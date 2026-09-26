@@ -540,9 +540,9 @@
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <TextBlock x:Name="HomeSelectionName" Text="Einrichtungsplatz" FontWeight="Bold" FontSize="14"/>
                                     <TextBlock x:Name="HomeSelectionSlotItemCount" Text=" (1/2)" FontSize="12" Foreground="{StaticResource DinoMutedText}" Margin="6,2,0,0" Visibility="Collapsed"/>
-                                    <Button x:Name="HomePrevItemButton" Content="â—€" Width="24" Height="22" Margin="8,0,2,0" Padding="0"
+                                    <Button x:Name="HomePrevItemButton" Content="&#x25C0;" Width="24" Height="22" Margin="8,0,2,0" Padding="0"
                                             FontSize="10" Cursor="Hand" Visibility="Collapsed" Click="HomePrevItemButton_Click"/>
-                                    <Button x:Name="HomeNextItemButton" Content="â–¶" Width="24" Height="22" Margin="2,0,0,0" Padding="0"
+                                    <Button x:Name="HomeNextItemButton" Content="&#x25B6;" Width="24" Height="22" Margin="2,0,0,0" Padding="0"
                                             FontSize="10" Cursor="Hand" Visibility="Collapsed" Click="HomeNextItemButton_Click"/>
                                 </StackPanel>
                                 <TextBlock x:Name="HomeSelectionDescription" Text="Wähle ein Element direkt im Raum aus."
