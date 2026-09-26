@@ -1573,14 +1573,6 @@ public partial class MainWindow : Window
         img.MouseLeftButtonDown += (s, e) =>
         {
             if (done) return;
-            if (_progress.Current.AdventurePoints <= 0)
-            {
-                ShowSpeech("Zu müde... 💤");
-                SetSleepState();
-                CloseShootingStar();
-                return;
-            }
-
             clicks++;
             counter.Text = $"{clicks}/{requiredClicks}";
             if (!_isDesktopDigging) _states.Set(DinoState.Curious);
