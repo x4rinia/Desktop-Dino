@@ -9,6 +9,7 @@ using DinoDesktopCompanion.Statistics;
 using DinoDesktopCompanion.Achievements;
 using DinoDesktopCompanion.Expeditions;
 using DinoDesktopCompanion.Core;
+using DinoDesktopCompanion.UI.Tutorial;
 
 namespace DinoDesktopCompanion;
 
@@ -50,13 +51,26 @@ public partial class App : System.Windows.Application
         _tray = new TrayIconService(DinoWindow, Configuration, Ollama, ExitApplication, OpenProfileWindow);
         DinoWindow.Show();
         Logger.Info("Dino Desktop Companion gestartet.");
+        if (!Configuration.Current.HasSeenTutorial)
+        {
+            Configuration.Current.HasSeenTutorial = true;
+            Configuration.Save();
+            OpenTutorialWindow();
+        }
     }
     
-    private void OpenProfileWindow()
+    public void OpenProfileWindow()
     {
         var pw = new DinoDesktopCompanion.UI.Profiles.ProfileWindow(Profiles);
         if (DinoWindow?.IsVisible == true) pw.Owner = DinoWindow;
         pw.ShowDialog();
+    }
+
+    public void OpenTutorialWindow()
+    {
+        var tw = new TutorialWindow();
+        if (DinoWindow?.IsVisible == true) tw.Owner = DinoWindow;
+        tw.Show();
     }
     
     private void SwitchProfile(bool isStartup = false)

@@ -27,6 +27,7 @@ public partial class InteractionWindow : Window
     private readonly DinoDesktopCompanion.Dino.Animation.DinoSpriteCatalog _catalog;
     private readonly DinoDesktopCompanion.Dino.Animation.DinoSpritePlayer _spritePlayer;
     private string? _selectedHomeSlotId;
+    private int _selectedSlotItemIndex;
     private AlbumEntryDefinition? _selectedAlbumEntry;
     private string _albumAreaFilter = "all";
     private string _albumRarityFilter = "all";
@@ -44,7 +45,6 @@ public partial class InteractionWindow : Window
         _catalog = new DinoDesktopCompanion.Dino.Animation.DinoSpriteCatalog(new DinoDesktopCompanion.Services.FileLogger());
         _spritePlayer = new DinoDesktopCompanion.Dino.Animation.DinoSpritePlayer(_catalog, frame =>
         {
-            PreviewDino.SetSprite(frame);
             WardrobeDino.SetSprite(frame);
         });
         HomeEquipButton.Click += HomeEquipButton_Click;
@@ -65,14 +65,14 @@ public partial class InteractionWindow : Window
         LoadAdventureDetails();
         LoadCollections();
         LoadAchievements();
-        UpdateStatsText();
 
 
-        _progress.XPAdded += (_, _) => Dispatcher.Invoke(() => { UpdateProgressUI(); UpdateStatsText(); });
+
+        _progress.XPAdded += (_, _) => Dispatcher.Invoke(() => { UpdateProgressUI(); });
         _progress.LevelUp += (_, _) => Dispatcher.Invoke(UpdateProgressUI);
         _progress.CoinsChanged += (_, _) => Dispatcher.Invoke(UpdateProgressUI);
         _progress.AdventurePointsChanged += (_, _) => Dispatcher.Invoke(UpdateProgressUI);
-        _stats.StatisticsChanged += (_, _) => Dispatcher.Invoke(UpdateStatsText);
+
         _collections.CollectionChanged += Collections_CollectionChanged;
         _achievements.AchievementUnlocked += Achievements_AchievementUnlocked;
         Closed += InteractionWindow_Closed;
@@ -86,15 +86,13 @@ public partial class InteractionWindow : Window
         {
             _catalog.SetSkin(skinDef);
             SkinText.Text = skinDef.Name;
-            PreviewDino.ApplySkin(skinDef);
             WardrobeDino.ApplySkin(skinDef);
         }
 
-        var (frames, duration, _) = _catalog.Get(DinoDesktopCompanion.Dino.States.DinoState.Idle);
-        if (frames.Count > 0)
+        var (idleFrames, _, _) = _catalog.Get(DinoDesktopCompanion.Dino.States.DinoState.Idle);
+        if (idleFrames.Count > 0)
         {
-            PreviewDino.SetSprite(frames[0]);
-            WardrobeDino.SetSprite(frames[0]);
+            WardrobeDino.SetSprite(idleFrames[0]);
         }
     }
 
@@ -107,7 +105,6 @@ public partial class InteractionWindow : Window
 
         if (PanelAchievements != null) PanelAchievements.Visibility = Visibility.Collapsed;
         if (PanelAdventure != null) PanelAdventure.Visibility = Visibility.Collapsed;
-        if (PanelSleep != null) PanelSleep.Visibility = Visibility.Collapsed;
         if (PanelHome != null) PanelHome.Visibility = Visibility.Collapsed;
     }
 
@@ -115,23 +112,18 @@ public partial class InteractionWindow : Window
     {
         HideAllPanels();
         if (PanelStart != null) PanelStart.Visibility = Visibility.Visible;
-        if (ProfileNameText is null || StatsText is null) return;
+        if (ProfileNameText is null) return;
         UpdateProfileUI();
         UpdateProgressUI();
-        UpdateStatsText();
+
+        UpdateSleepUI();
     }
     private void Nav_Adventure_Checked(object sender, RoutedEventArgs e) => ShowAdventure();
     private void Nav_Garderobe_Checked(object sender, RoutedEventArgs e) { HideAllPanels(); if (PanelGarderobe != null) PanelGarderobe.Visibility = Visibility.Visible; _wardrobePreviewSkinId = null; LoadGarderobe(); }
     private void Nav_Toys_Checked(object sender, RoutedEventArgs e) { HideAllPanels(); if (PanelToys != null) PanelToys.Visibility = Visibility.Visible; LoadAlbum(); }
 
     private void Nav_Achievements_Checked(object sender, RoutedEventArgs e) { HideAllPanels(); if (PanelAchievements != null) PanelAchievements.Visibility = Visibility.Visible; }
-    private void Nav_Home_Checked(object sender, RoutedEventArgs e) { HideAllPanels(); if (PanelHome != null) PanelHome.Visibility = Visibility.Visible; }
-    private void Nav_Sleep_Checked(object sender, RoutedEventArgs e)
-    {
-        HideAllPanels();
-        PanelSleep.Visibility = Visibility.Visible;
-        UpdateSleepUI();
-    }
+    private void Nav_Home_Checked(object sender, RoutedEventArgs e) { HideAllPanels(); if (PanelHome != null) PanelHome.Visibility = Visibility.Visible; UpdateSleepUI(); }
 
     private void UpdateProgressUI()
     {
@@ -145,14 +137,7 @@ public partial class InteractionWindow : Window
         if (SleepRegenProgressBar != null) UpdateSleepRegenerationUI();
     }
 
-    private void UpdateStatsText()
-    {
-        var s = _stats.Current;
-        StatsText.Text = $"Grabungen: {s.DigSitesCompleted}   •   Sammelfunde: {_collections.Current.UnlockedToys.Count}   •   " +
-                         $"Stein-Schere-Papier: {s.RockPaperScissors.GamesPlayed} Spiele\n" +
-                         $"Siege: {s.RockPaperScissors.Wins}   •   Niederlagen: {s.RockPaperScissors.Losses}   •   " +
-                         $"Unentschieden: {s.RockPaperScissors.Draws}   •   Gesamt-XP: {_progress.Current.TotalXP}";
-    }
+
 
     private void UpdateProfileUI()
     {
@@ -168,16 +153,52 @@ public partial class InteractionWindow : Window
             _ => "Wach"
         };
         StateText.Text = state;
+
+        // Apply profile color ring
+        if (ProfileColorRing != null)
+        {
+            var colorStr = DinoDesktopCompanion.Profiles.ProfileManager.NormalizeProfileColor(profile.ProfileColor);
+            try
+            {
+                var color = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(colorStr);
+                ProfileColorRing.Stroke = new System.Windows.Media.SolidColorBrush(color);
+            }
+            catch { /* keep default */ }
+        }
     }
 
     private void UpdateSleepUI()
     {
         var sleeping = _progress.IsSleeping;
-        SleepStatusText.Text = sleeping ? "Schläft" : "Wach";
+        bool isHome = false;
+        if (App.Current.MainWindow is MainWindow mw) isHome = mw.Home.IsHome;
+        var atMaximum = _progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints;
+        StateText.Text = isHome ? (sleeping ? "Schläft (Zuhause)" : "Ruht (Zuhause)") : (sleeping ? "Schläft (Desktop)" : "Wach (Desktop)");
         SleepApText.Text = $"{_progress.Current.AdventurePoints} / {_progress.Current.MaxAdventurePoints}";
-        SleepDinoButton.IsEnabled = !sleeping;
+        SleepDinoButton.IsEnabled = !sleeping && !atMaximum;
+        SleepDinoButton.ToolTip = atMaximum && !sleeping ? "Dino hat bereits volle Energie!" : null;
         WakeDinoButton.IsEnabled = sleeping;
+        
+        if (SleepDinoButton != null) SleepDinoButton.Visibility = sleeping ? Visibility.Collapsed : Visibility.Visible;
+        if (WakeDinoButton != null) WakeDinoButton.Visibility = sleeping ? Visibility.Visible : Visibility.Collapsed;
+        
+        if (SendHomeButton != null) SendHomeButton.Visibility = isHome ? Visibility.Collapsed : Visibility.Visible;
+        if (CallDesktopButton != null) CallDesktopButton.Visibility = isHome ? Visibility.Visible : Visibility.Collapsed;
+
         UpdateSleepRegenerationUI();
+        
+        if (HomeDinoImage != null)
+        {
+            if (isHome)
+            {
+                HomeDinoImage.Visibility = Visibility.Visible;
+                HomeDinoImage.Source = sleeping ? LoadHomeImage("Assets/Sprites/Sleep/sleep-01.png") : LoadHomeImage("Assets/Sprites/Sit/sit-01.png");
+            }
+            else
+            {
+                HomeDinoImage.Visibility = Visibility.Collapsed;
+            }
+        }
     }
 
     private void UpdateSleepRegenerationUI()
@@ -224,7 +245,14 @@ public partial class InteractionWindow : Window
             WardrobeEquipButton.Visibility = isUnlocked && previewSkin.Id != currentSkinId ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        foreach (var skin in _collections.Cosmetics.Skins)
+        var orderedSkins = _collections.Cosmetics.Skins
+            .OrderBy(s => GetAlbumRarityOrder(s.Rarity))
+            .ThenBy(s => s.UnlockLevel)
+            .ThenBy(s => s.Cost)
+            .ThenBy(s => s.Name)
+            .ToList();
+
+        foreach (var skin in orderedSkins)
         {
             if (SkinsList == null) continue;
             var unlocked = _collections.Current.UnlockedSkinIds.Contains(skin.Id);
@@ -234,7 +262,7 @@ public partial class InteractionWindow : Window
             var affordable = _progress.Current.DinoCoins >= skin.Cost;
             var status = isEquipped ? "Ausgerüstet" : unlocked ? "Freigeschaltet" : coinSkin && levelReady && affordable ? "Kaufbar" : "Gesperrt";
             var description = unlocked ? (skin.Id == _wardrobePreviewSkinId ? "Wird anprobiert" : "Klicken zum Anprobieren") : $"🔒 So bekommst du diesen Skin:\n{_collections.Cosmetics.GetUnlockText(skin)}";
-            var card = CreateCard(skin.Name, description, $"{status} · {skin.Rarity}", isEquipped);
+            var card = CreateCard(skin.Name, description, $"{status} · {skin.Rarity}", skin.Rarity, isEquipped);
             
             card.Cursor = System.Windows.Input.Cursors.Hand;
             card.MouseLeftButtonUp += (_, _) => 
@@ -276,11 +304,18 @@ public partial class InteractionWindow : Window
     private void LoadShop()
     {
         ShopList.Children.Clear();
-        foreach (var skin in _collections.Cosmetics.Skins)
+        var orderedSkins = _collections.Cosmetics.Skins
+            .OrderBy(s => GetAlbumRarityOrder(s.Rarity))
+            .ThenBy(s => s.UnlockLevel)
+            .ThenBy(s => s.Cost)
+            .ThenBy(s => s.Name)
+            .ToList();
+
+        foreach (var skin in orderedSkins)
         {
             if (_collections.Current.UnlockedSkinIds.Contains(skin.Id)) continue;
             var canBuy = skin.UnlockType == DinoDesktopCompanion.Customization.SkinUnlockType.Coins && _progress.Current.Level >= skin.UnlockLevel;
-            var card = CreateCard(skin.Name, canBuy ? $"Kaufbar ({skin.Cost} Coins)" : _collections.Cosmetics.GetUnlockText(skin), $"Skin - {skin.Rarity}");
+            var card = CreateCard(skin.Name, canBuy ? $"Kaufbar ({skin.Cost} Coins)" : _collections.Cosmetics.GetUnlockText(skin), $"Skin · {skin.Rarity}", skin.Rarity);
             if (canBuy)
             {
                 var btn = new System.Windows.Controls.Button { Content = $"Kaufen ({skin.Cost} Coins)", Margin = new Thickness(0, 5, 0, 0) };
@@ -296,18 +331,27 @@ public partial class InteractionWindow : Window
         }
     }
 
-    private Border CreateCard(string title, string description, string category, bool highlight = false)
+    private Border CreateCard(string title, string description, string category, string rarity = "Gewöhnlich", bool highlight = false)
     {
-        var border = new Border { Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(247, 251, 249)), BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(213, 229, 223)), BorderThickness = new Thickness(1), CornerRadius = new CornerRadius(14), Margin = new Thickness(10), Padding = new Thickness(15), Width = 220 };
-        if (highlight) border.BorderBrush = new SolidColorBrush(System.Windows.Media.Color.FromRgb(57, 139, 123)); // PrimaryColor
+        var accentBrush = GetRarityAccentBrush(rarity);
+        var border = new Border
+        {
+            Background = new SolidColorBrush(System.Windows.Media.Color.FromRgb(250, 252, 251)),
+            BorderBrush = accentBrush,
+            BorderThickness = new Thickness(highlight ? 2.5 : 1.5),
+            CornerRadius = new CornerRadius(14),
+            Margin = new Thickness(10),
+            Padding = new Thickness(15),
+            Width = 220
+        };
         
         var sp = new StackPanel();
         sp.Children.Add(new TextBlock { Text = title, FontWeight = FontWeights.Bold, FontSize = 16, Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(32, 58, 53)) });
-        sp.Children.Add(new TextBlock { Text = category, FontSize = 11, Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(99, 124, 118)), Margin = new Thickness(0, 4, 0, 10) });
+        sp.Children.Add(new TextBlock { Text = category, FontSize = 11, FontWeight = FontWeights.SemiBold, Foreground = accentBrush, Margin = new Thickness(0, 4, 0, 10) });
         sp.Children.Add(new TextBlock { Text = description, TextWrapping = TextWrapping.Wrap, Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(32, 58, 53)) });
         if (highlight)
         {
-            sp.Children.Add(new TextBlock { Text = "Ausgerüstet", Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(57, 139, 123)), FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 10, 0, 0) });
+            sp.Children.Add(new TextBlock { Text = "✓ Ausgerüstet", Foreground = accentBrush, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 10, 0, 0) });
         }
         border.Child = sp;
         return border;
@@ -324,7 +368,7 @@ public partial class InteractionWindow : Window
 
         var houseScene = LoadCroppedInterfaceImage("Assets/Home/haus.png", 1, 35, 806, 365);
         OverviewBackgroundImage.Source = houseScene;
-        SleepBackgroundImage.Source = houseScene;
+        PreviewPortraitImage.Source = LoadHomeImage("Assets/Home/dino_portrait.jpg");
 
         AdventureBackgroundImage.Source = LoadHomeImage("Assets/Backgrounds/adventure_map_clean.png");
         AchievementsBackgroundImage.Source = LoadCroppedInterfaceImage("Assets/Backgrounds/expedtion.png", 12, 90, 1268, 805);
@@ -430,7 +474,8 @@ public partial class InteractionWindow : Window
             CornerRadius = new CornerRadius(11),
             Background = entry.IsDiscovered ? Brushes.White : new SolidColorBrush(Color.FromRgb(238, 240, 239)),
             BorderBrush = isSelected ? new SolidColorBrush(Color.FromRgb(44, 143, 124)) : accent,
-            BorderThickness = new Thickness(isSelected ? 2 : 1)
+            BorderThickness = new Thickness(isSelected ? 2 : 1),
+            Tag = accent
         };
 
         var stack = new StackPanel();
@@ -440,15 +485,30 @@ public partial class InteractionWindow : Window
             CornerRadius = new CornerRadius(8),
             Background = entry.IsDiscovered ? GetAreaBrush(entry.AreaId) : new SolidColorBrush(Color.FromRgb(210, 214, 212))
         };
-        preview.Child = new TextBlock
+        var imgSource = entry.IsDiscovered ? LoadHomeImage(entry.AssetPath) : null;
+        if (imgSource != null)
         {
-            Text = entry.IsDiscovered ? GetAlbumGlyph(entry) : (entry.IsSecret ? "?" : "🔒"),
-            FontSize = entry.IsDiscovered ? 31 : 27,
-            FontWeight = FontWeights.Bold,
-            Foreground = entry.IsDiscovered ? Brushes.White : new SolidColorBrush(Color.FromRgb(126, 134, 131)),
-            HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+            preview.Child = new System.Windows.Controls.Image
+            {
+                Source = imgSource,
+                Width = 45,
+                Height = 45,
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+        }
+        else
+        {
+            preview.Child = new TextBlock
+            {
+                Text = entry.IsDiscovered ? GetAlbumGlyph(entry) : (entry.IsSecret ? "?" : "🔒"),
+                FontSize = entry.IsDiscovered ? 31 : 27,
+                FontWeight = FontWeights.Bold,
+                Foreground = entry.IsDiscovered ? Brushes.White : new SolidColorBrush(Color.FromRgb(126, 134, 131)),
+                HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+        }
         stack.Children.Add(preview);
         stack.Children.Add(new TextBlock
         {
@@ -480,12 +540,25 @@ public partial class InteractionWindow : Window
             MinWidth = 0,
             MinHeight = 0,
             Cursor = System.Windows.Input.Cursors.Hand,
-            ToolTip = entry.IsDiscovered ? entry.Name : "Noch nicht entdeckt"
+            ToolTip = entry.IsDiscovered ? entry.Name : "Noch nicht entdeckt",
+            Tag = entry.Id
         };
         button.Click += (_, _) =>
         {
+            if (_selectedAlbumEntry?.Id == entry.Id) return;
+            
             _selectedAlbumEntry = entry;
-            RefreshAlbumGrid();
+            foreach (System.Windows.Controls.Button childBtn in ToysList.Children)
+            {
+                if (childBtn.Content is Border childBorder)
+                {
+                    bool isThisSelected = (childBtn.Tag as string) == entry.Id;
+                    var bAccent = childBorder.Tag as System.Windows.Media.Brush;
+                    childBorder.BorderBrush = isThisSelected ? new SolidColorBrush(Color.FromRgb(44, 143, 124)) : bAccent;
+                    childBorder.BorderThickness = new Thickness(isThisSelected ? 2 : 1);
+                }
+            }
+            ShowAlbumDetails(_selectedAlbumEntry);
         };
         return button;
     }
@@ -501,6 +574,8 @@ public partial class InteractionWindow : Window
             AlbumDetailDescription.Text = "Passe die Filter an, um Fundstücke anzuzeigen.";
             AlbumDetailAreaText.Text = "–";
             AlbumDetailFoundAtText.Text = "–";
+            AlbumDetailCountTitle.Visibility = Visibility.Collapsed;
+            AlbumDetailCountText.Visibility = Visibility.Collapsed;
             AlbumDetailStatusText.Text = "Nicht verfügbar";
             return;
         }
@@ -525,6 +600,54 @@ public partial class InteractionWindow : Window
         AlbumDetailFoundAtText.Text = entry.IsDiscovered
             ? entry.FirstFoundAt?.ToLocalTime().ToString("dd.MM.yyyy HH:mm", CultureInfo.GetCultureInfo("de-DE")) ?? "Früher entdeckt – Datum nicht erfasst"
             : "Noch nicht gefunden";
+            
+        var baseId = entry.Id.Replace("_gold", "").Replace("_crystal", "");
+        var count = _collections.Current.ToyCounts.GetValueOrDefault(baseId, 0);
+
+        if (entry.Id.EndsWith("_crystal", StringComparison.OrdinalIgnoreCase))
+        {
+            AlbumDetailCountTitle.Visibility = Visibility.Visible;
+            AlbumDetailCountText.Visibility = Visibility.Visible;
+            AlbumDetailCountText.Text = "Endsammelstück erreicht!";
+            AlbumDetailCountText.Foreground = new SolidColorBrush(Color.FromRgb(44, 143, 124));
+        }
+        else if (entry.Id.EndsWith("_gold", StringComparison.OrdinalIgnoreCase))
+        {
+            AlbumDetailCountTitle.Visibility = Visibility.Visible;
+            AlbumDetailCountText.Visibility = Visibility.Visible;
+            AlbumDetailCountText.Text = $"{count} / 40 (Kristall)";
+            AlbumDetailCountText.Foreground = count >= 40 ? new SolidColorBrush(Color.FromRgb(44, 143, 124)) : Brushes.Gray;
+        }
+        else
+        {
+            var hasEvolutions = _collections.Toys.Items.Any(i => string.Equals(i.Id, entry.Id + "_gold", StringComparison.OrdinalIgnoreCase));
+            if (hasEvolutions)
+            {
+                AlbumDetailCountTitle.Visibility = Visibility.Visible;
+                AlbumDetailCountText.Visibility = Visibility.Visible;
+                if (count < 20)
+                {
+                    AlbumDetailCountText.Text = $"{count} / 20 (Gold)";
+                    AlbumDetailCountText.Foreground = Brushes.Gray;
+                }
+                else if (count < 40)
+                {
+                    AlbumDetailCountText.Text = $"{count} / 40 (Kristall)";
+                    AlbumDetailCountText.Foreground = Brushes.Gray;
+                }
+                else
+                {
+                    AlbumDetailCountText.Text = "Alle Meilensteine erreicht!";
+                    AlbumDetailCountText.Foreground = new SolidColorBrush(Color.FromRgb(44, 143, 124));
+                }
+            }
+            else
+            {
+                AlbumDetailCountTitle.Visibility = Visibility.Collapsed;
+                AlbumDetailCountText.Visibility = Visibility.Collapsed;
+            }
+        }
+
         AlbumDetailStatusText.Text = entry.IsDiscovered ? "Entdeckt" : "Nicht entdeckt";
         AlbumDetailStatusText.Foreground = entry.IsDiscovered
             ? new SolidColorBrush(Color.FromRgb(44, 143, 124))
@@ -579,20 +702,20 @@ public partial class InteractionWindow : Window
 
     private static System.Windows.Media.Brush GetRarityAccentBrush(string rarity) => rarity.ToLowerInvariant() switch
     {
-        "ungewöhnlich" => new SolidColorBrush(Color.FromRgb(24, 158, 78)),
-        "selten" => new SolidColorBrush(Color.FromRgb(37, 130, 216)),
-        "episch" => new SolidColorBrush(Color.FromRgb(132, 69, 205)),
-        "legendär" => new SolidColorBrush(Color.FromRgb(230, 132, 24)),
-        _ => new SolidColorBrush(Color.FromRgb(104, 116, 112))
+        "gewöhnlich" or "ungewöhnlich" => new SolidColorBrush(Color.FromRgb(34, 197, 94)),   // Grün
+        "selten" => new SolidColorBrush(Color.FromRgb(37, 130, 235)),                       // Blau
+        "episch" => new SolidColorBrush(Color.FromRgb(168, 85, 247)),                       // Lila
+        "legendär" => new SolidColorBrush(Color.FromRgb(249, 115, 22)),                     // Orange
+        _ => new SolidColorBrush(Color.FromRgb(34, 197, 94))
     };
 
     private static System.Windows.Media.Brush GetRarityBadgeBrush(string rarity) => rarity.ToLowerInvariant() switch
     {
-        "ungewöhnlich" => new SolidColorBrush(Color.FromRgb(223, 247, 228)),
-        "selten" => new SolidColorBrush(Color.FromRgb(222, 239, 252)),
-        "episch" => new SolidColorBrush(Color.FromRgb(239, 226, 250)),
-        "legendär" => new SolidColorBrush(Color.FromRgb(255, 238, 210)),
-        _ => new SolidColorBrush(Color.FromRgb(235, 239, 237))
+        "gewöhnlich" or "ungewöhnlich" => new SolidColorBrush(Color.FromArgb(35, 34, 197, 94)),
+        "selten" => new SolidColorBrush(Color.FromArgb(35, 37, 130, 235)),
+        "episch" => new SolidColorBrush(Color.FromArgb(35, 168, 85, 247)),
+        "legendär" => new SolidColorBrush(Color.FromArgb(40, 249, 115, 22)),
+        _ => new SolidColorBrush(Color.FromArgb(30, 200, 200, 200))
     };
 
     private static string GetAlbumGlyph(AlbumEntryDefinition entry)
@@ -600,7 +723,7 @@ public partial class InteractionWindow : Window
         var name = entry.Name.ToLowerInvariant();
         if (name.Contains("kleeblatt")) return "🍀";
         if (name.Contains("schnecken") || name.Contains("muschel")) return "🐚";
-        if (name.Contains("feder")) return "🪶";
+        if (name.Contains("feder")) return "🕊";
         if (name.Contains("zapfen") || name.Contains("eichel")) return "🌰";
         if (name.Contains("blume") || name.Contains("blüten")) return "🌸";
         if (name.Contains("kristall") || name.Contains("edelstein") || name.Contains("bernstein")) return "💎";
@@ -628,7 +751,7 @@ public partial class InteractionWindow : Window
     }
 
     private void Collections_CollectionChanged(object? sender, EventArgs e)
-        => Dispatcher.Invoke(() => { LoadAlbum(); UpdateStatsText(); if (PanelGarderobe.IsVisible) LoadGarderobe(); });
+        => Dispatcher.Invoke(() => { LoadAlbum(); if (PanelGarderobe.IsVisible) LoadGarderobe(); });
 
     private void Achievements_AchievementUnlocked(object? sender, Achievement e)
         => Dispatcher.Invoke(LoadAchievements);
@@ -795,9 +918,57 @@ public partial class InteractionWindow : Window
         return crop;
     }
 
+    private void HomePrevItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        var house = _collections.Home.Houses.FirstOrDefault(h => h.Id == _collections.Current.ActiveHouseId);
+        var slot = house?.Slots?.FirstOrDefault(s => s.Id == _selectedHomeSlotId);
+        if (slot == null) return;
+        var itemsForSlot = _collections.Home.Items.Where(i => i.SlotId == slot.Id).OrderBy(i => i.RequiredLevel).ThenBy(i => i.Cost).ToList();
+        if (itemsForSlot.Count <= 1) return;
+        _selectedSlotItemIndex = (_selectedSlotItemIndex - 1 + itemsForSlot.Count) % itemsForSlot.Count;
+        ShowHomeSelection(slot, itemsForSlot[_selectedSlotItemIndex]);
+    }
+
+    private void HomeNextItemButton_Click(object sender, RoutedEventArgs e)
+    {
+        var house = _collections.Home.Houses.FirstOrDefault(h => h.Id == _collections.Current.ActiveHouseId);
+        var slot = house?.Slots?.FirstOrDefault(s => s.Id == _selectedHomeSlotId);
+        if (slot == null) return;
+        var itemsForSlot = _collections.Home.Items.Where(i => i.SlotId == slot.Id).OrderBy(i => i.RequiredLevel).ThenBy(i => i.Cost).ToList();
+        if (itemsForSlot.Count <= 1) return;
+        _selectedSlotItemIndex = (_selectedSlotItemIndex + 1) % itemsForSlot.Count;
+        ShowHomeSelection(slot, itemsForSlot[_selectedSlotItemIndex]);
+    }
+
     private void ShowHomeSelection(HouseSlotDefinition slot, HomeItemDefinition? item)
     {
         _selectedHomeSlotId = slot.Id;
+        var itemsForSlot = _collections.Home.Items.Where(i => i.SlotId == slot.Id).OrderBy(i => i.RequiredLevel).ThenBy(i => i.Cost).ToList();
+        if (item != null)
+        {
+            var idx = itemsForSlot.FindIndex(i => i.Id == item.Id);
+            if (idx >= 0) _selectedSlotItemIndex = idx;
+        }
+        else if (itemsForSlot.Count > 0)
+        {
+            _selectedSlotItemIndex = Math.Clamp(_selectedSlotItemIndex, 0, itemsForSlot.Count - 1);
+            item = itemsForSlot[_selectedSlotItemIndex];
+        }
+
+        if (itemsForSlot.Count > 1 && item != null)
+        {
+            HomeSelectionSlotItemCount.Text = $"({_selectedSlotItemIndex + 1}/{itemsForSlot.Count})";
+            HomeSelectionSlotItemCount.Visibility = Visibility.Visible;
+            HomePrevItemButton.Visibility = Visibility.Visible;
+            HomeNextItemButton.Visibility = Visibility.Visible;
+        }
+        else
+        {
+            HomeSelectionSlotItemCount.Visibility = Visibility.Collapsed;
+            HomePrevItemButton.Visibility = Visibility.Collapsed;
+            HomeNextItemButton.Visibility = Visibility.Collapsed;
+        }
+
         HomeSelectionName.Text = item?.Name ?? slot.Name;
         HomeSelectionPreview.Source = item == null ? null : LoadHomeImage(item.AssetPath);
         HomeSelectionPlaceholder.Text = item == null ? "🔒" : "🏡";
@@ -814,18 +985,46 @@ public partial class InteractionWindow : Window
 
         var purchased = _collections.Current.UnlockedHomeItems.Contains(item.Id);
         var equipped = _collections.Current.EquippedHomeItemsBySlot.TryGetValue(slot.Id, out var equippedId) && equippedId == item.Id;
-        var status = equipped ? "Aktiv" : purchased ? "Gekauft" : _progress.Current.Level >= item.RequiredLevel ? "Verfügbar" : "Gesperrt";
-        HomeSelectionDescription.Text = $"Level {item.RequiredLevel} · {item.Cost} Dino Coins · {status}";
+        var previousTierActive = _collections.Home.IsPreviousTierActive(item);
+
+        string status;
+        if (equipped)
+        {
+            var nextTier = _collections.Home.Items.FirstOrDefault(candidate => candidate.RequiredPreviousItemId == item.Id);
+            var nextTierInfo = nextTier != null ? $"  ·  Nächste Stufe: {nextTier.Name} (Stufe {nextTier.UpgradeLevel})" : "";
+            status = $"Aktiv eingerichtet (Stufe {item.UpgradeLevel}){nextTierInfo}";
+        }
+        else if (purchased)
+        {
+            status = $"Im Besitz (Stufe {item.UpgradeLevel})";
+        }
+        else if (!previousTierActive)
+        {
+            status = $"Gesperrt: Benötigt aktive Vorgängerstufe (Stufe {item.UpgradeLevel - 1})";
+        }
+        else if (_progress.Current.Level < item.RequiredLevel)
+        {
+            status = $"Gesperrt: Benötigt Level {item.RequiredLevel}";
+        }
+        else
+        {
+            status = "Freigeschaltet zum Kauf";
+        }
+
+        var tierPrefix = item.UpgradeLevel > 1 ? $"[Stufe {item.UpgradeLevel}] " : "";
+        HomeSelectionDescription.Text = $"{tierPrefix}Benötigt: Level {item.RequiredLevel}  ·  Preis: {item.Cost} Dino Coins  ·  Status: {status}";
         var descriptions = (item.Bonuses ?? []).Where(bonus => !string.IsNullOrWhiteSpace(bonus.Description)).Select(bonus => bonus.Description).ToArray();
-        HomeSelectionBonus.Text = descriptions.Length == 0 ? "Aktuell kein fester Standardbonus" : $"Bonus: {string.Join(", ", descriptions)}";
+        HomeSelectionBonus.Text = descriptions.Length == 0 ? "Bonus: Keiner" : $"Bonus: {string.Join("  •  ", descriptions)}";
         HomeEquipButton.Tag = item.Id;
         HomeEquipButton.Content = equipped
-            ? "Aktiv"
+            ? "✓ Aktiv"
             : purchased
                 ? "Einrichten"
-                : _progress.Current.Level >= item.RequiredLevel ? "Kaufen" : $"Level {item.RequiredLevel}";
-        HomeEquipButton.IsEnabled = !equipped && (purchased || _progress.Current.Level >= item.RequiredLevel);
-        HomeEquipButton.Visibility = equipped ? Visibility.Collapsed : Visibility.Visible;
+                : !previousTierActive
+                    ? "Vorgänger nötig"
+                    : _progress.Current.Level >= item.RequiredLevel ? $"Kaufen ({item.Cost})" : $"Ab Level {item.RequiredLevel}";
+        HomeEquipButton.IsEnabled = !equipped && (purchased || (_progress.Current.Level >= item.RequiredLevel && previousTierActive));
+        HomeEquipButton.Visibility = Visibility.Visible;
     }
 
     private void HomeEquipButton_Click(object sender, RoutedEventArgs e)
@@ -844,6 +1043,9 @@ public partial class InteractionWindow : Window
                     UpdateProgressUI();
                     LoadHome();
                     return;
+                case HomePurchaseResult.RequiresPreviousTier:
+                    System.Windows.MessageBox.Show($"Für Stufe {item.UpgradeLevel} muss die Vorgängerstufe aktuell aktiv im Raum eingerichtet sein.", "Vorgängerstufe benötigt", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
                 case HomePurchaseResult.LevelTooLow:
                     System.Windows.MessageBox.Show($"Dino benötigt Level {item.RequiredLevel}, bevor du dieses Hausobjekt kaufen kannst.", "Noch gesperrt", MessageBoxButton.OK, MessageBoxImage.Information);
                     return;
@@ -860,7 +1062,11 @@ public partial class InteractionWindow : Window
         }
 
         _progress.RefreshAdventurePoints(DateTimeOffset.Now);
-        if (_collections.Home.EquipItem(itemId)) LoadHome();
+        if (_collections.Home.EquipItem(itemId))
+        {
+            UpdateProgressUI();
+            LoadHome();
+        }
     }
 
     private void LoadAreas()
@@ -1154,14 +1360,37 @@ public partial class InteractionWindow : Window
 
     private void SleepPage_Click(object sender, RoutedEventArgs e)
     {
-        HideAllPanels();
-        PanelSleep.Visibility = Visibility.Visible;
-        UpdateSleepUI();
+        Nav_Start_Checked(this, e);
+    }
+
+    private void SendHome_Click(object sender, RoutedEventArgs e)
+    {
+        if (App.Current.MainWindow is MainWindow mw && mw.EnsureDinoAvailableForAction())
+        {
+            mw.SendHome();
+            UpdateSleepUI();
+        }
+    }
+
+    private void CallDesktop_Click(object sender, RoutedEventArgs e)
+    {
+        if (App.Current.MainWindow is MainWindow mw && mw.EnsureDinoAvailableForAction())
+        {
+            mw.CallToCursor();
+            UpdateSleepUI();
+        }
     }
 
     private void SleepDino_Click(object sender, RoutedEventArgs e)
     {
-        if (!App.Current.DinoWindow.IsSleeping && EnsureDinoAvailable()) App.Current.DinoWindow.SetSleepState();
+        _progress.RefreshAdventurePoints(DateTimeOffset.Now);
+        if (_progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints)
+        {
+            App.Current.DinoWindow.ShowSpeech("Meine Energie ist schon voll!", 3000);
+            UpdateSleepUI();
+            return;
+        }
+        if (!_progress.IsSleeping && EnsureDinoAvailable()) App.Current.DinoWindow.SetSleepState();
         UpdateProfileUI();
         UpdateProgressUI();
         UpdateSleepUI();
@@ -1169,9 +1398,32 @@ public partial class InteractionWindow : Window
 
     private void WakeDino_Click(object sender, RoutedEventArgs e)
     {
-        if (App.Current.DinoWindow.IsSleeping) App.Current.DinoWindow.WakeUp();
+        if (_progress.IsSleeping) App.Current.DinoWindow.WakeUp();
         UpdateProfileUI();
         UpdateProgressUI();
         UpdateSleepUI();
+    }
+
+    private void OpenInfo_Click(object sender, RoutedEventArgs e)
+    {
+        ((App)System.Windows.Application.Current).OpenTutorialWindow();
+    }
+
+    private void OpenProfile_Click(object sender, RoutedEventArgs e)
+    {
+        ((App)System.Windows.Application.Current).OpenProfileWindow();
+    }
+
+    private void OpenSettings_Click(object sender, RoutedEventArgs e)
+    {
+        if (App.Current.MainWindow is MainWindow mw)
+        {
+            mw.OpenSettings();
+        }
+    }
+
+    private void QuitApp_Click(object sender, RoutedEventArgs e)
+    {
+        System.Windows.Application.Current.Shutdown();
     }
 }

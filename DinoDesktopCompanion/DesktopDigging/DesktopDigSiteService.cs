@@ -266,6 +266,8 @@ public sealed class DesktopDigSiteService : IDisposable
         var message = $"Grabung fertig: +{awardedXp} XP, +{_options.CoinReward} Dino Coins.";
         var areaCandidates = _collections.Toys.Items
             .Where(item => string.Equals(item.AreaId, _activeAreaId, StringComparison.OrdinalIgnoreCase))
+            .Where(item => !item.Id.EndsWith("_gold", StringComparison.OrdinalIgnoreCase) && !item.Id.EndsWith("_crystal", StringComparison.OrdinalIgnoreCase))
+            .Where(item => _collections.Current.ToyCounts.GetValueOrDefault(item.Id, 0) < 40)
             .ToList();
         var undiscoveredCandidates = areaCandidates
             .Where(item => !_collections.Current.UnlockedToys.Contains(item.Id))
@@ -283,9 +285,17 @@ public sealed class DesktopDigSiteService : IDisposable
         
         if (found is not null)
         {
-            message += _collections.Toys.Unlock(found.Id)
+            var isNew = _collections.Toys.Unlock(found.Id, out var superFound);
+            var count = _collections.Current.ToyCounts.GetValueOrDefault(found.Id, 0);
+            
+            message += isNew
                 ? $" Neuer Fund: {found.Name} – jetzt im Sammelalbum!"
-                : $" Fundstück: {found.Name} (bereits im Sammelalbum).";
+                : $" Fundstück: {found.Name} (bereits {count}x gesammelt).";
+                
+            if (superFound != null)
+            {
+                message += $"\n🌟 Wahnsinn! {count}x {found.Name} gesammelt! Du erhältst das Superfunde-Stück: {superFound.Name}!";
+            }
         }
         else
             message += " Diesmal kein Fundstück.";

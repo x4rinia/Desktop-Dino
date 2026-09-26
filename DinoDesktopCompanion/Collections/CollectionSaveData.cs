@@ -12,6 +12,7 @@ public class CollectionSaveData
     // Spielzeug
     public HashSet<string> UnlockedToys { get; set; } = [];
     public Dictionary<string, DateTimeOffset> ToyFirstFoundAt { get; set; } = new(StringComparer.OrdinalIgnoreCase);
+    public Dictionary<string, int> ToyCounts { get; set; } = new(StringComparer.OrdinalIgnoreCase);
 
     // Haus
     public HashSet<string> UnlockedHomeItems { get; set; } = [];

@@ -17,7 +17,8 @@
       { "Id": "regal", "Name": "Regal", "X": 270, "Y": 122, "Width": 126, "Height": 42, "ZIndex": 2 },
       { "Id": "fensterdeko", "Name": "Fensterdeko", "X": 582, "Y": 172, "Width": 148, "Height": 42, "ZIndex": 2 },
       { "Id": "wandbild", "Name": "Wanddeko", "X": 82, "Y": 82, "Width": 136, "Height": 42, "ZIndex": 2 },
-      { "Id": "event", "Name": "Eventdeko", "X": 434, "Y": 45, "Width": 136, "Height": 42, "ZIndex": 2 }
+      { "Id": "event", "Name": "Wandregal", "X": 434, "Y": 45, "Width": 136, "Height": 42, "ZIndex": 2 },
+      { "Id": "gartenkorb", "Name": "Gartenkorb", "X": 440, "Y": 255, "Width": 126, "Height": 42, "ZIndex": 2 }
     ]
   }
 ]

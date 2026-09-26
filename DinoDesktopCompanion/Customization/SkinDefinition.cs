@@ -40,7 +40,9 @@ public enum SkinUnlockType
     AllAreasUnlocked,
     AllStandardSkins,
     FullCollection,
-    Event
+    Event,
+    GoldFund,
+    CrystalFund
 }
 
 public enum EffectType

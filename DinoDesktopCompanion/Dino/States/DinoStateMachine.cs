@@ -12,7 +12,7 @@ public sealed class DinoStateMachine
         // A sleeping Dino is protected from generic AI, timer, and animation transitions.
         if (IsSleeping)
         {
-            if (state != DinoState.Sleep && state != DinoState.SleepLeft && state != DinoState.SleepRight)
+            if (state != DinoState.Sleep && state != DinoState.SleepLeft && state != DinoState.SleepRight && state != DinoState.Home)
             {
                 return;
             }

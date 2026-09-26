@@ -101,6 +101,8 @@ public class CosmeticCollectionService
         SkinUnlockType.AllAreasUnlocked => "Schalte alle Gebiete frei",
         SkinUnlockType.AllStandardSkins => "Besitze alle Standard-Farbskins",
         SkinUnlockType.FullCollection => "Vervollständige die Sammlung zu 100 %",
+        SkinUnlockType.GoldFund => "Erstelle ein Goldfundstück",
+        SkinUnlockType.CrystalFund => "Erstelle ein Kristallfundstück",
         _ => "Besondere Freischaltung"
     });
 
@@ -120,6 +122,8 @@ public class CosmeticCollectionService
             SkinUnlockType.AllAreasUnlocked => areas.Current.Areas.All(area => progress.Current.Level >= area.MinLevel),
             SkinUnlockType.AllStandardSkins => StandardColorIds.All(_manager.Current.UnlockedSkinIds.Contains),
             SkinUnlockType.FullCollection => _manager.Toys.Items.Count > 0 && _manager.Toys.Items.All(item => unlockedFinds.Contains(item.Id)),
+            SkinUnlockType.GoldFund => unlockedFinds.Any(id => id.EndsWith("_gold", StringComparison.OrdinalIgnoreCase)),
+            SkinUnlockType.CrystalFund => unlockedFinds.Any(id => id.EndsWith("_crystal", StringComparison.OrdinalIgnoreCase)),
             _ => false
         };
     }
@@ -179,15 +183,37 @@ public class ToyCollectionService
         }
     }
 
-    public bool Unlock(string id)
+    public bool Unlock(string id, out AlbumEntryDefinition? superFound)
     {
+        bool wasNew = false;
+        superFound = null;
+
         if (_manager.Current.UnlockedToys.Add(id))
         {
             _manager.Current.ToyFirstFoundAt[id] = DateTimeOffset.Now;
-            _manager.Save();
-            return true;
+            wasNew = true;
         }
-        return false;
+
+        var newCount = _manager.Current.ToyCounts.GetValueOrDefault(id, 0) + 1;
+        _manager.Current.ToyCounts[id] = newCount;
+
+        if (newCount == 20 || newCount == 40)
+        {
+            var suffix = newCount == 20 ? "_gold" : "_crystal";
+            var superId = id + suffix;
+            var superItem = Items.FirstOrDefault(i => string.Equals(i.Id, superId, StringComparison.OrdinalIgnoreCase));
+
+            if (superItem != null && !_manager.Current.UnlockedToys.Contains(superItem.Id))
+            {
+                _manager.Current.UnlockedToys.Add(superItem.Id);
+                _manager.Current.ToyFirstFoundAt[superItem.Id] = DateTimeOffset.Now;
+                _manager.Current.ToyCounts[superItem.Id] = 1;
+                superFound = superItem;
+            }
+        }
+
+        _manager.Save();
+        return wasNew;
     }
 }
 
@@ -251,12 +277,20 @@ public class HomeCollectionService
         return true;
     }
 
+    public bool IsPreviousTierActive(HomeItemDefinition item)
+    {
+        if (string.IsNullOrEmpty(item.RequiredPreviousItemId)) return true;
+        return _manager.Current.EquippedHomeItemsBySlot.TryGetValue(item.SlotId, out var equipped)
+               && string.Equals(equipped, item.RequiredPreviousItemId, StringComparison.OrdinalIgnoreCase);
+    }
+
     public HomePurchaseResult PurchaseItem(string id, ProgressService progress)
     {
         var item = Items.FirstOrDefault(candidate => candidate.Id == id);
         if (item == null) return HomePurchaseResult.NotFound;
         if (_manager.Current.UnlockedHomeItems.Contains(id)) return HomePurchaseResult.AlreadyPurchased;
         if (progress.Current.Level < item.RequiredLevel) return HomePurchaseResult.LevelTooLow;
+        if (!IsPreviousTierActive(item)) return HomePurchaseResult.RequiresPreviousTier;
         if (item.Cost > 0 && !progress.TrySpendCoins(item.Cost, $"Dinohaus:{id}")) return HomePurchaseResult.NotEnoughCoins;
 
         if (UnlockItem(id)) return HomePurchaseResult.Success;
@@ -273,5 +307,6 @@ public enum HomePurchaseResult
     NotFound,
     LevelTooLow,
     NotEnoughCoins,
-    AlreadyPurchased
+    AlreadyPurchased,
+    RequiresPreviousTier
 }

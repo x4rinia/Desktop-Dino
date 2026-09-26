@@ -56,6 +56,8 @@ public sealed class AchievementService
             new() { Id = "collection_rare", Title = "Erster seltener Fund", Description = "Entdecke dein erstes seltenes Fundstück.", XPReward = 100, CoinReward = 30, Category = "Sammeln", Target = 1 },
             new() { Id = "collection_epic", Title = "Erster epischer Fund", Description = "Entdecke dein erstes episches Fundstück.", XPReward = 200, CoinReward = 60, Category = "Sammeln", Target = 1 },
             new() { Id = "collection_legendary", Title = "Erster legendärer Fund", Description = "Entdecke dein erstes legendäres Fundstück.", XPReward = 350, CoinReward = 100, Category = "Sammeln", Target = 1 },
+            new() { Id = "collection_gold", Title = "Erster Goldfund", Description = "Entdecke dein erstes goldenes Fundstück.", XPReward = 500, CoinReward = 150, Category = "Sammeln", Target = 1 },
+            new() { Id = "collection_crystal", Title = "Erster Kristallfund", Description = "Entdecke dein erstes kristallines Fundstück.", XPReward = 800, CoinReward = 200, Category = "Sammeln", Target = 1 },
             new() { Id = "collection_complete", Title = "Komplette Sammlung", Description = "Vervollständige das gesamte Sammelalbum.", XPReward = 1000, CoinReward = 300, Category = "Sammeln", Target = 1 },
 
             new() { Id = "secret_first_skin", Title = "Erster zusätzlicher Skin", Description = "Schalte deinen ersten zusätzlichen Skin frei.", XPReward = 100, CoinReward = 20, Category = "Sammeln", Target = 1 },
@@ -102,6 +104,8 @@ public sealed class AchievementService
         TryUnlock("collection_rare", HasFindOfRarity("Selten"));
         TryUnlock("collection_epic", HasFindOfRarity("Episch"));
         TryUnlock("collection_legendary", HasFindOfRarity("Legendär"));
+        TryUnlock("collection_gold", HasFindOfSuffix("_gold"));
+        TryUnlock("collection_crystal", HasFindOfSuffix("_crystal"));
         TryUnlock("collection_complete", _collections.Toys.Items.Count > 0 && _collections.Toys.Items.All(item => unlockedFinds.Contains(item.Id)));
 
 
@@ -134,6 +138,8 @@ public sealed class AchievementService
     private bool HasFindOfRarity(string rarity) => _collections.Toys.Items.Any(item =>
         _collections.Current.UnlockedToys.Contains(item.Id) && string.Equals(item.Rarity, rarity, StringComparison.OrdinalIgnoreCase));
 
+    private bool HasFindOfSuffix(string suffix) => _collections.Current.UnlockedToys.Any(id => id.EndsWith(suffix, StringComparison.OrdinalIgnoreCase));
+
     public void CheckCustomCondition(string id) => TryUnlock(id, true);
 
     public int GetProgress(Achievement ach)
@@ -157,7 +163,12 @@ public sealed class AchievementService
             // Just return 0 or 1 since target is 1, but we can do ratio. Wait, Target is 1 for area complete.
             return unlocked == items.Count ? 1 : 0;
         }
-        if (ach.Id.StartsWith("collection_")) return HasFindOfRarity(ach.Id.Replace("collection_", "")) ? 1 : 0;
+        if (ach.Id.StartsWith("collection_"))
+        {
+            if (ach.Id == "collection_gold") return HasFindOfSuffix("_gold") ? 1 : 0;
+            if (ach.Id == "collection_crystal") return HasFindOfSuffix("_crystal") ? 1 : 0;
+            return HasFindOfRarity(ach.Id.Replace("collection_", "")) ? 1 : 0;
+        }
         if (ach.Id == "skins_5") return Math.Min(unlockedSkins.Count, ach.Target);
         if (ach.Id == "all_standard_colors") return Math.Min(StandardColorIds.Count(unlockedSkins.Contains), ach.Target);
         if (ach.Id == "home_first" || ach.Id == "home_5") return Math.Min(unlockedHomeItems.Count, ach.Target);

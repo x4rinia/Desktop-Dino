@@ -38,6 +38,10 @@ public sealed class HomeBonusService
             DigSiteLifetimeMultiplier = PercentMultiplier(totals.GetValueOrDefault(HomeBonusType.DigSiteLifetime)),
             DigSpeedMultiplier = PercentMultiplier(totals.GetValueOrDefault(HomeBonusType.DigSpeed)),
             GameXpMultiplier = PercentMultiplier(totals.GetValueOrDefault(HomeBonusType.GameExperience)),
+            AutoLeafCollect = totals.GetValueOrDefault(HomeBonusType.AutoLeafCollect) > 0,
+            LeafRewardBonus = totals.GetValueOrDefault(HomeBonusType.LeafRewardBonus),
+            BugRewardBonus = totals.GetValueOrDefault(HomeBonusType.BugRewardBonus),
+            CoinMultiplier = PercentMultiplier(totals.GetValueOrDefault(HomeBonusType.CoinBonus)),
             ActiveDescriptions = activeItems
                 .SelectMany(item => item.Bonuses ?? [])
                 .Where(bonus => bonus.Type is not (HomeBonusType.None or HomeBonusType.Event) && !string.IsNullOrWhiteSpace(bonus.Description))
@@ -91,5 +95,9 @@ public sealed class HomeBonusSummary
     public double DigSiteLifetimeMultiplier { get; init; } = 1;
     public double DigSpeedMultiplier { get; init; } = 1;
     public double GameXpMultiplier { get; init; } = 1;
+    public bool AutoLeafCollect { get; init; }
+    public double LeafRewardBonus { get; init; }
+    public double BugRewardBonus { get; init; }
+    public double CoinMultiplier { get; init; } = 1;
     public IReadOnlyList<string> ActiveDescriptions { get; init; } = Array.Empty<string>();
 }

@@ -17,6 +17,9 @@ public class HomeItemDefinition
     public string? InteractionId { get; set; }
     public int RequiredLevel { get; set; } = 1;
     public int Cost { get; set; }
+    public string? BaseDecorationId { get; set; }
+    public int UpgradeLevel { get; set; } = 1;
+    public string? RequiredPreviousItemId { get; set; }
     public List<HomeBonusDefinition> Bonuses { get; set; } = new();
     
     [JsonIgnore]
@@ -46,7 +49,11 @@ public enum HomeBonusType
     DigSiteLifetime,
     GameExperience,
     Event,
-    DigSpeed
+    DigSpeed,
+    AutoLeafCollect,
+    LeafRewardBonus,
+    BugRewardBonus,
+    CoinBonus
 }
 
 public class HouseLayoutDefinition

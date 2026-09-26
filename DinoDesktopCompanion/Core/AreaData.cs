@@ -3,7 +3,7 @@ namespace DinoDesktopCompanion.Core;
 public sealed class AreaData
 {
     public List<Area> Areas { get; set; } = new();
-    public string SelectedAreaId { get; set; } = "garten";
+    public string SelectedAreaId { get; set; } = "";
 }
 
 public sealed class Area

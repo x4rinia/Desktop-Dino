@@ -24,6 +24,9 @@ public class CollectionManager
         Current.ToyFirstFoundAt = Current.ToyFirstFoundAt == null
             ? new Dictionary<string, DateTimeOffset>(StringComparer.OrdinalIgnoreCase)
             : new Dictionary<string, DateTimeOffset>(Current.ToyFirstFoundAt, StringComparer.OrdinalIgnoreCase);
+        Current.ToyCounts = Current.ToyCounts == null
+            ? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase)
+            : new Dictionary<string, int>(Current.ToyCounts, StringComparer.OrdinalIgnoreCase);
         Current.UnlockedHomeItems ??= new HashSet<string>();
         Current.EquippedHomeItemsBySlot ??= new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         

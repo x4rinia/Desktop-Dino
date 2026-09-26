@@ -33,10 +33,13 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _returnToIdleTimer = new();
     private readonly DispatcherTimer _sleepClickMenuTimer = new();
     private readonly DispatcherTimer _fullScreenTimer = new() { Interval = TimeSpan.FromSeconds(3) };
-    private readonly DispatcherTimer _apRegenTimer = new() { Interval = TimeSpan.FromSeconds(15) };
+    private readonly DispatcherTimer _apRegenTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly DispatcherTimer _leavesTimer = new();
+    private readonly DispatcherTimer _autoLeafCollectTimer = new() { Interval = TimeSpan.FromSeconds(6) };
     private readonly DispatcherTimer _bugTimer = new();
     private DispatcherTimer? _walkTimer;
+    private UI.AreaVignetteWindow? _vignetteWindow;
+    private string? _pendingWakeMessage;
     private bool _isEventActive;
     private GpuDinoWindow? _chatWindow;
     private bool _isSmoothMoving;
@@ -81,6 +84,9 @@ public partial class MainWindow : Window
         ((App)System.Windows.Application.Current).Collections.CollectionChanged += (_, _) => UpdateSkin();
         UpdateSkin();
 
+        _vignetteWindow = new UI.AreaVignetteWindow();
+        UpdateVignette();
+
         _mouseFollow.StepRequested += (_, args) => FollowMouseStep(args);
         _bubbleTimer.Tick += (_, _) => { SpeechBubble.Visibility = Visibility.Collapsed; _bubbleTimer.Stop(); };
         _returnToIdleTimer.Tick += (_, _) =>
@@ -93,17 +99,27 @@ public partial class MainWindow : Window
         _sleepClickMenuTimer.Tick += (_, _) =>
         {
             _sleepClickMenuTimer.Stop();
-            if (IsSleeping) ShowDinoContextMenu();
+
         };
         _fullScreenTimer.Tick += (_, _) => CheckFullscreen();
         _apRegenTimer.Tick += (_, _) => 
         { 
-            if (_progress.IsSleeping) _progress.RefreshAdventurePoints(DateTimeOffset.Now); 
+            if (_progress.IsSleeping)
+            {
+                _progress.RefreshAdventurePoints(DateTimeOffset.Now); 
+                if (_progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints)
+                {
+                    WakeUpFromFullEnergy();
+                }
+            }
             else if (IdleTimeService.GetIdleTime().TotalMinutes > 1.5 && !_isDesktopDigging)
             {
                 _rewardService.TryRewardAP("IdleRest");
             }
         };
+        _autoLeafCollectTimer.Tick += (_, _) => TryDinoAutoLeafCollect();
+        _leavesTimer.Tick += LeavesTimer_Tick;
+        _bugTimer.Tick += BugTimer_Tick;
         _progress.AdventurePointsChanged += Progress_AdventurePointsChanged;
         _configuration.Changed += (_, _) => ApplySettings();
         Loaded += OnLoaded;
@@ -118,6 +134,13 @@ public partial class MainWindow : Window
     {
         var restoreSleep = _progress.IsSleeping
             || ((App)System.Windows.Application.Current).Profiles.ActiveProfile?.State == Profiles.DinoState.Sleeping;
+        if (restoreSleep && _progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints)
+        {
+            restoreSleep = false;
+            _progress.StopSleeping();
+            if (((App)System.Windows.Application.Current).Profiles.ActiveProfile != null)
+                ((App)System.Windows.Application.Current).Profiles.ActiveProfile.State = Profiles.DinoState.Idle;
+        }
         MonitorService.RestoreOrCenter(this, _configuration.Current);
         if (restoreSleep)
             RestoreSleepState();
@@ -127,6 +150,7 @@ public partial class MainWindow : Window
         _behaviour.Start();
         _fullScreenTimer.Start();
         _apRegenTimer.Start();
+        _autoLeafCollectTimer.Start();
         _digSites.Start();
         ScheduleNextLeavesTimer();
         ScheduleNextBugTimer();
@@ -186,11 +210,7 @@ public partial class MainWindow : Window
                 }
                 else
                 {
-                    var screen = System.Windows.Forms.Screen.FromHandle(new System.Windows.Interop.WindowInteropHelper(this).Handle);
-                    var workArea = screen.WorkingArea;
-                    var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(this);
-                    Left = workArea.Right / dpi.DpiScaleX - Width;
-                    Top = workArea.Bottom / dpi.DpiScaleY - Height;
+                    // Do nothing - Dino sleeps wherever he currently is.
                 }
             }
             else if (state == DinoState.Wake)
@@ -198,25 +218,66 @@ public partial class MainWindow : Window
                 Show();
             }
 
+            Dispatcher.Invoke(() => UpdateSleepToolTip());
+
             Dino.ShowState(state);
             _spritePlayer.Play(state, _configuration.Current.Animations && !_configuration.Current.QuietMode, _configuration.Current.AnimationSpeed);
             _animations.Apply(Dino, state, _configuration.Current.Animations && !_configuration.Current.QuietMode, _configuration.Current.AnimationSpeed);
             if (state == DinoState.Home) { SpeechBubble.Visibility = Visibility.Collapsed; return; }
             if (sleeping) ShowSpeech(_messages.Get("sleep"), 2500);
-            else if (state == DinoState.Wake) { ShowSpeech(_messages.Get("wake")); ReturnToIdleAfter(900); }
+            else if (state == DinoState.Wake)
+            {
+                if (!string.IsNullOrEmpty(_pendingWakeMessage))
+                {
+                    ShowSpeech(_pendingWakeMessage, 3000);
+                    _pendingWakeMessage = null;
+                }
+                else
+                {
+                    ShowSpeech(_messages.Get("wake"));
+                }
+                ReturnToIdleAfter(900);
+            }
         });
     }
 
     public void SetSleepState()
     {
-        if (IsSleeping || !EnsureDinoAvailableForAction()) return;
+        if ((_progress.IsSleeping && _home.IsHome) || IsSleeping || !EnsureDinoAvailableForAction()) return;
+        _progress.RefreshAdventurePoints(DateTimeOffset.Now);
+        if (_progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints)
+        {
+            ShowSpeech("Meine Energie ist schon voll!", 3000);
+            return;
+        }
         _digSites.CancelActive();
         StopAnimatedWindowMovement();
         _walkTimer?.Stop();
         _walkTimer = null;
         _returnToIdleTimer.Stop();
         _progress.StartSleeping(DateTimeOffset.Now);
-        _states.Set(Dino.IsFacingLeft ? DinoState.SleepLeft : DinoState.SleepRight);
+        
+        if (!_home.IsHome)
+        {
+            _states.Set(Dino.IsFacingLeft ? DinoState.SleepLeft : DinoState.SleepRight);
+        }
+        RefreshActiveArea();
+    }
+
+    public void WakeUpFromFullEnergy()
+    {
+        if (!IsSleeping && !_progress.IsSleeping) return;
+        _progress.RegenerateAdventurePoints(DateTimeOffset.Now);
+        
+        if (_home.IsHome) 
+        {
+            _progress.StopSleeping();
+            return;
+        }
+
+        _progress.StopSleeping();
+        _pendingWakeMessage = "Ich bin wieder fit!";
+        _states.Set(DinoState.Wake);
     }
 
     private void RestoreSleepState()
@@ -237,13 +298,42 @@ public partial class MainWindow : Window
 
     public void RefreshActiveArea()
     {
-        if (!_isDesktopDigging) _digSites.CancelActive();
+        if (!_isDesktopDigging) 
+        {
+            _digSites.CancelActive();
+            foreach (var leaf in _activeLeaves.ToList()) { leaf.Close(); }
+            _activeLeaves.Clear();
+        }
+        UpdateVignette();
+    }
+
+    public void UpdateVignette()
+    {
+        if (_vignetteWindow == null) return;
+        var app = (App)System.Windows.Application.Current;
+        var area = app.Areas?.Current?.SelectedAreaId;
+        if (_home.IsHome || string.IsNullOrEmpty(area) || area == "none" || _hiddenForFullscreen || !IsVisible)
+        {
+            _vignetteWindow.Hide();
+        }
+        else
+        {
+            _vignetteWindow.UpdateArea(area);
+        }
     }
 
     public void WakeUp()
     {
-        if (!IsSleeping) return;
+        if (!IsSleeping && !_progress.IsSleeping) return;
         _progress.RegenerateAdventurePoints(DateTimeOffset.Now);
+        _progress.StopSleeping();
+        
+        if (_home.IsHome)
+        {
+            RefreshActiveArea();
+            return;
+        }
+        
         _states.WakeUp();
     }
 
@@ -441,51 +531,74 @@ public partial class MainWindow : Window
 
     private void Dino_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
     {
-#if DEBUG
-        if ((Keyboard.Modifiers & (ModifierKeys.Control | ModifierKeys.Shift)) == (ModifierKeys.Control | ModifierKeys.Shift))
-        {
-            ShowSpeech(_digSites.TrySpawnNowForTesting()
-                ? "Test-Grabungsstelle erzeugt."
-                : "Wähle zuerst ein freigeschaltetes Gebiet und stelle sicher, dass Dino verfügbar ist.");
-            return;
-        }
-#endif
-        ShowDinoContextMenu();
+        // Rechtsklick-Menü deaktiviert wie gewünscht.
     }
 
-    private void ShowDinoContextMenu()
+    private System.Windows.Controls.ToolTip? _sleepToolTip;
+    private System.Windows.Controls.TextBlock? _sleepToolTipApText;
+    private System.Windows.Controls.TextBlock? _sleepToolTipRegenText;
+    private System.Windows.Controls.ProgressBar? _sleepToolTipRegenBar;
+
+    private void EnsureSleepToolTip()
     {
-        _dinoContextMenu?.SetCurrentValue(System.Windows.Controls.ContextMenu.IsOpenProperty, false);
-        var menu = new System.Windows.Controls.ContextMenu
+        if (_sleepToolTip != null) return;
+        var stackPanel = new System.Windows.Controls.StackPanel { Width = 160 };
+        stackPanel.Children.Add(new System.Windows.Controls.TextBlock { Text = "AP", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#7A939E")) });
+        
+        _sleepToolTipApText = new System.Windows.Controls.TextBlock { FontSize = 18, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#2A82D6")), Margin = new System.Windows.Thickness(0, 2, 0, 12) };
+        stackPanel.Children.Add(_sleepToolTipApText);
+        
+        var grid = new System.Windows.Controls.Grid { Margin = new System.Windows.Thickness(0, 0, 0, 6) };
+        grid.Children.Add(new System.Windows.Controls.TextBlock { Text = "Nächster AP", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A6572")), FontWeight = System.Windows.FontWeights.SemiBold });
+        _sleepToolTipRegenText = new System.Windows.Controls.TextBlock { FontSize = 11, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A6572")), HorizontalAlignment = System.Windows.HorizontalAlignment.Right };
+        grid.Children.Add(_sleepToolTipRegenText);
+        stackPanel.Children.Add(grid);
+        
+        _sleepToolTipRegenBar = new System.Windows.Controls.ProgressBar { Height = 8, Minimum = 0, Maximum = 100, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#329A5B")), Background = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#E2ECE9")), BorderThickness = new System.Windows.Thickness(0) };
+        stackPanel.Children.Add(_sleepToolTipRegenBar);
+        
+        _sleepToolTip = new System.Windows.Controls.ToolTip
         {
-            PlacementTarget = Dino,
-            Placement = System.Windows.Controls.Primitives.PlacementMode.MousePoint
+            Background = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#FFFFFF")),
+            BorderBrush = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#BFD5E5DF")),
+            BorderThickness = new System.Windows.Thickness(1),
+            Padding = new System.Windows.Thickness(12),
+            Content = stackPanel
         };
-        _dinoContextMenu = menu;
-        menu.Closed += (_, _) => { if (ReferenceEquals(_dinoContextMenu, menu)) _dinoContextMenu = null; };
-        if (IsSleeping)
+    }
+
+    private void UpdateSleepToolTip()
+    {
+        if (IsSleeping && _states.Current != DinoState.Home)
         {
-            var wakeItem = new System.Windows.Controls.MenuItem { Header = "Dino aufwecken" };
-            wakeItem.Click += (_, _) => WakeUp();
-            menu.Items.Add(wakeItem);
+            EnsureSleepToolTip();
+            Dino.ToolTip = _sleepToolTip;
+            
+            if (_sleepToolTipApText != null) _sleepToolTipApText.Text = $"{_progress.Current.AdventurePoints} / {_progress.Current.MaxAdventurePoints}";
+            var atMaximum = _progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints;
+            var progress = atMaximum ? 0 : Math.Clamp(_progress.Current.AdventurePointRegenProgress, 0, 0.9999999);
+            var percent = (int)Math.Floor(progress * 100);
+            if (_sleepToolTipRegenBar != null) _sleepToolTipRegenBar.Value = percent;
+            if (_sleepToolTipRegenText != null) _sleepToolTipRegenText.Text = $"{percent} %";
         }
         else
         {
-            var sleepItem = new System.Windows.Controls.MenuItem
-            {
-                Header = "Dino schlafen schicken",
-                IsEnabled = !IsPerformingAction
-            };
-            sleepItem.Click += (_, _) => SetSleepState();
-            menu.Items.Add(sleepItem);
+            Dino.ToolTip = null;
         }
-        menu.IsOpen = true;
     }
 
     private void Progress_AdventurePointsChanged(object? sender, Progress.AdventurePointsChangedEventArgs e)
     {
-        if (e.Delta > 0)
+        if (IsSleeping && e.Current >= e.Maximum)
+        {
+            Dispatcher.BeginInvoke(new Action(() => WakeUpFromFullEnergy()));
+            return;
+        }
+
+        if (e.Delta > 0 && !IsSleeping)
             Dispatcher.BeginInvoke(new Action(() => ShowSpeech($"⚡ +{e.Delta} AP", 2800)));
+            
+        Dispatcher.BeginInvoke(new Action(UpdateSleepToolTip));
     }
 
     private void OpenInteractionMenu()
@@ -589,18 +702,18 @@ public partial class MainWindow : Window
 
     private void CheckFullscreen()
     {
-        if (_home.IsHome) { _digSites.CancelActive(); _hiddenForFullscreen = false; if (IsVisible) Hide(); return; }
+        if (_home.IsHome) { _digSites.CancelActive(); _hiddenForFullscreen = false; if (IsVisible) Hide(); UpdateVignette(); return; }
         // A fullscreen app on another monitor must not hide the companion.
         var full = FullScreenDetector.IsForegroundFullScreen(this);
         if (full) _digSites.CancelActive();
-        if (!_configuration.Current.HideInFullscreen) { if (_hiddenForFullscreen) { Show(); _hiddenForFullscreen = false; ReapplyTopmost(); } return; }
-        if (full && IsVisible && IsActive == false) { _digSites.CancelActive(); StopAnimatedWindowMovement(); _hiddenForFullscreen = true; Hide(); }
-        else if (!full && _hiddenForFullscreen) { _hiddenForFullscreen = false; Show(); ReapplyTopmost(); }
+        if (!_configuration.Current.HideInFullscreen) { if (_hiddenForFullscreen) { Show(); _hiddenForFullscreen = false; ReapplyTopmost(); UpdateVignette(); } return; }
+        if (full && IsVisible && IsActive == false) { _digSites.CancelActive(); StopAnimatedWindowMovement(); _hiddenForFullscreen = true; Hide(); UpdateVignette(); }
+        else if (!full && _hiddenForFullscreen) { _hiddenForFullscreen = false; Show(); ReapplyTopmost(); UpdateVignette(); }
     }
 
     public void SendHome()
     {
-        if (IsSleeping || !EnsureDinoAvailableForAction()) return;
+        if (!EnsureDinoAvailableForAction()) return;
         _home.SendHome(
             () =>
             {
@@ -610,21 +723,32 @@ public partial class MainWindow : Window
                 _returnToIdleTimer.Stop(); _bubbleTimer.Stop();
                 MonitorService.SavePosition(this, _configuration.Current); _configuration.Save();
             },
-            () => { _hiddenForFullscreen = false; Hide(); });
+            () => { _hiddenForFullscreen = false; Hide(); UpdateVignette(); });
     }
 
     public void CallToCursor()
     {
-        if (IsSleeping || !EnsureDinoAvailableForAction()) return;
+        if (!EnsureDinoAvailableForAction()) return;
         _home.CallDino(() =>
         {
-        _digSites.CancelActive();
-        StopAnimatedWindowMovement();
-        _hiddenForFullscreen = false;
-        MonitorService.CallToCursor(this);
-        ReapplyTopmost();
-        ShowSpeech("Hier bin ich! 🦕");
-        ReturnToIdleAfter(900);
+            _digSites.CancelActive();
+            StopAnimatedWindowMovement();
+            _hiddenForFullscreen = false;
+            MonitorService.CallToCursor(this);
+            ReapplyTopmost();
+            
+            if (_progress.IsSleeping) 
+            {
+                _states.Set(Dino.IsFacingLeft ? DinoState.SleepLeft : DinoState.SleepRight);
+            }
+            else 
+            {
+                ShowSpeech("Hier bin ich! 🦕");
+                ReturnToIdleAfter(900);
+            }
+            
+            UpdateVignette();
+            RefreshActiveArea();
         });
     }
 
@@ -1040,6 +1164,24 @@ public partial class MainWindow : Window
 
     private readonly List<Window> _activeLeaves = new();
 
+    private void LeavesTimer_Tick(object? sender, EventArgs e)
+    {
+        _leavesTimer.Stop();
+        var app = (App)System.Windows.Application.Current;
+        bool hasActiveArea = !string.IsNullOrEmpty(app.Areas.Current.SelectedAreaId) && app.Areas.Current.SelectedAreaId != "none";
+
+        if (!hasActiveArea || _home.IsHome || IsSleeping)
+        {
+            foreach (var leaf in _activeLeaves.ToList()) { leaf.Close(); }
+            _activeLeaves.Clear();
+        }
+        else if (_activeLeaves.Count < 5) 
+        {
+            SpawnSingleLeaf();
+        }
+        ScheduleNextLeavesTimer();
+    }
+
     private void ScheduleNextLeavesTimer()
     {
         _leavesTimer.Stop();
@@ -1047,25 +1189,26 @@ public partial class MainWindow : Window
         _leavesTimer.Interval = _activeLeaves.Count == 0
             ? TimeSpan.FromSeconds(5)
             : TimeSpan.FromSeconds(Random.Shared.Next(8, 20));
-        _leavesTimer.Tick += (_, _) =>
-        {
-            _leavesTimer.Stop();
-            if (!IsSleeping && _activeLeaves.Count < 5) SpawnSingleLeaf();
-            ScheduleNextLeavesTimer();
-        };
         _leavesTimer.Start();
+    }
+
+    private void BugTimer_Tick(object? sender, EventArgs e)
+    {
+        _bugTimer.Stop();
+        var app = (App)System.Windows.Application.Current;
+        bool hasActiveArea = !string.IsNullOrEmpty(app.Areas.Current.SelectedAreaId) && app.Areas.Current.SelectedAreaId != "none";
+
+        if (hasActiveArea && !IsSleeping && !_home.IsHome) 
+        {
+            StartBugEvent();
+        }
+        ScheduleNextBugTimer();
     }
 
     private void ScheduleNextBugTimer()
     {
         _bugTimer.Stop();
         _bugTimer.Interval = TimeSpan.FromSeconds(Random.Shared.Next(60, 180));
-        _bugTimer.Tick += (_, _) =>
-        {
-            _bugTimer.Stop();
-            if (!IsSleeping) StartBugEvent();
-            ScheduleNextBugTimer();
-        };
         _bugTimer.Start();
     }
 
@@ -1123,9 +1266,10 @@ public partial class MainWindow : Window
 
         var marker = new Window
         {
-            WindowStyle = WindowStyle.None, AllowsTransparency = true,
-            Background = System.Windows.Media.Brushes.Transparent,
-            Topmost = true, Width = 56, Height = 56, ShowInTaskbar = false
+            AllowsTransparency = true,
+            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
+            Width = 56, Height = 56,
+            
         };
         var img = new System.Windows.Controls.Image
         {
@@ -1135,7 +1279,7 @@ public partial class MainWindow : Window
         };
         marker.Content = img;
         marker.Left = r.Next(workArea.Left + 60, workArea.Right - 60) / dpi.DpiScaleX;
-        marker.Top  = r.Next(workArea.Top  + 60, workArea.Bottom - 60) / dpi.DpiScaleY;
+        marker.Top = r.Next(workArea.Top  + 60, workArea.Bottom - 60) / dpi.DpiScaleY;
         _activeLeaves.Add(marker);
 
         marker.MouseLeftButtonDown += (s, e) =>
@@ -1160,26 +1304,7 @@ public partial class MainWindow : Window
                 ShowSpeech("-1 AP");
             }
 
-            // Dino gleitet hin
-            var tLeft = marker.Left - Width / 2;
-            var tTop  = marker.Top  - Height / 2;
-            var sLeft = Left; var sTop = Top;
-            var steps = 0;
-            var mv = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(25) };
-            mv.Tick += (_, _) =>
-            {
-                steps++;
-                var p = Math.Min(1.0, steps / 18.0);
-                Left = sLeft + (tLeft - sLeft) * p;
-                Top  = sTop  + (tTop  - sTop)  * p;
-                if (steps >= 18) mv.Stop();
-            };
-            mv.Start();
-
-            _states.Set(DinoState.Sniff);
-            if (r.Next(2) == 0) { _progress.AddXP(5, "Blatt"); ShowSpeech("+5 XP"); }
-            else { _progress.AddCoins(1, "Blatt"); ShowSpeech("+1 Coin"); }
-            ReturnToIdleAfter(800);
+            ApplyLeafReward(isAuto: false);
         };
 
         // Blatt verschwindet nach 25–40s von selbst
@@ -1196,6 +1321,97 @@ public partial class MainWindow : Window
         // KEIN State-Set hier – damit Grabung weiterhin erscheinen kann
     }
 
+    private void TryDinoAutoLeafCollect()
+    {
+        if (IsSleeping || _isDesktopDigging || _isSmoothMoving || _states.Current != DinoState.Idle) return;
+        if (_activeLeaves.Count == 0) return;
+
+        var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
+        if (!bonuses.AutoLeafCollect) return;
+
+        if (Random.Shared.NextDouble() > 0.35) return;
+
+        var marker = _activeLeaves.FirstOrDefault();
+        if (marker == null) return;
+
+        if (_progress.Current.AdventurePoints <= 0) return;
+
+        _isSmoothMoving = true;
+        var tLeft = marker.Left - Width / 2;
+        var tTop = marker.Top - Height / 2;
+        var sLeft = Left;
+        var sTop = Top;
+
+        Dino.SetFacingLeft(tLeft < sLeft);
+        _states.Set(DinoState.Walk);
+
+        var steps = 0;
+        const int totalSteps = 40;
+        var walk = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(40) };
+        walk.Tick += (_, _) =>
+        {
+            steps++;
+            if (!_activeLeaves.Contains(marker) || IsSleeping || _isDesktopDigging)
+            {
+                walk.Stop();
+                _isSmoothMoving = false;
+                if (!IsSleeping && !_isDesktopDigging) _states.Set(DinoState.Idle);
+                return;
+            }
+
+            var p = Math.Min(1.0, (double)steps / totalSteps);
+            Left = sLeft + (tLeft - sLeft) * p;
+            Top = sTop + (tTop - sTop) * p;
+
+            if (steps >= totalSteps)
+            {
+                walk.Stop();
+                _isSmoothMoving = false;
+                if (!_activeLeaves.Contains(marker))
+                {
+                    _states.Set(DinoState.Idle);
+                    return;
+                }
+
+                _activeLeaves.Remove(marker);
+                try { marker.Close(); } catch { }
+
+                if (Random.Shared.Next(2) == 0 && _progress.Current.AdventurePoints > 0)
+                {
+                    _progress.SpendAdventurePoints(1);
+                }
+
+                _states.Set(DinoState.Sniff);
+                ApplyLeafReward(isAuto: true);
+                ReturnToIdleAfter(900);
+            }
+        };
+        walk.Start();
+    }
+
+    private void ApplyLeafReward(bool isAuto)
+    {
+        var r = Random.Shared;
+        var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
+        var leafBonus = bonuses.LeafRewardBonus;
+
+        var giveCoin = r.Next(2) == 0 || (leafBonus > 0 && r.NextDouble() < (leafBonus / 100.0));
+        if (giveCoin)
+        {
+            var coinAmount = 1;
+            if (leafBonus >= 15 && r.Next(3) == 0) coinAmount++;
+            _progress.AddCoins(coinAmount, "Blatt");
+            ShowSpeech(coinAmount > 1 ? $"+{coinAmount} Coins! 🍃" : "+1 Coin 🍃");
+        }
+        else
+        {
+            var xpAmount = 5;
+            if (leafBonus > 0) xpAmount += (int)Math.Max(1, Math.Round(leafBonus / 10.0));
+            _progress.AddXP(xpAmount, "Blatt");
+            ShowSpeech($"+{xpAmount} XP 🍃");
+        }
+    }
+
     private void StartBugEvent()
     {
         if (IsSleeping) return;
@@ -1207,9 +1423,9 @@ public partial class MainWindow : Window
 
         var bug = new Window
         {
-            WindowStyle = WindowStyle.None, AllowsTransparency = true,
-            Background = System.Windows.Media.Brushes.Transparent,
-            Topmost = true, Width = 56, Height = 56, ShowInTaskbar = false
+            AllowsTransparency = true,
+            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
+            Width = 56, Height = 56, 
         };
         var img = new System.Windows.Controls.Image
         {
@@ -1228,15 +1444,15 @@ public partial class MainWindow : Window
         }
         PickTarget();
 
-        var crawl = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(25) };
+        var crawl = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(40) };
         crawl.Tick += (_, _) =>
         {
             var dx = targetLeft - bug.Left;
             var dy = targetTop  - bug.Top;
             var d = Math.Sqrt(dx * dx + dy * dy);
             if (d < 6) { PickTarget(); return; }
-            bug.Left += dx / d * 4.5;
-            bug.Top  += dy / d * 4.5;
+            bug.Left += dx / d * 7.2;
+            bug.Top  += dy / d * 7.2;
             img.RenderTransform = dx < 0
                 ? new ScaleTransform(-1, 1, 25, 25)
                 : Transform.Identity;
@@ -1248,7 +1464,7 @@ public partial class MainWindow : Window
         void CloseBug()
         {
             crawl.Stop(); retarget.Stop();
-            if (!done) { done = true; try { bug.Close(); } catch { } ReturnToIdleAfter(600); }
+            if (!done) { done = true; try { bug.Close(); } catch { } if (!_isDesktopDigging) ReturnToIdleAfter(600); }
         }
 
         bug.MouseLeftButtonDown += (s, e) =>
@@ -1264,19 +1480,27 @@ public partial class MainWindow : Window
             }
 
             clicks++;
-            _states.Set(DinoState.Curious);
+            if (!_isDesktopDigging) _states.Set(DinoState.Curious);
             // 1 AP pro Klick ausgeben
             _progress.SpendAdventurePoints(1);
 
-            if (r.Next(3) == 0 && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints)
-                { _progress.AddInstantAP(1); ShowSpeech("+1 AP"); }
-            else if (r.Next(2) == 0)
-                { _progress.AddCoins(1, "Kafer"); ShowSpeech("+1 Coin"); }
-            else
-                { _progress.AddXP(5, "Kafer"); ShowSpeech("+5 XP"); }
+            var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
+            var bugBonus = bonuses.BugRewardBonus;
+            var apChance = bugBonus > 0 ? 2 : 3;
 
-            if (clicks >= 4) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); CloseBug(); }
-            else { PickTarget(); ReturnToIdleAfter(600); }
+            if (r.Next(apChance) == 0 && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints)
+                { _progress.AddInstantAP(1); ShowSpeech("+1 AP ⚡"); }
+            else if (r.Next(2) == 0)
+                { _progress.AddCoins(1, "Kafer"); ShowSpeech("+1 Coin 🐞"); }
+            else
+            {
+                var xpAmount = 5 + (bugBonus > 0 ? 1 : 0);
+                _progress.AddXP(xpAmount, "Kafer");
+                ShowSpeech($"+{xpAmount} XP 🐞");
+            }
+
+            if (clicks >= 4) { if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); } CloseBug(); }
+            else { PickTarget(); if (!_isDesktopDigging) ReturnToIdleAfter(600); }
         };
 
         var timeout = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };

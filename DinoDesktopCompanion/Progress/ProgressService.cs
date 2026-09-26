@@ -156,10 +156,14 @@ public sealed class ProgressService
         lock (_gate)
         {
             if (Current.SleepStartedAt.HasValue) return;
+            if (Current.AdventurePoints >= Current.MaxAdventurePoints)
+            {
+                Current.AdventurePointRegenProgress = 0;
+                Current.SleepStartedAt = null;
+                return;
+            }
             Current.SleepStartedAt = startedAt;
             Current.LastAdventurePointRegenAt = startedAt;
-            if (Current.AdventurePoints >= Current.MaxAdventurePoints)
-                Current.AdventurePointRegenProgress = 0;
             _store.Save(Current);
         }
         AdventurePointsChanged?.Invoke(this, new AdventurePointsChangedEventArgs(0, Current.AdventurePoints, Current.MaxAdventurePoints));
@@ -179,6 +183,19 @@ public sealed class ProgressService
         }
         AdventurePointsChanged?.Invoke(this, new AdventurePointsChangedEventArgs(0, Current.AdventurePoints, Current.MaxAdventurePoints));
         return gained;
+    }
+
+    public void StopSleeping()
+    {
+        lock (_gate)
+        {
+            Current.SleepStartedAt = null;
+            Current.LastAdventurePointRegenAt = DateTimeOffset.Now;
+            if (Current.AdventurePoints >= Current.MaxAdventurePoints)
+                Current.AdventurePointRegenProgress = 0;
+            _store.Save(Current);
+        }
+        AdventurePointsChanged?.Invoke(this, new AdventurePointsChangedEventArgs(0, Current.AdventurePoints, Current.MaxAdventurePoints));
     }
 
     public int RefreshAdventurePoints(DateTimeOffset now)
@@ -204,6 +221,7 @@ public sealed class ProgressService
             else if (Current.AdventurePoints >= Current.MaxAdventurePoints)
             {
                 Current.AdventurePointRegenProgress = 0;
+                Current.SleepStartedAt = null;
             }
             else if (elapsed > TimeSpan.Zero)
             {
@@ -214,7 +232,11 @@ public sealed class ProgressService
                 var appliedPoints = Math.Min(availableCapacity, completedCycles * ApPerCompletedRegenCycle);
                 Current.AdventurePoints += appliedPoints;
                 Current.AdventurePointRegenProgress -= completedCycles;
-                if (Current.AdventurePoints >= Current.MaxAdventurePoints) Current.AdventurePointRegenProgress = 0;
+                if (Current.AdventurePoints >= Current.MaxAdventurePoints)
+                {
+                    Current.AdventurePointRegenProgress = 0;
+                    Current.SleepStartedAt = null;
+                }
             }
 
             Current.LastAdventurePointRegenAt = now;

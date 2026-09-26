@@ -32,6 +32,7 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
     public void ApplySkin(SkinDefinition skin)
     {
         _skin = skin;
+        FacingRoot.Effect = null;
         SkinOverlaysGrid.Visibility = System.Windows.Visibility.Collapsed;
         SkinBaseOverlay.Fill = null;
         SkinGradientOverlay.Fill = null;
@@ -40,6 +41,28 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
         SkinParticleCanvas.Children.Clear();
 
         if (skin.Id == "standard") return;
+
+        // Konturen
+        if (skin.Id == "night")
+        {
+            FacingRoot.Effect = new System.Windows.Media.Effects.DropShadowEffect
+            {
+                Color = System.Windows.Media.Color.FromRgb(56, 189, 248),
+                BlurRadius = 4.5,
+                ShadowDepth = 0,
+                Opacity = 0.98
+            };
+        }
+        else if (skin.Id == "rainbow" || skin.GradientType == "Rainbow" || skin.Effect == EffectType.Rainbow)
+        {
+            FacingRoot.Effect = new System.Windows.Media.Effects.DropShadowEffect
+            {
+                Color = System.Windows.Media.Color.FromRgb(255, 30, 80),
+                BlurRadius = 4.5,
+                ShadowDepth = 0,
+                Opacity = 0.95
+            };
+        }
 
         // Base color / Default 2-color gradient
         var baseColor = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(skin.BaseColor)!;
@@ -66,35 +89,61 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
         // Special Gradients
         if (skin.GradientType == "Rainbow" || skin.Effect == EffectType.Rainbow)
         {
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 20, 50));
+            SkinBaseOverlay.Opacity = 0.28;
+
             var brush = new LinearGradientBrush
             {
                 StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1),
                 GradientStops = new GradientStopCollection
                 {
-                    new(Colors.Red, 0), new(Colors.Orange, 0.17), new(Colors.Yellow, 0.34),
-                    new(Colors.LimeGreen, 0.51), new(Colors.DeepSkyBlue, 0.68), new(Colors.Blue, 0.84), new(Colors.Violet, 1)
+                    new(System.Windows.Media.Color.FromRgb(255, 0, 40), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(255, 30, 60), 0.16),
+                    new(System.Windows.Media.Color.FromRgb(255, 120, 0), 0.28),
+                    new(System.Windows.Media.Color.FromRgb(255, 220, 0), 0.40),
+                    new(System.Windows.Media.Color.FromRgb(0, 230, 80), 0.52),
+                    new(System.Windows.Media.Color.FromRgb(0, 195, 255), 0.64),
+                    new(System.Windows.Media.Color.FromRgb(30, 75, 255), 0.76),
+                    new(System.Windows.Media.Color.FromRgb(165, 25, 245), 0.88),
+                    new(System.Windows.Media.Color.FromRgb(255, 0, 40), 1.0)
                 }
             };
             var rotation = new RotateTransform(0, 0.5, 0.5);
             brush.RelativeTransform = rotation;
             rotation.BeginAnimation(RotateTransform.AngleProperty,
-                new DoubleAnimation(0, 360, TimeSpan.FromSeconds(8)) { RepeatBehavior = RepeatBehavior.Forever });
+                new DoubleAnimation(0, 360, TimeSpan.FromSeconds(6.5)) { RepeatBehavior = RepeatBehavior.Forever });
             SkinGradientOverlay.Fill = brush;
-            SkinGradientOverlay.Opacity = 0.55;
+            SkinGradientOverlay.Opacity = 0.82;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(60, 255, 25, 60));
+            SkinGlowOverlay.Opacity = 0.5;
         }
         else if (skin.GradientType == "Galaxy")
         {
-            SkinGradientOverlay.Fill = new LinearGradientBrush
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(16, 6, 32));
+            SkinBaseOverlay.Opacity = 0.35;
+
+            var brush = new LinearGradientBrush
             {
-                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(0, 1),
+                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1),
                 GradientStops = new GradientStopCollection
                 {
-                    new(System.Windows.Media.Color.FromRgb(10, 0, 40), 0),
-                    new(System.Windows.Media.Color.FromRgb(150, 20, 120), 0.5),
-                    new(System.Windows.Media.Color.FromRgb(30, 80, 200), 1)
+                    new(System.Windows.Media.Color.FromRgb(10, 3, 30), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(155, 20, 130), 0.28),
+                    new(System.Windows.Media.Color.FromRgb(35, 70, 200), 0.52),
+                    new(System.Windows.Media.Color.FromRgb(0, 200, 165), 0.74),
+                    new(System.Windows.Media.Color.FromRgb(12, 5, 38), 1.0)
                 }
             };
-            SkinGradientOverlay.Opacity = 0.75;
+            var rotation = new RotateTransform(0, 0.5, 0.5);
+            brush.RelativeTransform = rotation;
+            rotation.BeginAnimation(RotateTransform.AngleProperty,
+                new DoubleAnimation(-18, 18, TimeSpan.FromSeconds(6.5)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+            SkinGradientOverlay.Fill = brush;
+            SkinGradientOverlay.Opacity = 0.80;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(50, 0, 205, 175));
+            SkinGlowOverlay.Opacity = 0.5;
         }
         else if (skin.GradientType == "Night")
         {
@@ -106,23 +155,31 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
         }
         else if (skin.GradientType == "Aurora")
         {
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 40, 55));
+            SkinBaseOverlay.Opacity = 0.16;
+
             var brush = new LinearGradientBrush
             {
-                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1),
+                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(0.35, 1),
                 GradientStops = new GradientStopCollection
                 {
-                    new(System.Windows.Media.Color.FromRgb(0, 255, 180), 0),
-                    new(System.Windows.Media.Color.FromRgb(0, 150, 255), 0.4),
-                    new(Colors.DeepPink, 0.6), // pinker Strahl
-                    new(System.Windows.Media.Color.FromRgb(150, 50, 255), 1)
+                    new(System.Windows.Media.Color.FromRgb(0, 190, 220), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(10, 255, 145), 0.20),
+                    new(System.Windows.Media.Color.FromRgb(85, 255, 205), 0.40),
+                    new(System.Windows.Media.Color.FromRgb(170, 60, 245), 0.62),
+                    new(System.Windows.Media.Color.FromRgb(10, 255, 145), 0.82),
+                    new(System.Windows.Media.Color.FromRgb(0, 215, 245), 1.0)
                 }
             };
             var rotation = new RotateTransform(0, 0.5, 0.5);
             brush.RelativeTransform = rotation;
             rotation.BeginAnimation(RotateTransform.AngleProperty,
-                new DoubleAnimation(0, 360, TimeSpan.FromSeconds(2)) { RepeatBehavior = RepeatBehavior.Forever });
+                new DoubleAnimation(-16, 16, TimeSpan.FromSeconds(5.5)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
             SkinGradientOverlay.Fill = brush;
-            SkinGradientOverlay.Opacity = 0.65;
+            SkinGradientOverlay.Opacity = 0.82;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(60, 10, 255, 150));
+            SkinGlowOverlay.Opacity = 0.55;
         }
         else if (skin.GradientType == "Frost")
         {
@@ -236,24 +293,93 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
         }
         else if (skin.GradientType == "Fire")
         {
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(220, 25, 0));
+            SkinBaseOverlay.Opacity = 0.25;
+
             var brush = new LinearGradientBrush
             {
-                StartPoint = new System.Windows.Point(0, 1), EndPoint = new System.Windows.Point(0, 0),
+                StartPoint = new System.Windows.Point(0, 1), EndPoint = new System.Windows.Point(0.15, 0),
                 GradientStops = new GradientStopCollection
                 {
-                    new(System.Windows.Media.Color.FromRgb(100, 0, 0), 0),      // dunkelrot (unten)
-                    new(System.Windows.Media.Color.FromRgb(200, 0, 0), 0.25),   // rot
-                    new(System.Windows.Media.Color.FromRgb(255, 100, 0), 0.5),  // orange
-                    new(System.Windows.Media.Color.FromRgb(255, 200, 0), 0.75), // gelb
-                    new(System.Windows.Media.Color.FromRgb(255, 255, 150), 1)   // hellgelb (oben)
+                    new(System.Windows.Media.Color.FromRgb(120, 0, 0), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(225, 25, 0), 0.28),
+                    new(System.Windows.Media.Color.FromRgb(255, 105, 0), 0.52),
+                    new(System.Windows.Media.Color.FromRgb(255, 195, 0), 0.72),
+                    new(System.Windows.Media.Color.FromRgb(255, 255, 175), 0.88),
+                    new(System.Windows.Media.Color.FromRgb(255, 90, 0), 1.0)
+                }
+            };
+            var transformGroup = new TransformGroup();
+            var skew = new SkewTransform(0, 0, 0.5, 1.0);
+            var rotate = new RotateTransform(0, 0.5, 0.9);
+            transformGroup.Children.Add(skew);
+            transformGroup.Children.Add(rotate);
+            brush.RelativeTransform = transformGroup;
+
+            skew.BeginAnimation(SkewTransform.AngleXProperty,
+                new DoubleAnimation(-15, 15, TimeSpan.FromSeconds(0.85)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+            rotate.BeginAnimation(RotateTransform.AngleProperty,
+                new DoubleAnimation(-8, 8, TimeSpan.FromSeconds(1.1)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+
+            SkinGradientOverlay.Fill = brush;
+            SkinGradientOverlay.Opacity = 0.82;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(70, 255, 120, 0));
+            SkinGlowOverlay.Opacity = 0.6;
+        }
+        else if (skin.GradientType == "Crystal")
+        {
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(245, 110, 180));
+            SkinBaseOverlay.Opacity = 0.25;
+
+            var brush = new LinearGradientBrush
+            {
+                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1),
+                GradientStops = new GradientStopCollection
+                {
+                    new(System.Windows.Media.Color.FromRgb(255, 95, 175), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(255, 185, 230), 0.22),
+                    new(System.Windows.Media.Color.FromRgb(56, 189, 248), 0.48),
+                    new(System.Windows.Media.Color.FromRgb(37, 99, 235), 0.72),
+                    new(System.Windows.Media.Color.FromRgb(244, 114, 182), 1.0)
                 }
             };
             var rotation = new RotateTransform(0, 0.5, 0.5);
             brush.RelativeTransform = rotation;
             rotation.BeginAnimation(RotateTransform.AngleProperty,
-                new DoubleAnimation(-10, 10, TimeSpan.FromSeconds(3)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+                new DoubleAnimation(0, 360, TimeSpan.FromSeconds(1.8)) { RepeatBehavior = RepeatBehavior.Forever });
             SkinGradientOverlay.Fill = brush;
-            SkinGradientOverlay.Opacity = 0.75;
+            SkinGradientOverlay.Opacity = 0.82;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(65, 236, 72, 153));
+            SkinGlowOverlay.Opacity = 0.55;
+        }
+        else if (skin.GradientType == "Emerald")
+        {
+            SkinBaseOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(16, 185, 129));
+            SkinBaseOverlay.Opacity = 0.25;
+
+            var brush = new LinearGradientBrush
+            {
+                StartPoint = new System.Windows.Point(0, 0), EndPoint = new System.Windows.Point(1, 1),
+                GradientStops = new GradientStopCollection
+                {
+                    new(System.Windows.Media.Color.FromRgb(5, 150, 105), 0.0),
+                    new(System.Windows.Media.Color.FromRgb(16, 185, 129), 0.25),
+                    new(System.Windows.Media.Color.FromRgb(163, 230, 53), 0.50),
+                    new(System.Windows.Media.Color.FromRgb(250, 204, 21), 0.75),
+                    new(System.Windows.Media.Color.FromRgb(5, 150, 105), 1.0)
+                }
+            };
+            var rotation = new RotateTransform(0, 0.5, 0.5);
+            brush.RelativeTransform = rotation;
+            rotation.BeginAnimation(RotateTransform.AngleProperty,
+                new DoubleAnimation(-25, 25, TimeSpan.FromSeconds(3.0)) { AutoReverse = true, RepeatBehavior = RepeatBehavior.Forever });
+            SkinGradientOverlay.Fill = brush;
+            SkinGradientOverlay.Opacity = 0.82;
+
+            SkinGlowOverlay.Fill = new SolidColorBrush(System.Windows.Media.Color.FromArgb(60, 16, 185, 129));
+            SkinGlowOverlay.Opacity = 0.55;
         }
 
         // Pattern / Glow
@@ -291,13 +417,28 @@ public partial class DinoVisual : System.Windows.Controls.UserControl
             {
                 System.Windows.Media.Brush pColor = System.Windows.Media.Brushes.White;
                 if (skin.SparkleType == "Gold") pColor = System.Windows.Media.Brushes.Gold;
-                else if (skin.SparkleType == "Galaxy") pColor = System.Windows.Media.Brushes.LightCyan;
+                else if (skin.SparkleType == "Galaxy") pColor = Random.Shared.NextDouble() > 0.4 ? System.Windows.Media.Brushes.LightCyan : (Random.Shared.NextDouble() > 0.5 ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(0, 215, 175)) : System.Windows.Media.Brushes.White);
+                else if (skin.SparkleType == "Aurora" || skin.GradientType == "Aurora")
+                {
+                    var auroraColors = new[] { Colors.Aquamarine, Colors.SpringGreen, System.Windows.Media.Color.FromRgb(120, 255, 180), Colors.LightCyan, System.Windows.Media.Color.FromRgb(215, 130, 255), Colors.White };
+                    pColor = new SolidColorBrush(auroraColors[Random.Shared.Next(auroraColors.Length)]);
+                }
+                else if (skin.SparkleType == "Crystal" || skin.GradientType == "Crystal")
+                {
+                    var crystalColors = new[] { Colors.DeepPink, Colors.LightSkyBlue, Colors.White, System.Windows.Media.Color.FromRgb(255, 180, 230), System.Windows.Media.Color.FromRgb(100, 210, 255) };
+                    pColor = new SolidColorBrush(crystalColors[Random.Shared.Next(crystalColors.Length)]);
+                }
+                else if (skin.SparkleType == "Emerald" || skin.GradientType == "Emerald")
+                {
+                    var emeraldColors = new[] { Colors.MediumSeaGreen, Colors.Gold, Colors.LightGreen, Colors.Yellow, Colors.White };
+                    pColor = new SolidColorBrush(emeraldColors[Random.Shared.Next(emeraldColors.Length)]);
+                }
                 else if (skin.SparkleType == "Frost") pColor = Random.Shared.NextDouble() > 0.5 ? System.Windows.Media.Brushes.LightCyan : System.Windows.Media.Brushes.White;
                 else if (skin.SparkleType == "Fire") pColor = Random.Shared.NextDouble() > 0.5 ? System.Windows.Media.Brushes.Orange : System.Windows.Media.Brushes.Yellow;
                 else if (skin.SparkleType == "Toxic") pColor = Random.Shared.NextDouble() > 0.5 ? System.Windows.Media.Brushes.LimeGreen : System.Windows.Media.Brushes.MediumPurple;
                 else if (skin.SparkleType == "Magic") 
                 {
-                    var colors = new[] { Colors.HotPink, Colors.Cyan, Colors.Violet, Colors.White, Colors.LimeGreen };
+                    var colors = new[] { Colors.Crimson, Colors.Red, Colors.OrangeRed, Colors.Gold, Colors.LimeGreen, Colors.DeepSkyBlue, Colors.Magenta, Colors.Violet };
                     pColor = new SolidColorBrush(colors[Random.Shared.Next(colors.Length)]);
                 }
 

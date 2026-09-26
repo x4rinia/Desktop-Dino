@@ -17,7 +17,7 @@ public sealed class DinoHomeService
 
     public void SendHome(Action savePosition, Action hideDesktopDino)
     {
-        if (IsHome || _states.IsSleeping) return;
+        if (IsHome) return;
         GoingHome?.Invoke(this, EventArgs.Empty);
         savePosition();
         _states.Set(DinoState.Home);

@@ -44,7 +44,7 @@ try
     var lunaAreas = new AreaService(logger, lunaDirectory);
     var house = lunaCollections.Home.Houses.Single(layout => layout.Id == "default");
     Check(File.Exists(Path.Combine(AppContext.BaseDirectory, house.BackgroundAssetPath)), "Dinohaus-Hintergrund wird ausgeliefert");
-    Check(house.Slots.Count == 10 && house.Slots.All(slot => slot.Width > 0 && slot.Height > 0), "Bestehende Dinohaus-Slots mit festen Darstellungsgrößen");
+    Check(house.Slots.Count >= 10 && house.Slots.All(slot => slot.Width > 0 && slot.Height > 0), "Bestehende Dinohaus-Slots mit festen Darstellungsgrößen");
     var levelUps = 0;
     lunaProgress.LevelUp += (_, _) => levelUps++;
     lunaProgress.AddXP(260, "ArchitectureCheck");

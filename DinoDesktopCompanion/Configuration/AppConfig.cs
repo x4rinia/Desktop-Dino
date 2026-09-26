@@ -24,4 +24,5 @@ public sealed class AppConfig
     public double DinoScale { get; set; } = 1.0;
     public double DinoSize { get; set; } = 230;
     public double AnimationSpeed { get; set; } = 1.0;
+    public bool HasSeenTutorial { get; set; } = false;
 }
