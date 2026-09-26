@@ -17,14 +17,14 @@ Ein niedlicher Desktop-Begleiter-Dino für Windows, der auf deinem Bildschirm le
 
 - 🦕 **Lebendiger Desktop-Dino** – läuft, schläft, schaut sich um, wedelt mit dem Schwanz
 - ⛏️ **Desktop-Grabungen** – Grabungsstellen erscheinen zufällig auf dem Desktop, Dino reist hin und gräbt Fundstücke aus
-- 🍂 **Blätter-Event** – Blätter fallen auf den Desktop, klick sie weg und Dino holt sie ab
-- 🪲 **Käfer-Event** – Ein Käfer krabbelt über den Desktop, fange ihn mehrfach
+- 🌸 **Gebietsobjekte** – Garten nutzt Blüten, Wald Blätter, Strand Muscheln, Schneegebiet Eiskristalle und Höhle Pilze
+- 🌠 **Sternschnuppen-Event** – Ein beweglicher Stern erscheint zufällig und muss je nach Stufe 3, 5, 8 oder 12 Mal angeklickt werden; die Belohnung gibt es erst beim vollständigen Abschluss
 - 💤 **Schlaf & AP-System** – Dino regeneriert Abenteuerpunkte im Schlaf, die für Aktivitäten benötigt werden
 - 🎒 **Sammelalbum** – Fundstücke aus Grabungen werden gesammelt
-- 🏠 **Dinohaus** – Dino kann nach Hause geschickt werden
+- 🏠 **Dinohaus** – Dino kann nach Hause geschickt und das Haus ausgebaut werden; Ausbauten können beim Sternschnuppen-Abschluss garantiert 1, 2 oder 3 AP auffüllen
 - 🎨 **Skins** – verschiedene Dino-Outfits freischaltbar
 - 🏆 **Erfolge** – Achievements für Meilensteine
-- 📊 **Profil & Statistiken** – Level, XP, Coins, Spielzeit
+- 📊 **Profil & Statistiken** – Level, XP, Coins, Spielzeit und eine optionale Profilnotiz mit maximal 500 Zeichen
 
 ---
 
@@ -33,9 +33,8 @@ Ein niedlicher Desktop-Begleiter-Dino für Windows, der auf deinem Bildschirm le
 | Aktion | Beschreibung |
 |--------|-------------|
 | **Klick auf Dino** | Interaktionsmenü öffnen / schließen |
-| **Rechtsklick** | Kontextmenü (Schlafen / Aufwecken) |
-| **Blatt anklicken** | Dino läuft hin, Belohnung erhalten |
-| **Käfer anklicken** | Käfer fangen (mehrfach), Belohnung pro Treffer |
+| **Gebietsobjekt anklicken** | Dino läuft hin und sammelt das Objekt ein |
+| **Stern anklicken** | Beweglichen Stern vollständig anklicken; Klicks verbrauchen keine AP und funktionieren auch bei 0 AP |
 | **Grabungsstelle anklicken** | Dino zur Grabung schicken |
 
 ---
@@ -44,11 +43,11 @@ Ein niedlicher Desktop-Begleiter-Dino für Windows, der auf deinem Bildschirm le
 
 | Gebiet | Inhalte |
 |--------|---------|
-| 🌸 Garten | Blumen-Fundstücke, Blätter, Käfer |
-| 🌲 Wald | Holz-Fundstücke, Blätter, Käfer |
-| 🏖️ Strand | Sand-Fundstücke, Käfer |
-| 🕳️ Höhle | Stein-Fundstücke |
-| ❄️ Schnee | Eis-Fundstücke |
+| 🌸 Garten | Blumen-Fundstücke, Blüten, Sternschnuppen |
+| 🌲 Wald | Holz-Fundstücke, Blätter, Sternschnuppen |
+| 🏖️ Strand | Sand-Fundstücke, Muscheln, Sternschnuppen |
+| 🕳️ Höhle | Stein-Fundstücke, Pilze, Sternschnuppen |
+| ❄️ Schneegebiet | Eis-Fundstücke, Eiskristalle, Sternschnuppen |
 
 ---
 
@@ -64,15 +63,17 @@ Ein niedlicher Desktop-Begleiter-Dino für Windows, der auf deinem Bildschirm le
 
 Folgende Features sind geplant oder in Arbeit:
 
-- [ ] Gebietsabhängige Event-Grafiken (Blätter, Käfer je nach Gebiet)
 - [ ] Weitere Desktop-Aktivitäten pro Gebiet
-- [ ] Käfer mit gebietsabhängiger Geschwindigkeit
 - [ ] Mehr Skins & Accessoires
 - [ ] Weitere Erfolge
 
 ---
 
 ## 📦 Build
+
+Die aktuelle fertige Windows-Version gibt es im [GitHub-Release v1.1.0](https://github.com/x4rinia/Desktop-Dino/releases/tag/v1.1.0).
+
+Zum eigenen Erstellen:
 
 ```bash
 dotnet publish DinoDesktopCompanion/DinoDesktopCompanion.csproj -c Release -o ./publish
