@@ -1,5 +1,4 @@
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -53,7 +52,9 @@ public partial class ProfileWindow : Window
             texts.Children.Add(new TextBlock { Text = $"{profile.DinoName}  ·  Level {summary.Level}  ·  {summary.SkinName}", Margin = new Thickness(0, 4, 0, 0), Foreground = new SolidColorBrush(Color.FromRgb(70, 105, 97)) });
             summaryRow.Children.Add(texts);
             body.Children.Add(summaryRow);
-            body.Children.Add(new TextBlock { Text = BirthdayText(profile) + $"  ·  Zuletzt: {profile.LastPlayed:g}", Margin = new Thickness(0, 8, 0, 14), FontSize = 12, Foreground = new SolidColorBrush(Color.FromRgb(99, 124, 118)) });
+            body.Children.Add(new TextBlock { Text = $"Zuletzt: {profile.LastPlayed:g}", Margin = new Thickness(0, 8, 0, 8), FontSize = 12, Foreground = new SolidColorBrush(Color.FromRgb(99, 124, 118)) });
+            if (!string.IsNullOrWhiteSpace(profile.Note))
+                body.Children.Add(new TextBlock { Text = profile.Note, TextWrapping = TextWrapping.Wrap, MaxHeight = 72, Margin = new Thickness(0, 0, 0, 12), Foreground = new SolidColorBrush(Color.FromRgb(70, 105, 97)), ToolTip = profile.Note });
             if (!isCurrent)
             {
                 var activateButton = MakeButton("Als aktiv setzen", () => ActivateProfile(profile));
@@ -65,12 +66,16 @@ public partial class ProfileWindow : Window
             actions.ColumnDefinitions.Add(new ColumnDefinition());
             actions.ColumnDefinitions.Add(new ColumnDefinition());
             actions.ColumnDefinitions.Add(new ColumnDefinition());
+            actions.ColumnDefinitions.Add(new ColumnDefinition());
             var editButton = MakeButton("Bearbeiten", () => EditProfile(profile));
+            var saveButton = MakeButton("Speichern", () => SaveProfile(profile));
             var exportButton = MakeButton("Export", () => ExportProfile(profile));
             var deleteButton = MakeButton("Löschen", () => DeleteProfile(profile), true);
-            Grid.SetColumn(exportButton, 1);
-            Grid.SetColumn(deleteButton, 2);
+            Grid.SetColumn(saveButton, 1);
+            Grid.SetColumn(exportButton, 2);
+            Grid.SetColumn(deleteButton, 3);
             actions.Children.Add(editButton);
+            actions.Children.Add(saveButton);
             actions.Children.Add(exportButton);
             actions.Children.Add(deleteButton);
             body.Children.Add(actions);
@@ -84,20 +89,14 @@ public partial class ProfileWindow : Window
         var button = new System.Windows.Controls.Button
         {
             Content = text,
-            MinWidth = 72,
+            MinWidth = 0,
             MinHeight = 34,
-            Padding = new Thickness(12, 6, 12, 6),
+            Padding = new Thickness(5, 6, 5, 6),
             Margin = new Thickness(0, 0, 7, 4),
             Foreground = danger ? Brushes.Firebrick : null
         };
         button.Click += (_, _) => action();
         return button;
-    }
-
-    private static string BirthdayText(ProfileInfo profile)
-    {
-        if (profile.BirthdayDay is not { } day || profile.BirthdayMonth is not { } month) return "Geburtstag: nicht angegeben";
-        return $"Geburtstag: {day}. {CultureInfo.GetCultureInfo("de-DE").DateTimeFormat.GetMonthName(month)}";
     }
 
     private void NewProfile_Click(object sender, RoutedEventArgs e) => CreateProfile();
@@ -108,7 +107,7 @@ public partial class ProfileWindow : Window
         if (editor.ShowDialog() != true) return;
         try
         {
-            var profile = _manager.CreateProfile(editor.ProfileName, editor.DinoName, editor.BirthdayDay, editor.BirthdayMonth, editor.ProfileColor);
+            var profile = _manager.CreateProfile(editor.ProfileName, editor.DinoName, profileColor: editor.ProfileColor, note: editor.Note);
             if (!_manager.SetActiveProfile(profile.Id))
                 MessageBox.Show("Das Profil wurde gespeichert, konnte aber nicht aktiviert werden. Bitte versuche es erneut.", "Profilaktivierung", MessageBoxButton.OK, MessageBoxImage.Warning);
             LoadProfiles();
@@ -127,13 +126,31 @@ public partial class ProfileWindow : Window
         if (editor.ShowDialog() != true) return;
         try
         {
-            _manager.UpdateProfile(profile.Id, editor.ProfileName, editor.DinoName, editor.BirthdayDay, editor.BirthdayMonth, editor.ProfileColor);
+            _manager.UpdateProfile(profile.Id, editor.ProfileName, editor.DinoName, profile.BirthdayDay, profile.BirthdayMonth, editor.ProfileColor, editor.Note);
             LoadProfiles();
         }
         catch (Exception ex)
         {
             LogError("Profil konnte nicht bearbeitet werden.", ex);
             MessageBox.Show("Die Änderungen konnten nicht gespeichert werden. Bitte versuche es erneut.", "Profil konnte nicht gespeichert werden", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
+
+    private void SaveProfile(ProfileInfo profile)
+    {
+        try
+        {
+            if (!_manager.SaveProfile(profile.Id))
+            {
+                MessageBox.Show("Das Profil konnte nicht gespeichert werden.", "Profil speichern", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+            LoadProfiles();
+        }
+        catch (Exception ex)
+        {
+            LogError("Profil konnte nicht gespeichert werden.", ex);
+            MessageBox.Show("Das Profil konnte nicht gespeichert werden. Bitte versuche es erneut.", "Profil speichern", MessageBoxButton.OK, MessageBoxImage.Warning);
         }
     }
 

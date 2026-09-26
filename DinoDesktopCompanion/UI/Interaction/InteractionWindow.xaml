@@ -200,8 +200,8 @@
                                     <TextBlock x:Name="ProfileNameText" Text="Mein Dino" FontWeight="SemiBold" Margin="0,0,0,10"/>
                                     <TextBlock Text="Name" FontSize="11" Foreground="{StaticResource DinoMutedText}"/>
                                     <TextBlock x:Name="DinoNameText" Text="Dino" FontWeight="Bold" FontSize="17" Margin="0,0,0,10"/>
-                                    <TextBlock Text="Geburtstag" FontSize="11" Foreground="{StaticResource DinoMutedText}"/>
-                                    <TextBlock x:Name="BirthdayText" Text="Nicht angegeben" FontWeight="SemiBold" Margin="0,0,0,10"/>
+                                    <TextBlock Text="Notiz" FontSize="11" Foreground="{StaticResource DinoMutedText}"/>
+                                    <TextBlock x:Name="ProfileNoteText" Text="Keine Notiz" TextWrapping="Wrap" MaxHeight="66" Margin="0,0,0,10"/>
                                     <TextBlock Text="Ausgerüsteter Skin" FontSize="11" Foreground="{StaticResource DinoMutedText}"/>
                                     <TextBlock x:Name="SkinText" Text="Standard" FontWeight="SemiBold" Foreground="{StaticResource DinoPrimaryDark}"/>
                                 </StackPanel>

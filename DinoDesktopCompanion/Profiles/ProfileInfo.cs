@@ -9,6 +9,7 @@ public sealed class ProfileInfo
     public string DinoName { get; set; } = "Dino";
     public int? BirthdayDay { get; set; }
     public int? BirthdayMonth { get; set; }
+    public string Note { get; set; } = "";
     public string ProfileColor { get; set; } = DefaultProfileColor;
     public DateTime LastPlayed { get; set; }
     public int SaveVersion { get; set; } = 1;

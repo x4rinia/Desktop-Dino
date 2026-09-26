@@ -35,8 +35,8 @@ try
         Check(states.Current == DinoState.Wake, $"Nur explizites WakeUp beendet den Schlaf ({sleepState})");
     }
 
-    var luna = profiles.CreateProfile("Lunas Welt", "Luna", 12, 9);
-    Check(luna.Id.Length == 32 && profiles.SetActiveProfile(luna.Id), "Profil mit eindeutiger ID, Dino-Name und Geburtstag");
+    var luna = profiles.CreateProfile("Lunas Welt", "Luna", note: "Mag besonders gern Ausflüge.");
+    Check(luna.Id.Length == 32 && luna.Note.Length > 0 && profiles.SetActiveProfile(luna.Id), "Profil mit eindeutiger ID, Dino-Name und Notiz");
     var lunaDirectory = profiles.GetActiveProfileDirectory();
     var lunaProgress = new ProgressService(logger, lunaDirectory);
     var lunaCollections = new CollectionManager(logger, lunaDirectory, definitions);
@@ -61,7 +61,7 @@ try
     lunaStatistics.TrackDigSiteCompleted();
     Check(lunaStatistics.Current.RockPaperScissors.GamesPlayed == 2 && lunaStatistics.Current.RockPaperScissors.Wins == 1 && lunaStatistics.Current.RockPaperScissors.Draws == 1, "Stein-Schere-Papier-Statistik");
     Check(lunaStatistics.Current.DigSitesCompleted == 1, "Grabungsstatistik");
-    Check(lunaCollections.Toys.Items.Count > 0 && lunaCollections.Toys.Unlock(lunaCollections.Toys.Items[0].Id) && !lunaCollections.Toys.Unlock(lunaCollections.Toys.Items[0].Id), "Sammelfunde ohne Duplikate");
+    Check(lunaCollections.Toys.Items.Count > 0 && lunaCollections.Toys.Unlock(lunaCollections.Toys.Items[0].Id, out _) && !lunaCollections.Toys.Unlock(lunaCollections.Toys.Items[0].Id, out _), "Sammelfunde ohne Duplikate");
     Check(lunaAreas.SelectArea("garten", lunaProgress.Current.Level) && !lunaAreas.SelectArea("wald", lunaProgress.Current.Level), "Gebietsauswahl mit Level-Freischaltung");
 
     var homeDirectory = Path.Combine(testRoot, "HomeUpgradeData");
@@ -164,8 +164,9 @@ try
     var reloadedStatistics = new StatisticsService(logger, profiles.GetActiveProfileDirectory());
     Check(reloadedStatistics.Current.RockPaperScissors.GamesPlayed == 2 && reloadedStatistics.Current.DigSitesCompleted == 1, "Neue Gameplay-Statistiken persistieren");
     Check(new CollectionManager(logger, profiles.GetActiveProfileDirectory(), definitions).Current.EquippedSkinId == "blue", "Ausgerüsteter Skin persistiert");
-    profiles.UpdateProfile(luna.Id, "Luna umbenannt", "Lunchen", 13, 9);
-    Check(profiles.ActiveProfile?.DinoName == "Lunchen" && profiles.ActiveProfile.BirthdayDay == 13, "Profil umbenennen und Stammdaten ändern");
+    var note = new string('N', 520);
+    profiles.UpdateProfile(luna.Id, "Luna umbenannt", "Lunchen", 13, 9, note: note);
+    Check(profiles.ActiveProfile?.DinoName == "Lunchen" && profiles.ActiveProfile.Note.Length == 500, "Profil umbenennen, Notiz begrenzen und Stammdaten ändern");
 
     var exportPath = Path.Combine(testRoot, "Luna.dino");
     Check(profiles.ExportProfile(luna.Id, exportPath) && File.Exists(exportPath), "Vollständiger .dino-Export");

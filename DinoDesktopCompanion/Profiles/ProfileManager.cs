@@ -131,7 +131,7 @@ public sealed class ProfileManager
         ? GetProfileDirectory(profile.Id)
         : throw new InvalidOperationException("Es ist kein Dino-Profil aktiv.");
 
-    public ProfileInfo CreateProfile(string profileName, string dinoName, int? birthdayDay = null, int? birthdayMonth = null, string? profileColor = null)
+    public ProfileInfo CreateProfile(string profileName, string dinoName, int? birthdayDay = null, int? birthdayMonth = null, string? profileColor = null, string? note = null)
     {
         ValidateBirthday(birthdayDay, birthdayMonth);
         var profile = new ProfileInfo
@@ -140,6 +140,7 @@ public sealed class ProfileManager
             DinoName = NormalizeName(dinoName, "Dino"),
             BirthdayDay = birthdayDay,
             BirthdayMonth = birthdayMonth,
+            Note = NormalizeNote(note),
             ProfileColor = NormalizeProfileColor(profileColor),
             LastPlayed = DateTime.Now,
             SaveVersion = CurrentSaveVersion
@@ -208,7 +209,7 @@ public sealed class ProfileManager
         return true;
     }
 
-    public bool UpdateProfile(string id, string profileName, string dinoName, int? birthdayDay, int? birthdayMonth, string? profileColor = null)
+    public bool UpdateProfile(string id, string profileName, string dinoName, int? birthdayDay, int? birthdayMonth, string? profileColor = null, string? note = null)
     {
         var profile = _data.Profiles.FirstOrDefault(p => p.Id == id);
         if (profile is null) return false;
@@ -217,6 +218,7 @@ public sealed class ProfileManager
         profile.DinoName = NormalizeName(dinoName, "Dino");
         profile.BirthdayDay = birthdayDay;
         profile.BirthdayMonth = birthdayMonth;
+        profile.Note = NormalizeNote(note ?? profile.Note);
         profile.ProfileColor = NormalizeProfileColor(profileColor ?? profile.ProfileColor);
         WriteProfileMetadata(profile);
         SaveIndex();
@@ -226,7 +228,17 @@ public sealed class ProfileManager
     public void RenameProfile(string id, string newName)
     {
         var profile = _data.Profiles.FirstOrDefault(p => p.Id == id);
-        if (profile is not null) UpdateProfile(id, newName, profile.DinoName, profile.BirthdayDay, profile.BirthdayMonth);
+        if (profile is not null) UpdateProfile(id, newName, profile.DinoName, profile.BirthdayDay, profile.BirthdayMonth, profile.ProfileColor, profile.Note);
+    }
+
+    public bool SaveProfile(string id)
+    {
+        var profile = _data.Profiles.FirstOrDefault(p => p.Id == id);
+        if (profile is null) return false;
+        NormalizeProfileFields(profile);
+        WriteProfileMetadata(profile);
+        SaveIndex();
+        return true;
     }
 
     public bool ExportProfile(string id, string archivePath)
@@ -432,6 +444,7 @@ public sealed class ProfileManager
     {
         profile.ProfileName = NormalizeName(profile.ProfileName, "Mein Dino");
         profile.DinoName = NormalizeName(profile.DinoName, "Dino");
+        profile.Note = NormalizeNote(profile.Note);
         if (!IsValidBirthday(profile.BirthdayDay, profile.BirthdayMonth))
         {
             profile.BirthdayDay = null;
@@ -446,6 +459,11 @@ public sealed class ProfileManager
     public static string NormalizeProfileColor(string? color) => color is not null && AllowedProfileColors.Contains(color)
         ? AllowedProfileColors.First(value => value.Equals(color, StringComparison.OrdinalIgnoreCase))
         : ProfileInfo.DefaultProfileColor;
+    private static string NormalizeNote(string? value)
+    {
+        var normalized = value?.Trim() ?? "";
+        return normalized[..Math.Min(normalized.Length, 500)];
+    }
     private static string RequireName(string value, string label) => !string.IsNullOrWhiteSpace(value) && value.Trim().Length <= 60
         ? value.Trim()
         : throw new ArgumentException($"{label} muss 1 bis 60 Zeichen lang sein.");

@@ -145,8 +145,7 @@ public partial class InteractionWindow : Window
         if (profile is null) return;
         ProfileNameText.Text = profile.ProfileName;
         DinoNameText.Text = profile.DinoName;
-        var birthday = FormatBirthday(profile.BirthdayDay, profile.BirthdayMonth);
-        BirthdayText.Text = birthday;
+        ProfileNoteText.Text = string.IsNullOrWhiteSpace(profile.Note) ? "Keine Notiz" : profile.Note;
         var state = profile.State switch
         {
             DinoDesktopCompanion.Profiles.DinoState.Sleeping => "Schläft",
@@ -212,10 +211,6 @@ public partial class InteractionWindow : Window
         if (atMaximum)
             return;
     }
-
-    private static string FormatBirthday(int? day, int? month) => day is { } d && month is { } m
-        ? $"{d}. {CultureInfo.GetCultureInfo("de-DE").DateTimeFormat.GetMonthName(m)}"
-        : "Nicht angegeben";
 
     private void ManageProfiles_Click(object sender, RoutedEventArgs e)
     {
