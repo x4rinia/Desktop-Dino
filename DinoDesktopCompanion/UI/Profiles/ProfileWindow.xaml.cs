@@ -66,16 +66,12 @@ public partial class ProfileWindow : Window
             actions.ColumnDefinitions.Add(new ColumnDefinition());
             actions.ColumnDefinitions.Add(new ColumnDefinition());
             actions.ColumnDefinitions.Add(new ColumnDefinition());
-            actions.ColumnDefinitions.Add(new ColumnDefinition());
             var editButton = MakeButton("Bearbeiten", () => EditProfile(profile));
-            var saveButton = MakeButton("Speichern", () => SaveProfile(profile));
             var exportButton = MakeButton("Export", () => ExportProfile(profile));
             var deleteButton = MakeButton("Löschen", () => DeleteProfile(profile), true);
-            Grid.SetColumn(saveButton, 1);
-            Grid.SetColumn(exportButton, 2);
-            Grid.SetColumn(deleteButton, 3);
+            Grid.SetColumn(exportButton, 1);
+            Grid.SetColumn(deleteButton, 2);
             actions.Children.Add(editButton);
-            actions.Children.Add(saveButton);
             actions.Children.Add(exportButton);
             actions.Children.Add(deleteButton);
             body.Children.Add(actions);
@@ -89,9 +85,9 @@ public partial class ProfileWindow : Window
         var button = new System.Windows.Controls.Button
         {
             Content = text,
-            MinWidth = 0,
+            MinWidth = 72,
             MinHeight = 34,
-            Padding = new Thickness(5, 6, 5, 6),
+            Padding = new Thickness(12, 6, 12, 6),
             Margin = new Thickness(0, 0, 7, 4),
             Foreground = danger ? Brushes.Firebrick : null
         };
@@ -136,16 +132,16 @@ public partial class ProfileWindow : Window
         }
     }
 
-    private void SaveProfile(ProfileInfo profile)
+    private void SaveAndClose_Click(object sender, RoutedEventArgs e)
     {
         try
         {
-            if (!_manager.SaveProfile(profile.Id))
+            if (_manager.ActiveProfile is { } profile && !_manager.SaveProfile(profile.Id))
             {
                 MessageBox.Show("Das Profil konnte nicht gespeichert werden.", "Profil speichern", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
-            LoadProfiles();
+            DialogResult = true;
         }
         catch (Exception ex)
         {

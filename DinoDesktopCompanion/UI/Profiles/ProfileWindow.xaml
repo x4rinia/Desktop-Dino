@@ -17,6 +17,7 @@
         <Grid Grid.Row="2" Margin="0,18,0,0">
             <TextBlock x:Name="EmptyHint" Text="Noch kein Profil vorhanden. Lege deinen ersten Dino an." VerticalAlignment="Center" Foreground="{StaticResource DinoMutedText}" Visibility="Collapsed"/>
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Speichern" Width="125" Margin="0,0,24,0" Click="SaveAndClose_Click"/>
                 <Button Content="Profil importieren" Width="135" Margin="0,0,10,0" Click="ImportProfile_Click"/>
                 <Button Content="+ Neues Profil" Width="130" Click="NewProfile_Click"/>
             </StackPanel>
