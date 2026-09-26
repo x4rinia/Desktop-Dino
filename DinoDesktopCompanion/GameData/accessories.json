@@ -1,0 +1,48 @@
+[
+  {
+    "Id": "acc_muetze",
+    "Name": "Dino-Mütze",
+    "AssetPath": "Assets/Accessories/hat.png",
+    "UnlockLevel": 3,
+    "Cost": 150,
+    "Rarity": "Gewöhnlich",
+    "Slot": "Head"
+  },
+  {
+    "Id": "acc_wintermuetze",
+    "Name": "Wintermütze",
+    "AssetPath": "Assets/Accessories/winterhat.png",
+    "UnlockLevel": 12,
+    "Cost": 350,
+    "Rarity": "Selten",
+    "SetId": "set_winter",
+    "Slot": "Head"
+  },
+  {
+    "Id": "acc_schleife",
+    "Name": "Rote Schleife",
+    "AssetPath": "Assets/Accessories/bow.png",
+    "UnlockLevel": 5,
+    "Cost": 200,
+    "Rarity": "Ungewöhnlich",
+    "Slot": "Neck"
+  },
+  {
+    "Id": "acc_sonnenbrille",
+    "Name": "Sonnenbrille",
+    "AssetPath": "Assets/Accessories/sunglasses.png",
+    "UnlockLevel": 8,
+    "Cost": 400,
+    "Rarity": "Selten",
+    "Slot": "Face"
+  },
+  {
+    "Id": "acc_rucksack",
+    "Name": "Kleiner Rucksack",
+    "AssetPath": "Assets/Accessories/backpack.png",
+    "UnlockLevel": 10,
+    "Cost": 500,
+    "Rarity": "Episch",
+    "Slot": "Back"
+  }
+]

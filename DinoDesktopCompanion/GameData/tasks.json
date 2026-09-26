@@ -1,0 +1,35 @@
+[
+  {
+    "Id": "data-cave-expedition",
+    "Name": "Datenhöhle erkunden",
+    "Description": "Dino untersucht eine kleine Datenhöhle und bringt Fundstücke zurück.",
+    "Duration": "00:15:00",
+    "XPReward": 20,
+    "CoinReward": 5,
+    "Status": "Available",
+    "StartedAt": null,
+    "CompletedAt": null
+  },
+  {
+    "Id": "sort-fossils",
+    "Name": "Fossilien sortieren",
+    "Description": "Dino bringt Ordnung in seine kleine Fossiliensammlung.",
+    "Duration": "00:05:00",
+    "XPReward": 10,
+    "CoinReward": 2,
+    "Status": "Available",
+    "StartedAt": null,
+    "CompletedAt": null
+  },
+  {
+    "Id": "check-tools",
+    "Name": "Werkzeug prüfen",
+    "Description": "Dino prüft sein Expeditionswerkzeug für den nächsten Ausflug.",
+    "Duration": "00:10:00",
+    "XPReward": 15,
+    "CoinReward": 3,
+    "Status": "Available",
+    "StartedAt": null,
+    "CompletedAt": null
+  }
+]

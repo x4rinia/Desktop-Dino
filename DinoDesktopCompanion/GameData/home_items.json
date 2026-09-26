@@ -1,0 +1,174 @@
+[
+  {
+    "Id": "home-bed-basic",
+    "Name": "Gemütliches Dino-Bett",
+    "SlotId": "bett",
+    "AssetPath": "Assets/Home/Items/bed-basic.png",
+    "VisualWidth": 250,
+    "VisualHeight": 150,
+    "Rarity": "Gewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 2",
+    "RequiredLevel": 2,
+    "Cost": 100,
+    "Bonuses": [
+      { "Type": "SleepApRegeneration", "Value": 15, "Description": "+15 % Schlaf-AP-Regeneration" }
+    ]
+  },
+  {
+    "Id": "home-bed-large",
+    "Name": "Großes Dino-Bett",
+    "SlotId": "bett",
+    "AssetPath": "Assets/Home/Items/bed-large.png",
+    "VisualWidth": 270,
+    "VisualHeight": 165,
+    "Rarity": "Selten",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 10",
+    "RequiredLevel": 10,
+    "Cost": 500,
+    "Bonuses": [
+      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP" }
+    ]
+  },
+  {
+    "Id": "home-lamp-basic",
+    "Name": "Warme Dino-Lampe",
+    "SlotId": "lampe",
+    "AssetPath": "Assets/Home/Items/lamp-basic.png",
+    "VisualWidth": 85,
+    "VisualHeight": 125,
+    "Rarity": "Gewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 4",
+    "RequiredLevel": 4,
+    "Cost": 150,
+    "Bonuses": [
+      { "Type": "DigSpeed", "Value": 15, "Description": "+15 % passive Grabgeschwindigkeit" }
+    ]
+  },
+  {
+    "Id": "home-shelf-basic",
+    "Name": "Fundstück-Regal",
+    "SlotId": "regal",
+    "AssetPath": "Assets/Home/Items/shelf-basic.png",
+    "VisualWidth": 145,
+    "VisualHeight": 175,
+    "Rarity": "Gewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 6",
+    "RequiredLevel": 6,
+    "Cost": 250,
+    "Bonuses": [
+      { "Type": "CollectibleChance", "Value": 5, "Description": "+5 % Sammelfundchance" }
+    ]
+  },
+  {
+    "Id": "home-plant-basic",
+    "Name": "Glückliche Zimmerpflanze",
+    "SlotId": "pflanze",
+    "AssetPath": "Assets/Home/Items/plant-basic.png",
+    "VisualWidth": 105,
+    "VisualHeight": 130,
+    "Rarity": "Ungewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 8",
+    "RequiredLevel": 8,
+    "Cost": 300,
+    "Bonuses": [
+      { "Type": "RarityChance", "Value": 3, "Description": "+3 % Chance auf seltenere Funde" }
+    ]
+  },
+  {
+    "Id": "home-toybox-basic",
+    "Name": "Dinos Spielzeugkiste",
+    "SlotId": "spielzeugkiste",
+    "AssetPath": "Assets/Home/Items/toybox-basic.png",
+    "VisualWidth": 150,
+    "VisualHeight": 110,
+    "Rarity": "Ungewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 10",
+    "RequiredLevel": 10,
+    "Cost": 400,
+    "Bonuses": [
+      { "Type": "GameExperience", "Value": 5, "Description": "+5 % XP bei Stein-Schere-Papier" }
+    ]
+  },
+  {
+    "Id": "home-pillow-basic",
+    "Name": "Weiches Dino-Kissen",
+    "SlotId": "kissen",
+    "AssetPath": "Assets/Home/Items/pillow-basic.png",
+    "VisualWidth": 105,
+    "VisualHeight": 78,
+    "Rarity": "Ungewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 12",
+    "RequiredLevel": 12,
+    "Cost": 450,
+    "Bonuses": [
+      { "Type": "SleepApRegeneration", "Value": 5, "Description": "+5 % Schlaf-AP-Regeneration" }
+    ]
+  },
+  {
+    "Id": "home-rug-basic",
+    "Name": "Dino-Pfoten-Teppich",
+    "SlotId": "teppich",
+    "AssetPath": "Assets/Home/Items/rug-basic.png",
+    "VisualWidth": 250,
+    "VisualHeight": 100,
+    "Rarity": "Ungewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 14",
+    "RequiredLevel": 14,
+    "Cost": 500,
+    "Bonuses": [
+      { "Type": "DiggingExperience", "Value": 5, "Description": "+5 % XP bei Desktop-Grabungen" }
+    ]
+  },
+  {
+    "Id": "home-window-basic",
+    "Name": "Helle Fensterdeko",
+    "SlotId": "fensterdeko",
+    "AssetPath": "Assets/Home/Items/window-basic.png",
+    "VisualWidth": 120,
+    "VisualHeight": 145,
+    "Rarity": "Selten",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 16",
+    "RequiredLevel": 16,
+    "Cost": 650,
+    "Bonuses": [
+      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP" }
+    ]
+  },
+  {
+    "Id": "home-wall-picture",
+    "Name": "Pfoten-Wandbild",
+    "SlotId": "wandbild",
+    "AssetPath": "Assets/Home/Items/wall-picture.png",
+    "VisualWidth": 110,
+    "VisualHeight": 110,
+    "Rarity": "Gewöhnlich",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 3",
+    "RequiredLevel": 3,
+    "Cost": 120,
+    "Bonuses": []
+  },
+  {
+    "Id": "home-event-shelf",
+    "Name": "Event-Erinnerungsregal",
+    "SlotId": "event",
+    "AssetPath": "Assets/Home/Items/event-shelf.png",
+    "VisualWidth": 170,
+    "VisualHeight": 105,
+    "Rarity": "Selten",
+    "Source": "Dinohaus",
+    "UnlockCondition": "Level 20",
+    "RequiredLevel": 20,
+    "Cost": 750,
+    "Bonuses": []
+  }
+]

@@ -1,0 +1,662 @@
+[
+    {
+        "Id":  "garden-clover",
+        "Name":  "Kleeblatt",
+        "AreaId":  "garten",
+        "Description":  "Ein sattgrünes Kleeblatt aus Dinos Garten.",
+        "AssetPath":  "Assets/Items/garden-clover.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-snail-shell",
+        "Name":  "Schneckenhaus",
+        "AreaId":  "garten",
+        "Description":  "Ein kleines, fein gemustertes Schneckenhaus.",
+        "AssetPath":  "Assets/Items/garden-snail-shell.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-polished-stone",
+        "Name":  "Schöner Kieselstein",
+        "AreaId":  "garten",
+        "Description":  "Ein rund geschliffener Kieselstein aus dem Garten.",
+        "AssetPath":  "Assets/Items/garden-polished-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-feather",
+        "Name":  "Feder",
+        "AreaId":  "garten",
+        "Description":  "Eine weiche Feder, die zwischen Blumen lag.",
+        "AssetPath":  "Assets/Items/garden-feather.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-petal",
+        "Name":  "Blütenblatt",
+        "AreaId":  "garten",
+        "Description":  "Ein duftendes Blütenblatt in leuchtenden Farben.",
+        "AssetPath":  "Assets/Items/garden-petal.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-ladybug-figure",
+        "Name":  "Marienkäfer-Figur",
+        "AreaId":  "garten",
+        "Description":  "Eine winzige Figur, die wie ein Marienkäfer bemalt ist.",
+        "AssetPath":  "Assets/Items/garden-ladybug-figure.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-old-button",
+        "Name":  "Bunter Knopf",
+        "AreaId":  "garten",
+        "Description":  "Dino hat diesen bunten Knopf tief unter lockerer Erde entdeckt.",
+        "AssetPath":  "Assets/Items/garden-old-button.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-small-acorn",
+        "Name":  "Kleine Eichel",
+        "AreaId":  "garten",
+        "Description":  "Eine besonders hübsche Eichel vom Rand des Gartens.",
+        "AssetPath":  "Assets/Items/garden-small-acorn.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-old-key",
+        "Name":  "Alter Schlüssel",
+        "AreaId":  "garten",
+        "Description":  "Ein alter Schlüssel. Welches Schloss er wohl öffnet?",
+        "AssetPath":  "Assets/Items/garden-old-key.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "garden-mini-gnome",
+        "Name":  "Mini-Gartenzwerg",
+        "AreaId":  "garten",
+        "Description":  "Ein winziger Gartenzwerg mit geheimnisvollem Lächeln.",
+        "AssetPath":  "Assets/Items/garden-mini-gnome.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "forest-pinecone",
+        "Name":  "Tannenzapfen",
+        "AreaId":  "wald",
+        "Description":  "Ein wunderschöner Tannenzapfen, der noch nach Wald duftet.",
+        "AssetPath":  "Assets/Items/forest-pinecone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-moss-stone",
+        "Name":  "Moosstein",
+        "AreaId":  "wald",
+        "Description":  "Ein glatter Stein mit einem weichen Mantel aus Moos.",
+        "AssetPath":  "Assets/Items/forest-moss-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-mushroom-figure",
+        "Name":  "Pilzfigur",
+        "AreaId":  "wald",
+        "Description":  "Eine kleine geschnitzte Figur in Pilzform.",
+        "AssetPath":  "Assets/Items/forest-mushroom-figure.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-wood-pendant",
+        "Name":  "Holzanhänger",
+        "AreaId":  "wald",
+        "Description":  "Ein Anhänger aus duftendem Waldholz.",
+        "AssetPath":  "Assets/Items/forest-wood-pendant.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-acorn",
+        "Name":  "Eichel",
+        "AreaId":  "wald",
+        "Description":  "Eine ungewöhnlich glänzende Eichel.",
+        "AssetPath":  "Assets/Items/forest-acorn.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-beetle-shell",
+        "Name":  "Hirschkäfer-Panzer",
+        "AreaId":  "wald",
+        "Description":  "Eine schillernde, natürlich zurückgelassene Käferhülle.",
+        "AssetPath":  "Assets/Items/forest-beetle-shell.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-special-feather",
+        "Name":  "Besondere Feder",
+        "AreaId":  "wald",
+        "Description":  "Die Muster dieser Feder verändern sich im Licht.",
+        "AssetPath":  "Assets/Items/forest-special-feather.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-amber",
+        "Name":  "Stück Bernstein",
+        "AreaId":  "wald",
+        "Description":  "Ein warmer Fund zwischen Moos und Wurzeln.",
+        "AssetPath":  "Assets/Items/forest-amber.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-fossil-imprint",
+        "Name":  "Fossilabdruck",
+        "AreaId":  "wald",
+        "Description":  "Der feine Abdruck eines uralten Blattes.",
+        "AssetPath":  "Assets/Items/forest-fossil-imprint.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "forest-crystal",
+        "Name":  "Waldkristall",
+        "AreaId":  "wald",
+        "Description":  "Ein grüner Kristall aus einer verborgenen Waldlichtung.",
+        "AssetPath":  "Assets/Items/forest-crystal.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "beach-shell",
+        "Name":  "Muschel",
+        "AreaId":  "strand",
+        "Description":  "Eine kleine gestreifte Muschel aus hellem Sand.",
+        "AssetPath":  "Assets/Items/beach-shell.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-driftwood",
+        "Name":  "Treibholzstück",
+        "AreaId":  "strand",
+        "Description":  "Vom Meer weich geschliffenes Treibholz.",
+        "AssetPath":  "Assets/Items/beach-driftwood.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-colorful-stone",
+        "Name":  "Bunter Meeresstein",
+        "AreaId":  "strand",
+        "Description":  "Ein farbenfroher Stein aus der Brandung.",
+        "AssetPath":  "Assets/Items/beach-colorful-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-small-coral",
+        "Name":  "Kleine Koralle",
+        "AreaId":  "strand",
+        "Description":  "Ein kleines, vom Meer angespültes Korallenstück.",
+        "AssetPath":  "Assets/Items/beach-small-coral.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-message-bottle",
+        "Name":  "Flaschenpost",
+        "AreaId":  "strand",
+        "Description":  "In der Flasche steckt eine winzige, verblasste Nachricht.",
+        "AssetPath":  "Assets/Items/beach-message-bottle.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-mother-of-pearl",
+        "Name":  "Perlmuttstück",
+        "AreaId":  "strand",
+        "Description":  "Es schimmert in allen Farben des Meeres.",
+        "AssetPath":  "Assets/Items/beach-mother-of-pearl.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-old-coin",
+        "Name":  "Alte Münze",
+        "AreaId":  "strand",
+        "Description":  "Eine salzige Münze mit kaum lesbarer Prägung.",
+        "AssetPath":  "Assets/Items/beach-old-coin.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-sea-glass",
+        "Name":  "Glasstein",
+        "AreaId":  "strand",
+        "Description":  "Vom Meer glatt geschliffenes blaues Glas.",
+        "AssetPath":  "Assets/Items/beach-sea-glass.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-starfish",
+        "Name":  "Seestern",
+        "AreaId":  "strand",
+        "Description":  "Ein sternförmiger Fund in warmem Strandsand.",
+        "AssetPath":  "Assets/Items/beach-starfish.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "beach-mini-treasure-map",
+        "Name":  "Mini-Schatzkarte",
+        "AreaId":  "strand",
+        "Description":  "Eine winzige Karte mit einem geheimen roten Kreuz.",
+        "AssetPath":  "Assets/Items/beach-mini-treasure-map.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "cave-stone",
+        "Name":  "Höhlenstein",
+        "AreaId":  "hoehle",
+        "Description":  "Ein dunkler Stein aus den Tiefen der Höhle.",
+        "AssetPath":  "Assets/Items/cave-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-bone-fragment",
+        "Name":  "Knochenfragment",
+        "AreaId":  "hoehle",
+        "Description":  "Ein kleines, sehr altes Knochenfragment.",
+        "AssetPath":  "Assets/Items/cave-bone-fragment.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-glowing-mushroom-stone",
+        "Name":  "Leuchtender Pilzstein",
+        "AreaId":  "hoehle",
+        "Description":  "Seine Oberfläche schimmert wie ein Höhlenpilz.",
+        "AssetPath":  "Assets/Items/cave-glowing-mushroom-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-petrified-shell",
+        "Name":  "Versteinerte Muschel",
+        "AreaId":  "hoehle",
+        "Description":  "Eine Muschel, die vor langer Zeit zu Stein wurde.",
+        "AssetPath":  "Assets/Items/cave-petrified-shell.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-fossil",
+        "Name":  "Fossil",
+        "AreaId":  "hoehle",
+        "Description":  "Ein Fossil aus einer tiefen Gesteinsschicht.",
+        "AssetPath":  "Assets/Items/cave-fossil.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-old-rune",
+        "Name":  "Alte Rune",
+        "AreaId":  "hoehle",
+        "Description":  "Unbekannte Zeichen wurden in diesen Stein geritzt.",
+        "AssetPath":  "Assets/Items/cave-old-rune.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-dino-tooth",
+        "Name":  "Seltener Dino-Zahn",
+        "AreaId":  "hoehle",
+        "Description":  "Ein erstaunlich gut erhaltener Zahn eines uralten Dinos.",
+        "AssetPath":  "Assets/Items/cave-dino-tooth.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-crystal",
+        "Name":  "Kristall",
+        "AreaId":  "hoehle",
+        "Description":  "Ein Kristall, der schwach im Dunkeln funkelt.",
+        "AssetPath":  "Assets/Items/cave-crystal.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-amethyst",
+        "Name":  "Amethyst",
+        "AreaId":  "hoehle",
+        "Description":  "Ein violetter Edelstein mit klaren Spitzen.",
+        "AssetPath":  "Assets/Items/cave-amethyst.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "cave-gem",
+        "Name":  "Edelstein",
+        "AreaId":  "hoehle",
+        "Description":  "Ein außergewöhnlicher Edelstein aus einer geheimen Kammer.",
+        "AssetPath":  "Assets/Items/cave-gem.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "snow-winter-stone",
+        "Name":  "Winterstein",
+        "AreaId":  "schneeland",
+        "Description":  "Ein kühler Stein mit winterlicher Maserung.",
+        "AssetPath":  "Assets/Items/snow-winter-stone.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-frozen-feather",
+        "Name":  "Gefrorene Feder",
+        "AreaId":  "schneeland",
+        "Description":  "Eine Feder, an deren Rand kleine Eiskörner glitzern.",
+        "AssetPath":  "Assets/Items/snow-frozen-feather.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-small-icicle",
+        "Name":  "Kleiner Eiszapfen",
+        "AreaId":  "schneeland",
+        "Description":  "Ein winziger Eiszapfen, der niemals zu schmelzen scheint.",
+        "AssetPath":  "Assets/Items/snow-small-icicle.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-lost-glove",
+        "Name":  "Verlorener Handschuh",
+        "AreaId":  "schneeland",
+        "Description":  "Ein kleiner Handschuh, den jemand im Schnee verloren hat.",
+        "AssetPath":  "Assets/Items/snow-lost-glove.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-snowflake-pendant",
+        "Name":  "Schneeflocken-Anhänger",
+        "AreaId":  "schneeland",
+        "Description":  "Ein zarter Anhänger in Form einer Schneeflocke.",
+        "AssetPath":  "Assets/Items/snow-snowflake-pendant.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-snow-globe",
+        "Name":  "Schneekugel",
+        "AreaId":  "schneeland",
+        "Description":  "In dieser kleinen Kugel wirbelt immer neuer Schnee.",
+        "AssetPath":  "Assets/Items/snow-snow-globe.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-polar-stone",
+        "Name":  "Polarstein",
+        "AreaId":  "schneeland",
+        "Description":  "Ein heller Stein vom äußersten Rand des Schneegebiets.",
+        "AssetPath":  "Assets/Items/snow-polar-stone.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-ice-crystal",
+        "Name":  "Eiskristall",
+        "AreaId":  "schneeland",
+        "Description":  "Ein klarer Kristall mit eisblauem Schimmer.",
+        "AssetPath":  "Assets/Items/snow-ice-crystal.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-frost-crystal",
+        "Name":  "Frostkristall",
+        "AreaId":  "schneeland",
+        "Description":  "Ein seltener Kristall, der von Frost überzogen ist.",
+        "AssetPath":  "Assets/Items/snow-frost-crystal.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "snow-fossil",
+        "Name":  "Seltener Eisfossil-Fund",
+        "AreaId":  "schneeland",
+        "Description":  "Ein uralter Fossilabdruck aus einem tiefen Schneehügel.",
+        "AssetPath":  "Assets/Items/snow-fossil.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "event-christmas-bauble",
+        "Name":  "Weihnachtskugel",
+        "AreaId":  "events",
+        "EventId":  "Weihnachten",
+        "Description":  "Eine festlich glänzende Weihnachtskugel.",
+        "AssetPath":  "Assets/Items/event-christmas-bauble.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-christmas-ribbon",
+        "Name":  "Geschenkband",
+        "AreaId":  "events",
+        "EventId":  "Weihnachten",
+        "Description":  "Ein funkelndes Band von einem Dino-Geschenk.",
+        "AssetPath":  "Assets/Items/event-christmas-ribbon.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-christmas-candy-cane",
+        "Name":  "Zuckerstange",
+        "AreaId":  "events",
+        "EventId":  "Weihnachten",
+        "Description":  "Eine rot-weiß gestreifte Festtagsüberraschung.",
+        "AssetPath":  "Assets/Items/event-christmas-candy-cane.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-christmas-ornament",
+        "Name":  "Dino-Ornament",
+        "AreaId":  "events",
+        "EventId":  "Weihnachten",
+        "Description":  "Ein handbemalter Dino für den Weihnachtsbaum.",
+        "AssetPath":  "Assets/Items/event-christmas-ornament.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-christmas-snow-star",
+        "Name":  "Schneestern",
+        "AreaId":  "events",
+        "EventId":  "Weihnachten",
+        "Description":  "Ein zauberhafter Stern aus ewigem Schnee.",
+        "AssetPath":  "Assets/Items/event-christmas-snow-star.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "event-easter-egg",
+        "Name":  "Buntes Ei",
+        "AreaId":  "events",
+        "EventId":  "Ostern",
+        "Description":  "Ein fröhlich bemaltes Osterei.",
+        "AssetPath":  "Assets/Items/event-easter-egg.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-easter-flower",
+        "Name":  "Frühlingsblume",
+        "AreaId":  "events",
+        "EventId":  "Ostern",
+        "Description":  "Eine Blume in den ersten Farben des Frühlings.",
+        "AssetPath":  "Assets/Items/event-easter-flower.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-easter-figure",
+        "Name":  "Osterfigur",
+        "AreaId":  "events",
+        "EventId":  "Ostern",
+        "Description":  "Eine kleine Figur aus Dinos Osterversteck.",
+        "AssetPath":  "Assets/Items/event-easter-figure.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-easter-bunny-badge",
+        "Name":  "Hasenabzeichen",
+        "AreaId":  "events",
+        "EventId":  "Ostern",
+        "Description":  "Ein seltenes Abzeichen mit langen Hasenohren.",
+        "AssetPath":  "Assets/Items/event-easter-bunny-badge.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-halloween-pumpkin",
+        "Name":  "Kürbisfigur",
+        "AreaId":  "events",
+        "EventId":  "Halloween",
+        "Description":  "Eine freundlich grinsende Kürbisfigur.",
+        "AssetPath":  "Assets/Items/event-halloween-pumpkin.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-halloween-bat-pendant",
+        "Name":  "Fledermaus-Anhänger",
+        "AreaId":  "events",
+        "EventId":  "Halloween",
+        "Description":  "Ein kleiner Anhänger mit Fledermausflügeln.",
+        "AssetPath":  "Assets/Items/event-halloween-bat-pendant.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-halloween-ghost",
+        "Name":  "Kleiner Geist",
+        "AreaId":  "events",
+        "EventId":  "Halloween",
+        "Description":  "Ein überraschend niedlicher kleiner Geist.",
+        "AssetPath":  "Assets/Items/event-halloween-ghost.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-halloween-web-amulet",
+        "Name":  "Spinnennetz-Amulett",
+        "AreaId":  "events",
+        "EventId":  "Halloween",
+        "Description":  "Ein geheimnisvolles Amulett in Spinnennetzform.",
+        "AssetPath":  "Assets/Items/event-halloween-web-amulet.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "event-dino-day-medal",
+        "Name":  "Dino-Medaille",
+        "AreaId":  "events",
+        "EventId":  "Dino-Tag",
+        "Description":  "Eine Medaille vom großen Dino-Tag.",
+        "AssetPath":  "Assets/Items/event-dino-day-medal.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-dino-day-coin",
+        "Name":  "Dino-Münze",
+        "AreaId":  "events",
+        "EventId":  "Dino-Tag",
+        "Description":  "Eine besondere Münze mit Dino-Prägung.",
+        "AssetPath":  "Assets/Items/event-dino-day-coin.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-dino-day-fossil-plaque",
+        "Name":  "Fossilplakette",
+        "AreaId":  "events",
+        "EventId":  "Dino-Tag",
+        "Description":  "Eine seltene Plakette mit Fossilmotiv.",
+        "AssetPath":  "Assets/Items/event-dino-day-fossil-plaque.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-dino-day-anniversary",
+        "Name":  "Jubiläumsfigur",
+        "AreaId":  "events",
+        "EventId":  "Dino-Tag",
+        "Description":  "Die legendäre Figur eines ganz besonderen Dino-Jubiläums.",
+        "AssetPath":  "Assets/Items/event-dino-day-anniversary.png",
+        "Rarity":  "Legendär",
+        "IsSecret":  true
+    },
+    {
+        "Id":  "event-birthday-party-badge",
+        "Name":  "Partyabzeichen",
+        "AreaId":  "events",
+        "EventId":  "Geburtstag",
+        "Description":  "Ein fröhliches Abzeichen für Dinos Geburtstag.",
+        "AssetPath":  "Assets/Items/event-birthday-party-badge.png",
+        "Rarity":  "Gewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-birthday-balloon",
+        "Name":  "Ballonfigur",
+        "AreaId":  "events",
+        "EventId":  "Geburtstag",
+        "Description":  "Eine kleine Figur in Form eines bunten Ballons.",
+        "AssetPath":  "Assets/Items/event-birthday-balloon.png",
+        "Rarity":  "Ungewöhnlich",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-birthday-cake-pendant",
+        "Name":  "Kuchen-Anhänger",
+        "AreaId":  "events",
+        "EventId":  "Geburtstag",
+        "Description":  "Ein seltener Anhänger wie ein winziges Stück Kuchen.",
+        "AssetPath":  "Assets/Items/event-birthday-cake-pendant.png",
+        "Rarity":  "Selten",
+        "IsSecret":  false
+    },
+    {
+        "Id":  "event-birthday-star",
+        "Name":  "Geburtstagsstern",
+        "AreaId":  "events",
+        "EventId":  "Geburtstag",
+        "Description":  "Ein strahlender Stern für einen unvergesslichen Geburtstag.",
+        "AssetPath":  "Assets/Items/event-birthday-star.png",
+        "Rarity":  "Episch",
+        "IsSecret":  true
+    }
+]

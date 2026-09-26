@@ -1,0 +1,149 @@
+{
+    "Idle":  {
+                 "Frames":  [
+                                "Assets/Sprites/Idle/idle-01.png"
+                            ],
+                 "FrameDurationMs":  220,
+                 "Loop":  false
+             },
+    "Walk":  {
+                 "Frames":  [
+                                "Assets/Sprites/Walk/walk-01.png",
+                                "Assets/Sprites/Walk/walk-02.png"
+                            ],
+                 "FrameDurationMs":  180,
+                 "Loop":  true
+             },
+    "Dig":  {
+                "Frames":  [
+                               "Assets/Sprites/Dig/dig-01.png",
+                               "Assets/Sprites/Dig/dig-02.png"
+                           ],
+                "FrameDurationMs":  180,
+                "Loop":  true
+            },
+    "Hop":  {
+                "Frames":  [
+                               "Assets/Sprites/Walk/walk-02.png"
+                           ],
+                "FrameDurationMs":  180,
+                "Loop":  false
+            },
+    "Sit":  {
+                "Frames":  [
+                               "Assets/Sprites/Sit/sit-01.png"
+                           ],
+                "FrameDurationMs":  700,
+                "Loop":  false
+            },
+    "Sleep":  {
+                  "Frames":  [
+                                 "Assets/Sprites/Sleep/sleep-01.png"
+                             ],
+                  "FrameDurationMs":  180,
+                  "Loop":  false
+              },
+    "SleepLeft":  {
+                      "Frames":  [
+                                     "Assets/Sprites/Sleep/sleep-01.png"
+                                 ],
+                      "FrameDurationMs":  180,
+                      "Loop":  false
+                  },
+    "SleepRight":  {
+                       "Frames":  [
+                                      "Assets/Sprites/Sleep/sleep-01.png"
+                                  ],
+                       "FrameDurationMs":  180,
+                       "Loop":  false
+                   },
+    "Doze":  {
+                 "Frames":  [
+                                "Assets/Sprites/Sleep/sleep-01.png"
+                            ],
+                 "FrameDurationMs":  180,
+                 "Loop":  false
+             },
+    "Wake":  {
+                 "Frames":  [
+                                "Assets/Sprites/Wake/wake-01.png"
+                            ],
+                 "FrameDurationMs":  350,
+                 "Loop":  false
+             },
+    "Happy":  {
+                  "Frames":  [
+                                 "Assets/Sprites/Happy/happy-01.png",
+                                 "Assets/Sprites/Happy/happy-02.png"
+                             ],
+                  "FrameDurationMs":  180,
+                  "Loop":  true
+              },
+    "Curious":  {
+                    "Frames":  [
+                                   "Assets/Sprites/Curious/curious-01.png"
+                               ],
+                    "FrameDurationMs":  180,
+                    "Loop":  false
+                },
+    "Blink":  {
+                  "Frames":  [
+                                 "Assets/Sprites/Idle/idle-01.png",
+                                 "Assets/Sprites/Blink/blink-closed.png",
+                                 "Assets/Sprites/Idle/idle-01.png"
+                             ],
+                  "FrameDurationMs":  130,
+                  "Loop":  false
+              },
+    "TailWag":  {
+                    "Frames":  [
+                                   "Assets/Sprites/TailWag/tail-left.png",
+                                   "Assets/Sprites/TailWag/tail-right.png"
+                               ],
+                    "FrameDurationMs":  230,
+                    "Loop":  true
+                },
+    "WeightShift":  {
+                        "Frames":  [
+                                       "Assets/Sprites/WeightShift/weight-shift.png"
+                                   ],
+                        "FrameDurationMs":  600,
+                        "Loop":  false
+                    },
+    "BigHappy":  {
+                     "Loop":  false,
+                     "Frames":  [
+                                    "Assets/Sprites/Happy/happy-02.png"
+                                ],
+                     "FrameDurationMs":  180
+                 },
+    "Yawn":  {
+                 "Loop":  false,
+                 "Frames":  [
+                                "Assets/Sprites/Yawn/yawn-01.png"
+                            ],
+                 "FrameDurationMs":  400
+             },
+    "Stretch":  {
+                    "Loop":  false,
+                    "Frames":  [
+                                   "Assets/Sprites/Stretch/stretch-01.png"
+                               ],
+                    "FrameDurationMs":  500
+                },
+    "Sniff":  {
+                  "Loop":  true,
+                  "Frames":  [
+                                 "Assets/Sprites/Sniff/sniff-01.png",
+                                 "Assets/Sprites/Sniff/sniff-02.png"
+                             ],
+                  "FrameDurationMs":  300
+              },
+    "LookAtFind":  {
+                       "Loop":  false,
+                       "Frames":  [
+                                      "Assets/Sprites/LookAtFind/look-01.png"
+                                  ],
+                       "FrameDurationMs":  800
+                   }
+}

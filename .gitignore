@@ -1,0 +1,29 @@
+# Build outputs
+bin/
+obj/
+publish/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# Rider
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+
+# Local data
+DinoDesktopCompanion/progress.json
+DinoDesktopCompanion/statistics.json
+DinoDesktopCompanion/config.json
+DinoDesktopCompanion/profiles.json
+DinoDesktopCompanion/collections.json
+
+# Temp
+screenshot.png

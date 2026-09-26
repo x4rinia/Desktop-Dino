@@ -1,0 +1,16 @@
+{
+  "Idle":    { "DurationMs": 2200, "Bob": 2.0, "Rotate": 0.7, "RepeatCount": 1 },
+  "Walk":    { "DurationMs": 320,  "Bob": 5.0, "Rotate": 2.0, "RepeatCount": 8 },
+  "Dig":     { "DurationMs": 180,  "Bob": 1.0, "Rotate": 5.0, "RepeatCount": 10 },
+  "Hop":     { "DurationMs": 420,  "Bob": 18.0, "Rotate": 0.0, "RepeatCount": 1 },
+  "Sit":     { "DurationMs": 1700, "Bob": 1.0, "Rotate": 0.0, "RepeatCount": 1 },
+  "Sleep":   { "DurationMs": 3000, "Bob": 1.5, "Rotate": 0.0, "RepeatCount": 1 },
+  "SleepLeft": { "DurationMs": 3000, "Bob": 1.5, "Rotate": 0.0, "RepeatCount": 1 },
+  "SleepRight": { "DurationMs": 3000, "Bob": 1.5, "Rotate": 0.0, "RepeatCount": 1 },
+  "Wake":    { "DurationMs": 450,  "Bob": 8.0, "Rotate": 1.0, "RepeatCount": 1 },
+  "Happy":   { "DurationMs": 300,  "Bob": 7.0, "Rotate": 4.0, "RepeatCount": 3 },
+  "Curious": { "DurationMs": 900,  "Bob": 2.0, "Rotate": 5.0, "RepeatCount": 2 },
+  "Doze":    { "DurationMs": 1400, "Bob": 1.0, "Rotate": 0.0, "RepeatCount": 1 },
+  "TailWag": { "DurationMs": 320,  "Bob": 2.0, "Rotate": 1.5, "RepeatCount": 2 },
+  "WeightShift": { "DurationMs": 600, "Bob": 2.0, "Rotate": 2.5, "RepeatCount": 1 }
+}

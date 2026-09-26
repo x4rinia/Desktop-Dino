@@ -1,0 +1,57 @@
+<Window x:Class="DinoDesktopCompanion.UI.Profiles.ProfileEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dino-Profil" Width="470" Height="540" MinWidth="430" MinHeight="480" ResizeMode="CanResize"
+        WindowStartupLocation="CenterOwner" Background="{StaticResource DinoBackground}"
+        ShowInTaskbar="False">
+    <Border Margin="18" Padding="22" Style="{StaticResource DinoSectionCard}">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                <StackPanel Margin="0,0,8,4">
+                    <TextBlock Text="Dein Dino-Profil" Style="{StaticResource DinoTitle}"/>
+
+                    <TextBlock Text="Profilname" Margin="0,18,0,6" Foreground="{StaticResource DinoMutedText}"/>
+                    <TextBox x:Name="ProfileNameBox" MinHeight="40" MaxLength="60"/>
+
+                    <TextBlock Text="Dino-Name" Margin="0,14,0,6" Foreground="{StaticResource DinoMutedText}"/>
+                    <TextBox x:Name="DinoNameBox" MinHeight="40" MaxLength="60"/>
+
+                    <TextBlock Text="Geburtstag (optional, ohne Jahr)" Margin="0,14,0,6" Foreground="{StaticResource DinoMutedText}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/><ColumnDefinition Width="16"/><ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="Tag" Margin="2,0,0,4" FontSize="12" Foreground="{StaticResource DinoMutedText}"/>
+                            <TextBox x:Name="BirthdayDayBox" MinHeight="40" MaxLength="2" ToolTip="Tag (1–31)"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Monat" Margin="2,0,0,4" FontSize="12" Foreground="{StaticResource DinoMutedText}"/>
+                            <TextBox x:Name="BirthdayMonthBox" MinHeight="40" MaxLength="2" ToolTip="Monat (1–12)"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBlock Text="Profilfarbe" Margin="0,14,0,6" Foreground="{StaticResource DinoMutedText}"/>
+                    <ComboBox x:Name="ProfileColorBox" MinHeight="40" SelectedValuePath="Tag">
+                        <ComboBoxItem Tag="#789E5B"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#789E5B" Margin="0,0,9,0"/><TextBlock Text="Grün"/></StackPanel></ComboBoxItem>
+                        <ComboBoxItem Tag="#4E8BC7"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#4E8BC7" Margin="0,0,9,0"/><TextBlock Text="Blau"/></StackPanel></ComboBoxItem>
+                        <ComboBoxItem Tag="#D979A5"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#D979A5" Margin="0,0,9,0"/><TextBlock Text="Rosa"/></StackPanel></ComboBoxItem>
+                        <ComboBoxItem Tag="#8B6CC4"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#8B6CC4" Margin="0,0,9,0"/><TextBlock Text="Lila"/></StackPanel></ComboBoxItem>
+                        <ComboBoxItem Tag="#E3BC45"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#E3BC45" Margin="0,0,9,0"/><TextBlock Text="Gelb"/></StackPanel></ComboBoxItem>
+                        <ComboBoxItem Tag="#E58A45"><StackPanel Orientation="Horizontal"><Ellipse Width="18" Height="18" Fill="#E58A45" Margin="0,0,9,0"/><TextBlock Text="Orange"/></StackPanel></ComboBoxItem>
+                    </ComboBox>
+
+                    <TextBlock x:Name="ErrorText" Foreground="#B33A3A" Margin="0,10,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+            </ScrollViewer>
+            <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+                <Button Content="Abbrechen" MinWidth="105" MinHeight="40" Margin="0,0,10,0" IsCancel="True"/>
+                <Button Content="Speichern" MinWidth="115" MinHeight="40" IsDefault="True" Click="Save_Click"/>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

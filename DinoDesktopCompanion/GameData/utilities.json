@@ -1,0 +1,88 @@
+[
+  {
+    "Id": "util_kissen",
+    "Name": "Gemütliches Kissen",
+    "Description": "Ein weiches Kissen für Dino.",
+    "EffectDescription": "AP-Regeneration beim Schlafen +10 %",
+    "Type": "PassiveUpgrade",
+    "Cost": 500,
+    "UnlockLevel": 5,
+    "Rarity": "Ungewöhnlich",
+    "SleepRegenBonusPercent": 10
+  },
+  {
+    "Id": "util_dinobett",
+    "Name": "Dino-Bett",
+    "Description": "Ein bequemes Bett für Dino.",
+    "EffectDescription": "AP-Regeneration beim Schlafen +20 %",
+    "Type": "PassiveUpgrade",
+    "Cost": 1200,
+    "UnlockLevel": 12,
+    "Rarity": "Selten",
+    "SleepRegenBonusPercent": 20
+  },
+  {
+    "Id": "util_amulett",
+    "Name": "Legendäres Dino-Amulett",
+    "Description": "Ein magisches Artefakt.",
+    "EffectDescription": "Regeneriert: 1 AP / 2 Stunden (auch im Wachzustand)",
+    "Type": "PassiveUpgrade",
+    "Cost": 0,
+    "UnlockLevel": 50,
+    "Rarity": "Legendär",
+    "PassiveRegenMinutes": 120
+  },
+  {
+    "Id": "util_tasche",
+    "Name": "Kleine Abenteuertasche",
+    "Description": "Mehr Platz für Ausrüstung.",
+    "EffectDescription": "Max AP +1",
+    "Type": "PassiveUpgrade",
+    "Cost": 1500,
+    "UnlockLevel": 15,
+    "Rarity": "Selten",
+    "MaxAPBonus": 1
+  },
+  {
+    "Id": "util_rucksack_gross",
+    "Name": "Großer Dino-Rucksack",
+    "Description": "Sehr viel Platz für Ausrüstung.",
+    "EffectDescription": "Max AP +2",
+    "Type": "PassiveUpgrade",
+    "Cost": 3000,
+    "UnlockLevel": 25,
+    "Rarity": "Episch",
+    "MaxAPBonus": 2
+  },
+  {
+    "Id": "util_snack",
+    "Name": "Abenteuer-Snack",
+    "Description": "Stellt sofort etwas Energie wieder her.",
+    "EffectDescription": "+1 AP (Sofort)",
+    "Type": "Consumable",
+    "Cost": 0,
+    "UnlockLevel": 5,
+    "Rarity": "Gewöhnlich",
+    "InstantAP": 1
+  },
+  {
+    "Id": "home_nest",
+    "Name": "Kleines Dino-Nest",
+    "Description": "Das erste Zuhause für Dino.",
+    "EffectDescription": "Standard-Zuhause",
+    "Type": "Home",
+    "Cost": 0,
+    "UnlockLevel": 1,
+    "Rarity": "Gewöhnlich"
+  },
+  {
+    "Id": "home_holz",
+    "Name": "Holzhütte",
+    "Description": "Eine robuste Hütte aus Holz.",
+    "EffectDescription": "Ein gemütliches Upgrade",
+    "Type": "Home",
+    "Cost": 1000,
+    "UnlockLevel": 10,
+    "Rarity": "Ungewöhnlich"
+  }
+]

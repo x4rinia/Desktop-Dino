@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="DinoDesktopCompanion.ArchitectureChecks/DinoDesktopCompanion.ArchitectureChecks.csproj" />
+  <Project Path="DinoDesktopCompanion/DinoDesktopCompanion.csproj" />
+</Solution>

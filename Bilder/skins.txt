@@ -1,0 +1,42 @@
+Normale Farbskins: Grün, Blau, Rot, Gelb, Lila, Türkis, Orange, Rosa
+Seltene Varianten: z. B. zweifarbig, dunkler Rücken + heller Bauch, Pastell, Neon-Akzente
+Epische Effekte: Glanz, Glitzer, Regenbogen, Schimmer, Sternenstaub
+
+Programmierbar wären z. B.:
+
+Hue Shift / Farbtonwechsel: bestimmte Bereiche des Sprites umfärben
+Gradient Overlay: z. B. Türkis → Blau
+Gloss / Glanz: wandernder Lichtstreifen über Rücken und Panzer
+Glitzer: kleine Partikel, die zufällig kurz aufblitzen
+Regenbogen: langsam wandernder Farbverlauf
+Schimmer: subtiler Farbwechsel je nach Zeit
+Outline Glow: ganz leichter Leuchtrand
+Sparkles: wenige kleine Sterne/Punkte um Dino herum
+Pulse-Effekt: sehr sanftes Aufhellen und Abdunkeln
+Iridescent: Farbe kippt langsam zwischen 2–3 Tönen
+Frost-Effekt: kühle Highlights auf den Panzerplatten
+Lava-/Ember-Effekt: orange-rote Glutpunkte, aber sehr dezent
+Galaxy: dunkler Grundton mit kleinen Sternpunkten
+
+Was ich vermeiden würde:
+
+zu viel Partikelgewitter
+starke Blitze
+extreme Neonanimationen
+Effekte, die CPU/GPU unnötig hochziehen
+
+Für Dino wären meine Favoriten:
+
+Türkis
+Blau
+Lila
+Pastellrosa
+Nachtblau
+Regenbogen
+Glitzer
+Perlmutt / Schimmer
+Sternenhimmel
+Frost
+Goldglanz
+
+Und ja: Glanz, Glitzer und Regenbogen würde ich nicht als eigene Sprite-Sets bauen, sondern eher als programmierte Effekte über dem jeweiligen Basisskin. Das spart Assets und sieht flexibler aus.

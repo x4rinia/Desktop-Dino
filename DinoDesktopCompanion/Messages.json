@@ -1,0 +1,13 @@
+{
+  "greeting": ["Hallo Xarinia 🦕", "Schön, dass du da bist."],
+  "idle": ["Was programmieren wir heute?", "Ich bin noch da.", "Ein ruhiger Desktop ist ein guter Desktop."],
+  "coding": ["Kleine Schritte, sauberer Code.", "Vergiss die Pause nicht."],
+  "morning": ["Guten Morgen 🦕", "Bereit für einen guten Start?"],
+  "evening": ["Ganz schön spät.", "Noch eine kleine Aufgabe, dann Pause?"],
+  "sleep": ["Ich ruhe mich kurz aus.", "Zzz …"],
+  "wake": ["Da bin ich wieder!", "Schon wach."],
+  "home": ["Ich gehe nach Hause.", "Bis später!"],
+  "return": ["Hier bin ich! 🦕", "Du hast mich gerufen?"],
+  "chat": ["Wenn du magst, kannst du mich etwas fragen.", "Ich denke gern mit dir nach."],
+  "random": ["Knusper.", "Ich bewache deinen Desktop.", "Heute ist ein guter Dino-Tag."]
+}
