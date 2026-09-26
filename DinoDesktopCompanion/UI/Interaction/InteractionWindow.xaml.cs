@@ -215,8 +215,12 @@ public partial class InteractionWindow : Window
     private void ManageProfiles_Click(object sender, RoutedEventArgs e)
     {
         var window = new DinoDesktopCompanion.UI.Profiles.ProfileWindow(App.Current.Profiles) { Owner = this };
-        window.ShowDialog();
-        UpdateProfileUI();
+        if (window.ShowDialog() == true)
+        {
+            UpdateProfileUI();
+            ProfileColorRing.InvalidateVisual();
+            Dispatcher.BeginInvoke(new Action(UpdateProfileUI), System.Windows.Threading.DispatcherPriority.Render);
+        }
     }
 
     private string? _wardrobePreviewSkinId;
@@ -981,6 +985,8 @@ public partial class InteractionWindow : Window
         var purchased = _collections.Current.UnlockedHomeItems.Contains(item.Id);
         var equipped = _collections.Current.EquippedHomeItemsBySlot.TryGetValue(slot.Id, out var equippedId) && equippedId == item.Id;
         var previousTierActive = _collections.Home.IsPreviousTierActive(item);
+        var levelReady = _progress.Current.Level >= item.RequiredLevel;
+        var hasEnoughCoins = _progress.Current.DinoCoins >= item.Cost;
 
         string status;
         if (equipped)
@@ -997,9 +1003,13 @@ public partial class InteractionWindow : Window
         {
             status = $"Gesperrt: Benötigt aktive Vorgängerstufe (Stufe {item.UpgradeLevel - 1})";
         }
-        else if (_progress.Current.Level < item.RequiredLevel)
+        else if (!levelReady)
         {
             status = $"Gesperrt: Benötigt Level {item.RequiredLevel}";
+        }
+        else if (!hasEnoughCoins)
+        {
+            status = $"Gesperrt: Benötigt {item.Cost} Dino Coins";
         }
         else
         {
@@ -1017,8 +1027,8 @@ public partial class InteractionWindow : Window
                 ? "Einrichten"
                 : !previousTierActive
                     ? "Vorgänger nötig"
-                    : _progress.Current.Level >= item.RequiredLevel ? $"Kaufen ({item.Cost})" : $"Ab Level {item.RequiredLevel}";
-        HomeEquipButton.IsEnabled = !equipped && (purchased || (_progress.Current.Level >= item.RequiredLevel && previousTierActive));
+                    : levelReady ? $"Kaufen ({item.Cost})" : $"Ab Level {item.RequiredLevel}";
+        HomeEquipButton.IsEnabled = !equipped && (purchased || (levelReady && previousTierActive && hasEnoughCoins));
         HomeEquipButton.Visibility = Visibility.Visible;
     }
 
