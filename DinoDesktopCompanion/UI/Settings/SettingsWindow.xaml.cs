@@ -42,6 +42,7 @@ public partial class SettingsWindow : Window
     private void Save_Click(object sender, RoutedEventArgs e)
     {
         var c = _configuration.Current;
+        c.QuietMode = false;
         c.StartWithWindows = StartupBox.IsChecked == true;
         c.AlwaysOnTop = TopmostBox.IsChecked == true;
         c.SpeechBubbles = BubblesBox.IsChecked == true;

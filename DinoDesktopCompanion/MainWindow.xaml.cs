@@ -1298,13 +1298,10 @@ public partial class MainWindow : Window
         var dg = new System.Windows.Media.DrawingGroup();
         using (var dc = dg.Open())
         {
-            var trailPen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 201, 74)), 4)
-            {
-                StartLineCap = System.Windows.Media.PenLineCap.Round,
-                EndLineCap = System.Windows.Media.PenLineCap.Round
-            };
-            dc.DrawLine(trailPen, new System.Windows.Point(4, 44), new System.Windows.Point(27, 24));
-            dc.DrawLine(new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 255, 238, 151)), 2), new System.Windows.Point(7, 34), new System.Windows.Point(25, 19));
+            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(90, 255, 225, 102)), null, new System.Windows.Point(5, 43), 1.5, 1.5);
+            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(130, 255, 225, 102)), null, new System.Windows.Point(11, 38), 2, 2);
+            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(170, 255, 225, 102)), null, new System.Windows.Point(17, 33), 2.5, 2.5);
+            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(210, 255, 225, 102)), null, new System.Windows.Point(23, 27), 3, 3);
 
             var geometry = new System.Windows.Media.StreamGeometry();
             using (var context = geometry.Open())
@@ -1313,14 +1310,14 @@ public partial class MainWindow : Window
                 {
                     var radius = index % 2 == 0 ? 15d : 6.5d;
                     var angle = -Math.PI / 2 + index * Math.PI / 5;
-                    return new System.Windows.Point(32 + Math.Cos(angle) * radius, 17 + Math.Sin(angle) * radius);
+                    return new System.Windows.Point(34 + Math.Cos(angle) * radius, 16 + Math.Sin(angle) * radius);
                 }).ToArray();
                 context.BeginFigure(points[0], true, true);
                 context.PolyLineTo(points.Skip(1).ToArray(), true, true);
             }
             geometry.Freeze();
             dc.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 221, 74)), new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(213, 135, 22)), 1.5), geometry);
-            dc.DrawEllipse(System.Windows.Media.Brushes.White, null, new System.Windows.Point(29, 12), 2.2, 2.2);
+            dc.DrawEllipse(System.Windows.Media.Brushes.White, null, new System.Windows.Point(31, 11), 2.2, 2.2);
         }
         dg.Freeze();
         var image = new System.Windows.Media.DrawingImage(dg);
@@ -1493,6 +1490,7 @@ public partial class MainWindow : Window
         var workArea = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
         var dpi = VisualTreeHelper.GetDpi(this);
         var r = Random.Shared;
+        var requiredClicks = new[] { 3, 5, 8, 12 }[r.Next(4)];
         int clicks = 0;
         bool done = false;
 
@@ -1500,14 +1498,43 @@ public partial class MainWindow : Window
         {
             AllowsTransparency = true,
             WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
-            Width = 56, Height = 56, 
+            Width = 72, Height = 72,
         };
         var img = new System.Windows.Controls.Image
         {
-            Source = MakeShootingStarImage(), Width = 50, Height = 50,
+            Source = MakeShootingStarImage(), Width = 56, Height = 56,
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+            VerticalAlignment = System.Windows.VerticalAlignment.Center,
             Cursor = System.Windows.Input.Cursors.Hand
         };
-        shootingStar.Content = img;
+        var counter = new System.Windows.Controls.TextBlock
+        {
+            Text = $"0/{requiredClicks}",
+            Foreground = System.Windows.Media.Brushes.White,
+            FontSize = 11,
+            FontWeight = FontWeights.Bold,
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+            VerticalAlignment = System.Windows.VerticalAlignment.Center,
+            IsHitTestVisible = false
+        };
+        var counterBadge = new System.Windows.Controls.Border
+        {
+            Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(220, 45, 55, 78)),
+            BorderBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 222, 92)),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(9),
+            MinWidth = 34,
+            Height = 20,
+            Padding = new Thickness(5, 0, 5, 0),
+            HorizontalAlignment = System.Windows.HorizontalAlignment.Right,
+            VerticalAlignment = System.Windows.VerticalAlignment.Bottom,
+            Child = counter,
+            IsHitTestVisible = false
+        };
+        var starContent = new System.Windows.Controls.Grid();
+        starContent.Children.Add(img);
+        starContent.Children.Add(counterBadge);
+        shootingStar.Content = starContent;
         shootingStar.Left = r.Next(workArea.Left + 80, workArea.Right - 80) / dpi.DpiScaleX;
         shootingStar.Top  = r.Next(workArea.Top  + 80, workArea.Bottom - 80) / dpi.DpiScaleY;
 
@@ -1536,49 +1563,53 @@ public partial class MainWindow : Window
         var retarget = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(2, 5)) };
         retarget.Tick += (_, _) => { retarget.Interval = TimeSpan.FromSeconds(r.Next(2, 5)); PickTarget(); };
 
+        DispatcherTimer? timeout = null;
         void CloseShootingStar()
         {
-            crawl.Stop(); retarget.Stop();
+            crawl.Stop(); retarget.Stop(); timeout?.Stop();
             if (!done) { done = true; try { shootingStar.Close(); } catch { } if (!_isDesktopDigging) ReturnToIdleAfter(600); }
         }
 
-        shootingStar.MouseLeftButtonDown += (s, e) =>
+        img.MouseLeftButtonDown += (s, e) =>
         {
-            // AP-Prüfung: kein AP -> Dino muss schlafen
+            if (done) return;
             if (_progress.Current.AdventurePoints <= 0)
             {
                 ShowSpeech("Zu müde... 💤");
                 SetSleepState();
-                crawl.Stop(); retarget.Stop();
-                try { shootingStar.Close(); } catch { }
+                CloseShootingStar();
                 return;
             }
 
             clicks++;
+            counter.Text = $"{clicks}/{requiredClicks}";
             if (!_isDesktopDigging) _states.Set(DinoState.Curious);
-            // 1 AP pro Klick ausgeben
-            _progress.SpendAdventurePoints(1);
-
-            var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
-            var shootingStarBonus = bonuses.BugRewardBonus;
-            var apChance = shootingStarBonus > 0 ? 2 : 3;
-
-            if (r.Next(apChance) == 0 && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints)
-                { _progress.AddInstantAP(1); ShowSpeech("+1 AP ⚡"); }
-            else if (r.Next(2) == 0)
-                { _progress.AddCoins(1, "Sternschnuppe"); ShowSpeech("+1 Coin 🌠"); }
-            else
+            if (clicks < requiredClicks)
             {
-                var xpAmount = 5 + (shootingStarBonus > 0 ? 1 : 0);
-                _progress.AddXP(xpAmount, "Sternschnuppe");
-                ShowSpeech($"+{xpAmount} XP 🌠");
+                PickTarget();
+                if (!_isDesktopDigging) ReturnToIdleAfter(600);
+                return;
             }
 
-            if (clicks >= 4) { if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); } CloseShootingStar(); }
-            else { PickTarget(); if (!_isDesktopDigging) ReturnToIdleAfter(600); }
+            var shootingStarBonus = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current.BugRewardBonus;
+            var baseCoins = requiredClicks switch { 3 => 1, 5 => 2, 8 => 3, _ => 5 };
+            var baseXp = requiredClicks switch { 3 => 5, 5 => 10, 8 => 18, _ => 30 };
+            var rewardMultiplier = 1d + shootingStarBonus / 100d;
+            var coinReward = Math.Max(1, (int)Math.Round(baseCoins * rewardMultiplier));
+            var xpReward = Math.Max(1, (int)Math.Round(baseXp * rewardMultiplier));
+            _progress.AddCoins(coinReward, "Sternschnuppe");
+            _progress.AddXP(xpReward, "Sternschnuppe");
+
+            var apChance = Math.Min(0.9, requiredClicks switch { 3 => 0.05, 5 => 0.10, 8 => 0.20, _ => 0.35 } + shootingStarBonus / 100d);
+            var apRewarded = r.NextDouble() < apChance && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints;
+            if (apRewarded) _progress.AddInstantAP(1);
+            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apRewarded ? " · +1 AP" : "")} 🌠");
+
+            if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); }
+            CloseShootingStar();
         };
 
-        var timeout = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+        timeout = new DispatcherTimer { Interval = TimeSpan.FromSeconds(18 + requiredClicks * 3) };
         timeout.Tick += delegate { timeout.Stop(); CloseShootingStar(); };
         timeout.Start();
 

@@ -75,7 +75,7 @@ public sealed class DinoBehaviourService
             }
         }
 
-        var chance = _config.Activity switch { "Aktiver" or "Lebhaft" => 35, "Normal" => 20, _ => 10 };
+        var chance = _config.Activity switch { "Aktiver" or "Lebhaft" => 55, "Normal" => 30, _ => 12 };
         if (_random.Next(100) < chance)
         {
             var action = _random.Next(100);
@@ -104,7 +104,13 @@ public sealed class DinoBehaviourService
             }
         }
 
-        if (_config.RandomMessages && _config.SpeechBubbles && DateTime.Now - _lastMessage >= TimeSpan.FromMinutes(Math.Max(1, _config.MessageFrequencyMinutes)))
+        var messageInterval = _config.Activity switch
+        {
+            "Aktiver" or "Lebhaft" => TimeSpan.FromMinutes(1),
+            "Normal" => TimeSpan.FromMinutes(Math.Min(4, Math.Max(1, _config.MessageFrequencyMinutes))),
+            _ => TimeSpan.FromMinutes(Math.Max(1, _config.MessageFrequencyMinutes))
+        };
+        if (_config.RandomMessages && _config.SpeechBubbles && DateTime.Now - _lastMessage >= messageInterval)
         {
             _lastMessage = DateTime.Now; RandomMessageRequested?.Invoke();
         }

@@ -39,8 +39,14 @@ public sealed class MouseFollowService : IDisposable
         var cursor = Forms.Control.MousePosition;
         var cursorTravel = Distance(cursor, _lastCursor);
         _lastCursor = cursor;
-        if (cursorTravel > 42) { _stableSamples = 0; return; }
-        if (++_stableSamples < 2) return;
+        if (cursorTravel < 8)
+        {
+            if (++_stableSamples < 2) return;
+        }
+        else
+        {
+            _stableSamples = 2;
+        }
 
         var dino = _companionCenter();
         if (Forms.Screen.FromPoint(cursor).DeviceName != Forms.Screen.FromPoint(dino).DeviceName) return;
