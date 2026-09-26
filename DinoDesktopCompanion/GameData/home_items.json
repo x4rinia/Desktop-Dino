@@ -469,7 +469,7 @@
     "RequiredLevel": 3,
     "Cost": 120,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 15, "Description": "Käfer-Bonus: Höhere AP-Chance & +1 XP" }
+      { "Type": "BugRewardBonus", "Value": 15, "Description": "Sternschnuppen-Bonus: Höhere AP-Chance & +1 XP" }
     ]
   },
   {
@@ -488,7 +488,7 @@
     "RequiredLevel": 12,
     "Cost": 450,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 25, "Description": "Käfer-Bonus: Hohe AP-Chance" },
+      { "Type": "BugRewardBonus", "Value": 25, "Description": "Sternschnuppen-Bonus: Hohe AP-Chance" },
       { "Type": "Experience", "Value": 5, "Description": "+5 % Gesamt-XP" }
     ]
   },
@@ -508,7 +508,7 @@
     "RequiredLevel": 20,
     "Cost": 900,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 35, "Description": "Käfer-Bonus: Maximale AP-Chance" },
+      { "Type": "BugRewardBonus", "Value": 35, "Description": "Sternschnuppen-Bonus: Maximale AP-Chance" },
       { "Type": "Experience", "Value": 10, "Description": "+10 % Gesamt-XP" }
     ]
   },
@@ -527,8 +527,8 @@
     "RequiredLevel": 8,
     "Cost": 350,
     "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Blätter" },
-      { "Type": "LeafRewardBonus", "Value": 15, "Description": "+15 % Blatt-Belohnung" }
+      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
+      { "Type": "LeafRewardBonus", "Value": 15, "Description": "+15 % Gebietsobjekt-Belohnung" }
     ]
   },
   {
@@ -547,8 +547,8 @@
     "RequiredLevel": 16,
     "Cost": 650,
     "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Blätter" },
-      { "Type": "LeafRewardBonus", "Value": 25, "Description": "+25 % Blatt-Belohnung" }
+      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
+      { "Type": "LeafRewardBonus", "Value": 25, "Description": "+25 % Gebietsobjekt-Belohnung" }
     ]
   },
   {
@@ -567,8 +567,8 @@
     "RequiredLevel": 22,
     "Cost": 1050,
     "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Blätter" },
-      { "Type": "LeafRewardBonus", "Value": 35, "Description": "+35 % Blatt-Belohnung" },
+      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
+      { "Type": "LeafRewardBonus", "Value": 35, "Description": "+35 % Gebietsobjekt-Belohnung" },
       { "Type": "Experience", "Value": 5, "Description": "+5 % Gesamt-XP" }
     ]
   },

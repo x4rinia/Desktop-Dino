@@ -36,7 +36,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer _apRegenTimer = new() { Interval = TimeSpan.FromSeconds(2) };
     private readonly DispatcherTimer _leavesTimer = new();
     private readonly DispatcherTimer _autoLeafCollectTimer = new() { Interval = TimeSpan.FromSeconds(6) };
-    private readonly DispatcherTimer _bugTimer = new();
+    private readonly DispatcherTimer _shootingStarTimer = new();
     private DispatcherTimer? _walkTimer;
     private UI.AreaVignetteWindow? _vignetteWindow;
     private string? _pendingWakeMessage;
@@ -119,7 +119,7 @@ public partial class MainWindow : Window
         };
         _autoLeafCollectTimer.Tick += (_, _) => TryDinoAutoLeafCollect();
         _leavesTimer.Tick += LeavesTimer_Tick;
-        _bugTimer.Tick += BugTimer_Tick;
+        _shootingStarTimer.Tick += ShootingStarTimer_Tick;
         _progress.AdventurePointsChanged += Progress_AdventurePointsChanged;
         _configuration.Changed += (_, _) => ApplySettings();
         Loaded += OnLoaded;
@@ -153,7 +153,7 @@ public partial class MainWindow : Window
         _autoLeafCollectTimer.Start();
         _digSites.Start();
         ScheduleNextLeavesTimer();
-        ScheduleNextBugTimer();
+        ScheduleNextShootingStarTimer();
         if (IsSleeping) return;
         if (_progress.InitialAdventurePointsGained > 0)
             ShowSpeech($"⚡ +{_progress.InitialAdventurePointsGained} AP", 2800);
@@ -1098,7 +1098,7 @@ public partial class MainWindow : Window
             StartMouseGame,
             StartPawTrail,
             SpawnSingleLeaf,
-            StartBugEvent
+            StartShootingStarEvent
         };
 
         if (_lastRandomEvent != null && availableEvents.Count > 1)
@@ -1185,75 +1185,147 @@ public partial class MainWindow : Window
     private void ScheduleNextLeavesTimer()
     {
         _leavesTimer.Stop();
-        // Erstes Blatt schon nach 5s, dann alle 8–20s ein neues
+        // Erstes Gebietsobjekt schon nach 5s, dann alle 8–20s ein neues
         _leavesTimer.Interval = _activeLeaves.Count == 0
             ? TimeSpan.FromSeconds(5)
             : TimeSpan.FromSeconds(Random.Shared.Next(8, 20));
         _leavesTimer.Start();
     }
 
-    private void BugTimer_Tick(object? sender, EventArgs e)
+    private void ShootingStarTimer_Tick(object? sender, EventArgs e)
     {
-        _bugTimer.Stop();
+        _shootingStarTimer.Stop();
         var app = (App)System.Windows.Application.Current;
         bool hasActiveArea = !string.IsNullOrEmpty(app.Areas.Current.SelectedAreaId) && app.Areas.Current.SelectedAreaId != "none";
 
         if (hasActiveArea && !IsSleeping && !_home.IsHome) 
         {
-            StartBugEvent();
+            StartShootingStarEvent();
         }
-        ScheduleNextBugTimer();
+        ScheduleNextShootingStarTimer();
     }
 
-    private void ScheduleNextBugTimer()
+    private void ScheduleNextShootingStarTimer()
     {
-        _bugTimer.Stop();
-        _bugTimer.Interval = TimeSpan.FromSeconds(Random.Shared.Next(60, 180));
-        _bugTimer.Start();
+        _shootingStarTimer.Stop();
+        _shootingStarTimer.Interval = TimeSpan.FromSeconds(Random.Shared.Next(60, 180));
+        _shootingStarTimer.Start();
     }
 
-    private static System.Windows.Media.ImageSource MakeLeafImage()
+    private sealed record AreaCollectibleVisual(System.Windows.Media.ImageSource Image, string RewardSource, string Emoji);
+
+    private static AreaCollectibleVisual MakeAreaCollectibleVisual(string? areaId)
     {
         var dg = new System.Windows.Media.DrawingGroup();
         using (var dc = dg.Open())
         {
-            dc.DrawEllipse(
-                new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(200, 120, 30)),
-                new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(140, 80, 10)), 1.5),
-                new System.Windows.Point(24, 24), 18, 11);
-            dc.DrawLine(
-                new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(140, 80, 10)), 1.5),
-                new System.Windows.Point(8, 30), new System.Windows.Point(40, 18));
-            dc.DrawLine(
-                new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(100, 60, 10)), 2),
-                new System.Windows.Point(40, 18), new System.Windows.Point(46, 12));
-        }
-        return new System.Windows.Media.DrawingImage(dg);
-    }
-
-    private static System.Windows.Media.ImageSource MakeBugImage()
-    {
-        var dg = new System.Windows.Media.DrawingGroup();
-        using (var dc = dg.Open())
-        {
-            var bodyBrush = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(30, 140, 40));
-            var outline = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(10, 80, 20)), 1.5);
-            var legPen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(10, 80, 20)), 1.5);
-            for (int i = 0; i < 3; i++)
+            switch (areaId?.ToLowerInvariant())
             {
-                double y = 16 + i * 7;
-                dc.DrawLine(legPen, new System.Windows.Point(17, y), new System.Windows.Point(6, y - 4));
-                dc.DrawLine(legPen, new System.Windows.Point(31, y), new System.Windows.Point(42, y - 4));
+                case "garten":
+                {
+                    var petal = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(245, 113, 176));
+                    var petalOutline = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(176, 58, 123)), 1.2);
+                    var center = new System.Windows.Point(24, 23);
+                    dc.DrawLine(new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(70, 145, 70)), 2.5), center, new System.Windows.Point(17, 45));
+                    foreach (var offset in new[] { new Vector(0, -11), new Vector(10, -3), new Vector(6, 9), new Vector(-6, 9), new Vector(-10, -3) })
+                        dc.DrawEllipse(petal, petalOutline, center + offset, 7, 9);
+                    dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 205, 66)), null, center, 6, 6);
+                    break;
+                }
+                case "strand":
+                {
+                    var shell = System.Windows.Media.Geometry.Parse("M 7,39 Q 24,4 41,39 Q 24,47 7,39 Z");
+                    var outline = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(164, 99, 63)), 1.5);
+                    dc.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 202, 151)), outline, shell);
+                    foreach (var x in new[] { 14d, 19d, 24d, 29d, 34d })
+                        dc.DrawLine(new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(222, 139, 100)), 1.2), new System.Windows.Point(24, 10), new System.Windows.Point(x, 40));
+                    break;
+                }
+                case "schneeland":
+                {
+                    var icePen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(77, 190, 235)), 2.4);
+                    var branchPen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(155, 231, 255)), 1.6);
+                    var center = new System.Windows.Point(24, 24);
+                    foreach (var angle in new[] { 0d, 60d, 120d })
+                    {
+                        var radians = angle * Math.PI / 180d;
+                        var dx = Math.Cos(radians) * 19;
+                        var dy = Math.Sin(radians) * 19;
+                        dc.DrawLine(icePen, new System.Windows.Point(center.X - dx, center.Y - dy), new System.Windows.Point(center.X + dx, center.Y + dy));
+                    }
+                    dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(220, 250, 255)), branchPen, center, 5, 5);
+                    dc.DrawLine(branchPen, new System.Windows.Point(8, 15), new System.Windows.Point(15, 15));
+                    dc.DrawLine(branchPen, new System.Windows.Point(33, 33), new System.Windows.Point(40, 33));
+                    break;
+                }
+                case "hoehle":
+                {
+                    var stem = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(238, 218, 177));
+                    var outline = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(91, 55, 88)), 1.5);
+                    dc.DrawRoundedRectangle(stem, outline, new Rect(19, 23, 10, 23), 4, 4);
+                    dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(159, 78, 177)), outline, new System.Windows.Point(24, 21), 18, 12);
+                    dc.DrawEllipse(System.Windows.Media.Brushes.LavenderBlush, null, new System.Windows.Point(17, 18), 3, 2);
+                    dc.DrawEllipse(System.Windows.Media.Brushes.LavenderBlush, null, new System.Windows.Point(29, 15), 2.5, 2.5);
+                    dc.DrawEllipse(System.Windows.Media.Brushes.LavenderBlush, null, new System.Windows.Point(34, 23), 2, 2);
+                    break;
+                }
+                default:
+                {
+                    var fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(92, 161, 69));
+                    var outline = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(45, 103, 42)), 1.5);
+                    dc.DrawEllipse(fill, outline, new System.Windows.Point(24, 24), 18, 11);
+                    dc.DrawLine(outline, new System.Windows.Point(8, 30), new System.Windows.Point(40, 18));
+                    dc.DrawLine(new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(56, 91, 35)), 2), new System.Windows.Point(40, 18), new System.Windows.Point(46, 12));
+                    break;
+                }
             }
-            dc.DrawEllipse(bodyBrush, outline, new System.Windows.Point(24, 28), 12, 14);
-            dc.DrawEllipse(bodyBrush, outline, new System.Windows.Point(24, 13), 8, 7);
-            var feelPen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(10, 80, 20)), 1.2);
-            dc.DrawLine(feelPen, new System.Windows.Point(20, 8), new System.Windows.Point(15, 2));
-            dc.DrawLine(feelPen, new System.Windows.Point(28, 8), new System.Windows.Point(33, 2));
-            dc.DrawEllipse(System.Windows.Media.Brushes.Black, null, new System.Windows.Point(21, 12), 2, 2);
-            dc.DrawEllipse(System.Windows.Media.Brushes.Black, null, new System.Windows.Point(27, 12), 2, 2);
         }
-        return new System.Windows.Media.DrawingImage(dg);
+        dg.Freeze();
+        var image = new System.Windows.Media.DrawingImage(dg);
+        image.Freeze();
+        return areaId?.ToLowerInvariant() switch
+        {
+            "garten" => new AreaCollectibleVisual(image, "Blüte", "🌸"),
+            "strand" => new AreaCollectibleVisual(image, "Muschel", "🐚"),
+            "schneeland" => new AreaCollectibleVisual(image, "Eiskristall", "❄️"),
+            "hoehle" => new AreaCollectibleVisual(image, "Pilz", "🍄"),
+            _ => new AreaCollectibleVisual(image, "Blatt", "🍃")
+        };
+    }
+
+    private static System.Windows.Media.ImageSource MakeShootingStarImage()
+    {
+        var dg = new System.Windows.Media.DrawingGroup();
+        using (var dc = dg.Open())
+        {
+            var trailPen = new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 201, 74)), 4)
+            {
+                StartLineCap = System.Windows.Media.PenLineCap.Round,
+                EndLineCap = System.Windows.Media.PenLineCap.Round
+            };
+            dc.DrawLine(trailPen, new System.Windows.Point(4, 44), new System.Windows.Point(27, 24));
+            dc.DrawLine(new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 255, 238, 151)), 2), new System.Windows.Point(7, 34), new System.Windows.Point(25, 19));
+
+            var geometry = new System.Windows.Media.StreamGeometry();
+            using (var context = geometry.Open())
+            {
+                var points = Enumerable.Range(0, 10).Select(index =>
+                {
+                    var radius = index % 2 == 0 ? 15d : 6.5d;
+                    var angle = -Math.PI / 2 + index * Math.PI / 5;
+                    return new System.Windows.Point(32 + Math.Cos(angle) * radius, 17 + Math.Sin(angle) * radius);
+                }).ToArray();
+                context.BeginFigure(points[0], true, true);
+                context.PolyLineTo(points.Skip(1).ToArray(), true, true);
+            }
+            geometry.Freeze();
+            dc.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 221, 74)), new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(213, 135, 22)), 1.5), geometry);
+            dc.DrawEllipse(System.Windows.Media.Brushes.White, null, new System.Windows.Point(29, 12), 2.2, 2.2);
+        }
+        dg.Freeze();
+        var image = new System.Windows.Media.DrawingImage(dg);
+        image.Freeze();
+        return image;
     }
 
     private void SpawnSingleLeaf()
@@ -1262,18 +1334,19 @@ public partial class MainWindow : Window
         var workArea = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
         var dpi = VisualTreeHelper.GetDpi(this);
         var r = Random.Shared;
-        var leafImg = MakeLeafImage();
+        var areaId = ((App)System.Windows.Application.Current).Areas.Current.SelectedAreaId;
+        var collectible = MakeAreaCollectibleVisual(areaId);
 
         var marker = new Window
         {
             AllowsTransparency = true,
             WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
             Width = 56, Height = 56,
-            
+            Tag = collectible
         };
         var img = new System.Windows.Controls.Image
         {
-            Source = leafImg, Width = 50, Height = 50,
+            Source = collectible.Image, Width = 50, Height = 50,
             Cursor = System.Windows.Input.Cursors.Hand,
             RenderTransform = new RotateTransform(r.Next(-40, 40), 25, 25)
         };
@@ -1304,10 +1377,10 @@ public partial class MainWindow : Window
                 ShowSpeech("-1 AP");
             }
 
-            ApplyLeafReward(isAuto: false);
+            ApplyAreaCollectibleReward(collectible, isAuto: false);
         };
 
-        // Blatt verschwindet nach 25–40s von selbst
+        // Gebietsobjekt verschwindet nach 25–40s von selbst
         var lifetime = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(25, 40)) };
         lifetime.Tick += (_, _) =>
         {
@@ -1382,14 +1455,16 @@ public partial class MainWindow : Window
                 }
 
                 _states.Set(DinoState.Sniff);
-                ApplyLeafReward(isAuto: true);
+                var collectible = marker.Tag as AreaCollectibleVisual
+                    ?? MakeAreaCollectibleVisual(((App)System.Windows.Application.Current).Areas.Current.SelectedAreaId);
+                ApplyAreaCollectibleReward(collectible, isAuto: true);
                 ReturnToIdleAfter(900);
             }
         };
         walk.Start();
     }
 
-    private void ApplyLeafReward(bool isAuto)
+    private void ApplyAreaCollectibleReward(AreaCollectibleVisual collectible, bool isAuto)
     {
         var r = Random.Shared;
         var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
@@ -1400,19 +1475,19 @@ public partial class MainWindow : Window
         {
             var coinAmount = 1;
             if (leafBonus >= 15 && r.Next(3) == 0) coinAmount++;
-            _progress.AddCoins(coinAmount, "Blatt");
-            ShowSpeech(coinAmount > 1 ? $"+{coinAmount} Coins! 🍃" : "+1 Coin 🍃");
+            _progress.AddCoins(coinAmount, collectible.RewardSource);
+            ShowSpeech(coinAmount > 1 ? $"+{coinAmount} Coins! {collectible.Emoji}" : $"+1 Coin {collectible.Emoji}");
         }
         else
         {
             var xpAmount = 5;
             if (leafBonus > 0) xpAmount += (int)Math.Max(1, Math.Round(leafBonus / 10.0));
-            _progress.AddXP(xpAmount, "Blatt");
-            ShowSpeech($"+{xpAmount} XP 🍃");
+            _progress.AddXP(xpAmount, collectible.RewardSource);
+            ShowSpeech($"+{xpAmount} XP {collectible.Emoji}");
         }
     }
 
-    private void StartBugEvent()
+    private void StartShootingStarEvent()
     {
         if (IsSleeping) return;
         var workArea = System.Windows.Forms.Screen.PrimaryScreen.WorkingArea;
@@ -1421,7 +1496,7 @@ public partial class MainWindow : Window
         int clicks = 0;
         bool done = false;
 
-        var bug = new Window
+        var shootingStar = new Window
         {
             AllowsTransparency = true,
             WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
@@ -1429,14 +1504,14 @@ public partial class MainWindow : Window
         };
         var img = new System.Windows.Controls.Image
         {
-            Source = MakeBugImage(), Width = 50, Height = 50,
+            Source = MakeShootingStarImage(), Width = 50, Height = 50,
             Cursor = System.Windows.Input.Cursors.Hand
         };
-        bug.Content = img;
-        bug.Left = r.Next(workArea.Left + 80, workArea.Right - 80) / dpi.DpiScaleX;
-        bug.Top  = r.Next(workArea.Top  + 80, workArea.Bottom - 80) / dpi.DpiScaleY;
+        shootingStar.Content = img;
+        shootingStar.Left = r.Next(workArea.Left + 80, workArea.Right - 80) / dpi.DpiScaleX;
+        shootingStar.Top  = r.Next(workArea.Top  + 80, workArea.Bottom - 80) / dpi.DpiScaleY;
 
-        double targetLeft = bug.Left, targetTop = bug.Top;
+        double targetLeft = shootingStar.Left, targetTop = shootingStar.Top;
         void PickTarget()
         {
             targetLeft = r.Next(workArea.Left + 80, workArea.Right - 80) / dpi.DpiScaleX;
@@ -1447,12 +1522,12 @@ public partial class MainWindow : Window
         var crawl = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(40) };
         crawl.Tick += (_, _) =>
         {
-            var dx = targetLeft - bug.Left;
-            var dy = targetTop  - bug.Top;
+            var dx = targetLeft - shootingStar.Left;
+            var dy = targetTop  - shootingStar.Top;
             var d = Math.Sqrt(dx * dx + dy * dy);
             if (d < 6) { PickTarget(); return; }
-            bug.Left += dx / d * 7.2;
-            bug.Top  += dy / d * 7.2;
+            shootingStar.Left += dx / d * 7.2;
+            shootingStar.Top  += dy / d * 7.2;
             img.RenderTransform = dx < 0
                 ? new ScaleTransform(-1, 1, 25, 25)
                 : Transform.Identity;
@@ -1461,13 +1536,13 @@ public partial class MainWindow : Window
         var retarget = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(2, 5)) };
         retarget.Tick += (_, _) => { retarget.Interval = TimeSpan.FromSeconds(r.Next(2, 5)); PickTarget(); };
 
-        void CloseBug()
+        void CloseShootingStar()
         {
             crawl.Stop(); retarget.Stop();
-            if (!done) { done = true; try { bug.Close(); } catch { } if (!_isDesktopDigging) ReturnToIdleAfter(600); }
+            if (!done) { done = true; try { shootingStar.Close(); } catch { } if (!_isDesktopDigging) ReturnToIdleAfter(600); }
         }
 
-        bug.MouseLeftButtonDown += (s, e) =>
+        shootingStar.MouseLeftButtonDown += (s, e) =>
         {
             // AP-Prüfung: kein AP -> Dino muss schlafen
             if (_progress.Current.AdventurePoints <= 0)
@@ -1475,7 +1550,7 @@ public partial class MainWindow : Window
                 ShowSpeech("Zu müde... 💤");
                 SetSleepState();
                 crawl.Stop(); retarget.Stop();
-                try { bug.Close(); } catch { }
+                try { shootingStar.Close(); } catch { }
                 return;
             }
 
@@ -1485,31 +1560,31 @@ public partial class MainWindow : Window
             _progress.SpendAdventurePoints(1);
 
             var bonuses = ((App)System.Windows.Application.Current).Collections.HomeBonuses.Current;
-            var bugBonus = bonuses.BugRewardBonus;
-            var apChance = bugBonus > 0 ? 2 : 3;
+            var shootingStarBonus = bonuses.BugRewardBonus;
+            var apChance = shootingStarBonus > 0 ? 2 : 3;
 
             if (r.Next(apChance) == 0 && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints)
                 { _progress.AddInstantAP(1); ShowSpeech("+1 AP ⚡"); }
             else if (r.Next(2) == 0)
-                { _progress.AddCoins(1, "Kafer"); ShowSpeech("+1 Coin 🐞"); }
+                { _progress.AddCoins(1, "Sternschnuppe"); ShowSpeech("+1 Coin 🌠"); }
             else
             {
-                var xpAmount = 5 + (bugBonus > 0 ? 1 : 0);
-                _progress.AddXP(xpAmount, "Kafer");
-                ShowSpeech($"+{xpAmount} XP 🐞");
+                var xpAmount = 5 + (shootingStarBonus > 0 ? 1 : 0);
+                _progress.AddXP(xpAmount, "Sternschnuppe");
+                ShowSpeech($"+{xpAmount} XP 🌠");
             }
 
-            if (clicks >= 4) { if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); } CloseBug(); }
+            if (clicks >= 4) { if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); } CloseShootingStar(); }
             else { PickTarget(); if (!_isDesktopDigging) ReturnToIdleAfter(600); }
         };
 
         var timeout = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
-        timeout.Tick += delegate { timeout.Stop(); CloseBug(); };
+        timeout.Tick += delegate { timeout.Stop(); CloseShootingStar(); };
         timeout.Start();
 
         crawl.Start();
         retarget.Start();
-        bug.Show();
+        shootingStar.Show();
         _states.Set(DinoState.Curious);
         ReturnToIdleAfter(1200);
     }
