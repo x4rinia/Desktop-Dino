@@ -1592,10 +1592,13 @@ public partial class MainWindow : Window
             _progress.AddCoins(coinReward, "Sternschnuppe");
             _progress.AddXP(xpReward, "Sternschnuppe");
 
-            var apChance = Math.Min(0.9, requiredClicks switch { 3 => 0.05, 5 => 0.10, 8 => 0.20, _ => 0.35 } + shootingStarBonus / 100d);
-            var apRewarded = r.NextDouble() < apChance && _progress.Current.AdventurePoints < _progress.Current.MaxAdventurePoints;
-            if (apRewarded) _progress.AddInstantAP(1);
-            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apRewarded ? " · +1 AP" : "")} 🌠");
+            var guaranteedAp = shootingStarBonus switch { >= 35 => 3, >= 25 => 2, >= 15 => 1, _ => 0 };
+            var randomAp = guaranteedAp == 0 && r.NextDouble() < requiredClicks switch { 3 => 0.05, 5 => 0.10, 8 => 0.20, _ => 0.35 } ? 1 : 0;
+            var requestedAp = guaranteedAp + randomAp;
+            var previousAp = _progress.Current.AdventurePoints;
+            if (requestedAp > 0) _progress.AddInstantAP(requestedAp);
+            var apReward = _progress.Current.AdventurePoints - previousAp;
+            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apReward > 0 ? $" · +{apReward} AP" : "")} 🌠");
 
             if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); }
             CloseShootingStar();

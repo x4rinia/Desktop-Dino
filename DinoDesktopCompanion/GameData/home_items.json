@@ -469,7 +469,7 @@
     "RequiredLevel": 3,
     "Cost": 120,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 15, "Description": "Sternschnuppen-Bonus: Höhere AP-Chance & +1 XP" }
+      { "Type": "BugRewardBonus", "Value": 15, "Description": "Sternschnuppen-Abschluss: garantiert +1 AP" }
     ]
   },
   {
@@ -488,7 +488,7 @@
     "RequiredLevel": 12,
     "Cost": 450,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 25, "Description": "Sternschnuppen-Bonus: Hohe AP-Chance" },
+      { "Type": "BugRewardBonus", "Value": 25, "Description": "Sternschnuppen-Abschluss: garantiert +2 AP" },
       { "Type": "Experience", "Value": 5, "Description": "+5 % Gesamt-XP" }
     ]
   },
@@ -508,7 +508,7 @@
     "RequiredLevel": 20,
     "Cost": 900,
     "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 35, "Description": "Sternschnuppen-Bonus: Maximale AP-Chance" },
+      { "Type": "BugRewardBonus", "Value": 35, "Description": "Sternschnuppen-Abschluss: garantiert +3 AP" },
       { "Type": "Experience", "Value": 10, "Description": "+10 % Gesamt-XP" }
     ]
   },
