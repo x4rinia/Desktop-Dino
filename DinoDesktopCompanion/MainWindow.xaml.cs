@@ -1,4 +1,4 @@
-﻿using System.ComponentModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -249,7 +249,7 @@ public partial class MainWindow : Window
 
     public void SetSleepState()
     {
-        if ((_progress.IsSleeping && _home.IsHome) || IsSleeping || !EnsureDinoAvailableForAction()) return;
+        if ((_progress.IsSleeping && _home.IsHome) || IsSleeping || (_states.Current != DinoState.Home && !EnsureDinoAvailableForAction())) return;
         _progress.RefreshAdventurePoints(DateTimeOffset.Now);
         if (_progress.Current.AdventurePoints >= _progress.Current.MaxAdventurePoints)
         {
@@ -668,7 +668,7 @@ public partial class MainWindow : Window
         }
         if ((DateTime.Now - _progress.Current.LastWashTime).TotalMinutes < 10)
         {
-            ShowSpeech("Ich bin doch schon sauber! ??");
+            ShowSpeech("Ich bin doch schon sauber! ✨");
             return;
         }
         if (_home.IsHome)
@@ -745,7 +745,7 @@ public partial class MainWindow : Window
         }
         if ((DateTime.Now - _progress.Current.LastAppleTime).TotalMinutes < 5)
         {
-            ShowSpeech("Ich bin noch satt vom letzten Apfel! ??");
+            ShowSpeech("Ich bin noch satt vom letzten Apfel! 🍎");
             return;
         }
         if (_home.IsHome)
@@ -777,7 +777,7 @@ public partial class MainWindow : Window
             apple.PlacementCancelled += (_, _) => CancelApplePlacement(apple, actionVersion);
             apple.Closed += (_, _) => HandleAppleClosed(apple, actionVersion);
             apple.BeginPlacement();
-            ShowSpeech("Lege den Apfel mit einem Klick auf dem Desktop ab. ??", 4000);
+            ShowSpeech("Lege den Apfel mit einem Klick auf dem Desktop ab. 🍎", 4000);
         }));
     }
 
@@ -886,7 +886,7 @@ public partial class MainWindow : Window
             else
             {
                 _states.Set(isSponge ? DinoState.Happy : DinoState.Sniff);
-                ShowSpeech(isSponge ? "Blubb blubb... ??" : "Mampf! ??", 2200);
+                ShowSpeech(isSponge ? "Blubb blubb... 🫧" : "Mampf! 🍎", 2200);
                 var eatingDuration = TimeSpan.FromSeconds(8);
                 if (isSponge) apple.BeginWashAnimation(eatingDuration, this);
                 else apple.BeginEatingAnimation(eatingDuration);
@@ -914,7 +914,7 @@ public partial class MainWindow : Window
             if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
             {
                 _states.Set(DinoState.Happy);
-                ShowSpeech("Quietschsauber! +50 XP ??", 2500);
+                ShowSpeech("Quietschsauber! +50 XP ✨", 2500);
                 ReturnToIdleAfter(1400);
             }
         }
@@ -927,7 +927,7 @@ public partial class MainWindow : Window
                 if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
                 {
                     _states.Set(DinoState.Happy);
-                    ShowSpeech("+1 AP! ??", 2500);
+                    ShowSpeech("+1 AP! ⚡", 2500);
                     ReturnToIdleAfter(1400);
                 }
             }
@@ -947,7 +947,7 @@ public partial class MainWindow : Window
             if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
             {
                 _states.Set(DinoState.Happy);
-                ShowSpeech("Lecker! +1 AP ?", 2500);
+                ShowSpeech("Lecker! +1 AP ⚡", 2500);
                 ReturnToIdleAfter(1400);
             }
         }
@@ -1101,7 +1101,7 @@ public partial class MainWindow : Window
             }
             else 
             {
-                ShowSpeech("Hier bin ich! ??");
+                ShowSpeech("Hier bin ich! 👋");
                 ReturnToIdleAfter(900);
             }
             
@@ -1115,7 +1115,7 @@ public partial class MainWindow : Window
     {
         if (_home.IsHome || IsSleeping) return;
         _states.Set(DinoState.Happy);
-        ShowSpeech($"Level {level}! ??");
+        ShowSpeech($"Level {level}! 🎉");
         ReturnToIdleAfter(1800);
     }
     public void OpenSettings()
@@ -1710,12 +1710,7 @@ public partial class MainWindow : Window
             if (!_activeLeaves.Contains(marker)) return;
 
             // AP-Prüfung: kein AP -> Dino muss schlafen
-            if (_progress.Current.AdventurePoints <= 0)
-            {
-                ShowSpeech("Zu müde... ??");
-                SetSleepState();
-                return;
-            }
+            if (_progress.Current.AdventurePoints <= 0) { ShowSpeech("Ich bin zu müde dafür...", 2000); return; }
 
             _activeLeaves.Remove(marker);
             marker.Close();
@@ -1951,7 +1946,7 @@ public partial class MainWindow : Window
             var previousAp = _progress.Current.AdventurePoints;
             if (requestedAp > 0) _progress.AddInstantAP(requestedAp);
             var apReward = _progress.Current.AdventurePoints - previousAp;
-            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apReward > 0 ? $" · +{apReward} AP" : "")} ??");
+            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apReward > 0 ? $" · +{apReward} AP" : "")} 🌟");
 
             if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); }
             CloseShootingStar();
@@ -1966,6 +1961,7 @@ public partial class MainWindow : Window
         shootingStar.Show();
         if (!_isDesktopDigging) { _states.Set(DinoState.Curious); ReturnToIdleAfter(1200); } }
 }
+
 
 
 

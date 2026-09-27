@@ -23,6 +23,7 @@ public partial class InteractionWindow : Window
     private readonly StatisticsService _stats;
     private readonly AchievementService _achievements;
     private readonly AreaService _areas;
+    private readonly System.Windows.Threading.DispatcherTimer _cooldownTimer = new();
 
     private readonly DinoDesktopCompanion.Dino.Animation.DinoSpriteCatalog _catalog;
     private readonly DinoDesktopCompanion.Dino.Animation.DinoSpritePlayer _spritePlayer;
@@ -50,6 +51,9 @@ public partial class InteractionWindow : Window
         HomeEquipButton.Click += HomeEquipButton_Click;
         LoadInterfaceArtwork();
         InitializeAlbumFilters();
+        _cooldownTimer.Interval = TimeSpan.FromSeconds(1);
+        _cooldownTimer.Tick += (_, _) => UpdateCooldownUI();
+        _cooldownTimer.Start();
 
         UpdateProgressUI();
         UpdateProfileUI();
@@ -78,6 +82,47 @@ public partial class InteractionWindow : Window
         Closed += InteractionWindow_Closed;
     }
 
+    
+    private void UpdateCooldownUI()
+    {
+        if (AppleBtn is null || WashBtn is null || BallBtn is null) return;
+        
+        var appleRemaining = TimeSpan.FromMinutes(5) - (DateTime.Now - _progress.Current.LastAppleTime);
+        if (appleRemaining.TotalSeconds > 0)
+        {
+            AppleBtn.IsEnabled = false;
+            AppleBtn.Content = $"🍎 Apfel ({appleRemaining:m\\:ss})";
+        }
+        else
+        {
+            AppleBtn.IsEnabled = true;
+            AppleBtn.Content = "🍎 Apfel hinlegen";
+        }
+
+        var washRemaining = TimeSpan.FromMinutes(10) - (DateTime.Now - _progress.Current.LastWashTime);
+        if (washRemaining.TotalSeconds > 0)
+        {
+            WashBtn.IsEnabled = false;
+            WashBtn.Content = $"🧽 Waschen ({washRemaining:m\\:ss})";
+        }
+        else
+        {
+            WashBtn.IsEnabled = true;
+            WashBtn.Content = "🧽 Dino waschen";
+        }
+
+        var ballRemaining = TimeSpan.FromMinutes(1) - (DateTime.Now - _progress.Current.LastBallTime);
+        if (ballRemaining.TotalSeconds > 0)
+        {
+            BallBtn.IsEnabled = false;
+            BallBtn.Content = $"🎾 Ball werfen ({ballRemaining:m\\:ss})";
+        }
+        else
+        {
+            BallBtn.IsEnabled = true;
+            BallBtn.Content = "🎾 Ball werfen";
+        }
+    }
     private void UpdatePreviewDino()
     {
         var equippedSkinId = _collections.Current.EquippedSkinId;
@@ -1443,7 +1488,7 @@ public partial class InteractionWindow : Window
             UpdateSleepUI();
             return;
         }
-        if (!_progress.IsSleeping && EnsureDinoAvailable()) App.Current.DinoWindow.SetSleepState();
+        if (!_progress.IsSleeping) App.Current.DinoWindow.SetSleepState();
         UpdateProfileUI();
         UpdateProgressUI();
         UpdateSleepUI();
@@ -1507,6 +1552,7 @@ public partial class InteractionWindow : Window
 
 
 }
+
 
 
 
