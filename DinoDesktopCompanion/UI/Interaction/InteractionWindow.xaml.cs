@@ -1414,6 +1414,14 @@ public partial class InteractionWindow : Window
         ((App)System.Windows.Application.Current).OpenTutorialWindow();
     }
 
+    private void SpawnApple_Click(object sender, RoutedEventArgs e)
+    {
+        if (App.Current.MainWindow is MainWindow mw)
+        {
+            mw.StartApplePlacement();
+        }
+    }
+
     private void OpenProfile_Click(object sender, RoutedEventArgs e)
     {
         ((App)System.Windows.Application.Current).OpenProfileWindow();

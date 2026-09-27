@@ -16,5 +16,12 @@
                        MouseLeftButtonDown="Dino_MouseLeftButtonDown" MouseRightButtonUp="Dino_MouseRightButtonUp"
                        MouseMove="Dino_MouseMove" MouseLeftButtonUp="Dino_MouseLeftButtonUp">
         </ui:DinoVisual>
+        <TextBlock x:Name="PetHeart" Text="♥" FontSize="48" FontWeight="Bold" Foreground="#F05A78"
+                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="118,0,0,150"
+                   Visibility="Collapsed" Opacity="0" IsHitTestVisible="False">
+            <TextBlock.Effect>
+                <DropShadowEffect Color="#FFFFFFFF" BlurRadius="5" ShadowDepth="0" Opacity="0.9"/>
+            </TextBlock.Effect>
+        </TextBlock>
     </Grid>
 </Window>

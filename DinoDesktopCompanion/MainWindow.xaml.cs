@@ -14,6 +14,7 @@ using DinoDesktopCompanion.Services;
 using DinoDesktopCompanion.UI;
 using DinoDesktopCompanion.UI.Settings;
 using DinoDesktopCompanion.DesktopDigging;
+using DinoDesktopCompanion.DesktopToys;
 
 namespace DinoDesktopCompanion;
 
@@ -50,6 +51,9 @@ public partial class MainWindow : Window
     private readonly Statistics.StatisticsService _statistics;
     private readonly DesktopDigSiteService _digSites;
     private readonly DesktopActivityRewardService _rewardService;
+    private DesktopAppleWindow? _activeApple;
+    private bool _isToyBreak;
+    private int _appleActionVersion;
     private bool _waitingForHighFive;
     private bool _waitingForAttention;
     private bool _waitingForDigInteraction;
@@ -92,7 +96,7 @@ public partial class MainWindow : Window
         _returnToIdleTimer.Tick += (_, _) =>
         {
             _returnToIdleTimer.Stop();
-            if (!_isDesktopDigging && !IsSleepState(_states.Current) && _states.Current != DinoState.Home)
+            if (!_isDesktopDigging && !_isToyBreak && !IsSleepState(_states.Current) && _states.Current != DinoState.Home)
                 _states.Set(DinoState.Idle);
         };
         _sleepClickMenuTimer.Interval = TimeSpan.FromMilliseconds(System.Windows.Forms.SystemInformation.DoubleClickTime);
@@ -288,11 +292,11 @@ public partial class MainWindow : Window
     private static bool IsSleepState(DinoState state) => DinoStateMachine.IsSleepState(state);
 
     public bool IsSleeping => IsSleepState(_states.Current);
-    public bool IsPerformingAction => _isDesktopDigging;
+    public bool IsPerformingAction => _isDesktopDigging || _isToyBreak;
     public bool EnsureDinoAvailableForAction()
     {
-        if (!_isDesktopDigging) return true;
-        ShowSpeech("Ich grabe gerade! Brich die Grabung zuerst ab.");
+        if (!_isDesktopDigging && !_isToyBreak) return true;
+        ShowSpeech(_isToyBreak ? "Ich mache gerade Apfelpause! 🍎" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
         return false;
     }
 
@@ -423,6 +427,11 @@ public partial class MainWindow : Window
 
     private void Dino_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
     {
+        if (_isToyBreak)
+        {
+            ShowSpeech("Ich mache gerade Apfelpause! 🍎");
+            return;
+        }
         if (_isDesktopDigging)
         {
             ShowSpeech("Ich grabe gerade!");
@@ -531,7 +540,36 @@ public partial class MainWindow : Window
 
     private void Dino_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
     {
-        // Rechtsklick-Menü deaktiviert wie gewünscht.
+        e.Handled = true;
+        _statistics.TrackClick();
+        ShowPetHeart();
+
+        if (IsSleeping || _isDesktopDigging || _isToyBreak) return;
+        if (DateTimeOffset.Now - _lastClickXP > TimeSpan.FromSeconds(5))
+        {
+            _progress.AddXP(1, "Pet");
+            _lastClickXP = DateTimeOffset.Now;
+        }
+
+        _states.Set(Random.Shared.Next(2) == 0 ? DinoState.Happy : DinoState.SmallHappy);
+        ReturnToIdleAfter(1200);
+    }
+
+    private void ShowPetHeart()
+    {
+        PetHeart.Visibility = Visibility.Visible;
+        PetHeart.Opacity = 1;
+        var movement = new TranslateTransform();
+        PetHeart.RenderTransform = movement;
+        var duration = TimeSpan.FromMilliseconds(950);
+        var rise = new DoubleAnimation(0, -38, duration)
+        {
+            EasingFunction = new QuadraticEase { EasingMode = EasingMode.EaseOut }
+        };
+        var fade = new DoubleAnimation(1, 0, duration);
+        fade.Completed += (_, _) => PetHeart.Visibility = Visibility.Collapsed;
+        movement.BeginAnimation(TranslateTransform.YProperty, rise);
+        PetHeart.BeginAnimation(OpacityProperty, fade);
     }
 
     private System.Windows.Controls.ToolTip? _sleepToolTip;
@@ -612,6 +650,134 @@ public partial class MainWindow : Window
         _interactionWindow = new InteractionWindow(((App)System.Windows.Application.Current).Progress, ((App)System.Windows.Application.Current).Collections, ((App)System.Windows.Application.Current).Tasks, _statistics, ((App)System.Windows.Application.Current).Achievements, ((App)System.Windows.Application.Current).Areas);
         _interactionWindow.Closed += (_, _) => _interactionWindow = null;
         _interactionWindow.Show();
+    }
+
+    public void StartApplePlacement()
+    {
+        if (_activeApple is not null || _isToyBreak)
+        {
+            ShowSpeech("Da liegt schon ein Apfel! 🍎");
+            return;
+        }
+        if (_isDesktopDigging)
+        {
+            ShowSpeech("Ich grabe gerade! Brich die Grabung zuerst ab.");
+            return;
+        }
+        if (_home.IsHome)
+        {
+            ShowSpeech("Hol mich erst aus dem Dinohaus!");
+            return;
+        }
+        if (IsSleeping)
+        {
+            ShowSpeech("Ich schlafe gerade. Wecke mich erst auf.");
+            return;
+        }
+
+        _interactionWindow?.Close();
+        _interactionWindow = null;
+        _isToyBreak = true;
+        _returnToIdleTimer.Stop();
+        StopAnimatedWindowMovement();
+        _walkTimer?.Stop();
+        _walkTimer = null;
+        var actionVersion = ++_appleActionVersion;
+
+        Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(() =>
+        {
+            if (actionVersion != _appleActionVersion || !_isToyBreak) return;
+            var apple = new DesktopAppleWindow();
+            _activeApple = apple;
+            apple.PlacementConfirmed += (_, _) => TravelToApple(apple, actionVersion);
+            apple.PlacementCancelled += (_, _) => CancelApplePlacement(apple, actionVersion);
+            apple.Closed += (_, _) => HandleAppleClosed(apple, actionVersion);
+            apple.BeginPlacement();
+            ShowSpeech("Lege den Apfel mit einem Klick auf dem Desktop ab. 🍎", 4000);
+        }));
+    }
+
+    private void TravelToApple(DesktopAppleWindow apple, int actionVersion)
+    {
+        if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion || !apple.IsVisible) return;
+
+        apple.Topmost = false;
+        WindowZOrderService.Apply(this, _configuration.Current.AlwaysOnTop);
+        WindowZOrderService.BringToFront(this);
+        _states.Set(DinoState.Walk);
+
+        var dpi = VisualTreeHelper.GetDpi(this);
+        var appleCenterPixels = new System.Drawing.Point(
+            (int)((apple.Left + apple.Width / 2) * dpi.DpiScaleX),
+            (int)((apple.Top + apple.Height / 2) * dpi.DpiScaleY));
+        var workArea = System.Windows.Forms.Screen.FromPoint(appleCenterPixels).WorkingArea;
+        var workLeft = workArea.Left / dpi.DpiScaleX;
+        var workTop = workArea.Top / dpi.DpiScaleY;
+        var workRight = workArea.Right / dpi.DpiScaleX;
+        var workBottom = workArea.Bottom / dpi.DpiScaleY;
+        var targetLeft = apple.Left + (apple.Width - Width) / 2;
+        targetLeft = Math.Clamp(targetLeft, workLeft, Math.Max(workLeft, workRight - Width));
+        var targetTop = Math.Clamp(apple.Top - Height + 64, workTop, Math.Max(workTop, workBottom - Height));
+        Dino.SetFacingLeft(targetLeft < Left);
+
+        _isSmoothMoving = true;
+        var distance = Math.Sqrt(Math.Pow(targetLeft - Left, 2) + Math.Pow(targetTop - Top, 2));
+        var duration = TimeSpan.FromMilliseconds(Math.Max(500, (int)(distance / 220 * 1000)));
+        var easing = new QuadraticEase { EasingMode = EasingMode.EaseInOut };
+        var leftAnimation = new DoubleAnimation(Left, targetLeft, duration) { FillBehavior = FillBehavior.Stop, EasingFunction = easing };
+        var topAnimation = new DoubleAnimation(Top, targetTop, duration) { FillBehavior = FillBehavior.Stop, EasingFunction = easing };
+        leftAnimation.Completed += async (_, _) =>
+        {
+            Left = targetLeft;
+            Top = targetTop;
+            BeginAnimation(LeftProperty, null);
+            BeginAnimation(TopProperty, null);
+            _isSmoothMoving = false;
+            MonitorService.KeepVisible(this);
+            if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion || !apple.IsVisible) return;
+
+            _states.Set(DinoState.Sniff);
+            ShowSpeech("Mampf! 🍎", 2200);
+            var eatingDuration = TimeSpan.FromSeconds(8);
+            apple.BeginEatingAnimation(eatingDuration);
+            await Task.Delay(eatingDuration);
+            FinishAppleBreak(apple, actionVersion);
+        };
+        BeginAnimation(LeftProperty, leftAnimation);
+        BeginAnimation(TopProperty, topAnimation);
+    }
+
+    private void FinishAppleBreak(DesktopAppleWindow apple, int actionVersion)
+    {
+        if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion) return;
+        _activeApple = null;
+        _isToyBreak = false;
+        try { apple.Close(); } catch { }
+        if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+        {
+            _states.Set(DinoState.Happy);
+            ShowSpeech("Lecker! ♥", 1800);
+            ReturnToIdleAfter(1400);
+        }
+    }
+
+    private void CancelApplePlacement(DesktopAppleWindow apple, int actionVersion)
+    {
+        if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion) return;
+        _activeApple = null;
+        _isToyBreak = false;
+        _states.Set(DinoState.Idle);
+        ShowSpeech("Apfel abgebrochen.", 1800);
+    }
+
+    private void HandleAppleClosed(DesktopAppleWindow apple, int actionVersion)
+    {
+        if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion) return;
+        _activeApple = null;
+        _isToyBreak = false;
+        _appleActionVersion++;
+        StopAnimatedWindowMovement();
+        if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home) _states.Set(DinoState.Idle);
     }
 
     private void WalkBriefly()
@@ -792,11 +958,11 @@ public partial class MainWindow : Window
         if (!_home.IsHome && IsVisible) WindowZOrderService.Apply(this, _configuration.Current.AlwaysOnTop);
     }
 
-    private bool CanFollowMouse() => IsVisible && !_home.IsHome && !_hiddenForFullscreen && !_configuration.Current.QuietMode && !_isDesktopDigging
+    private bool CanFollowMouse() => IsVisible && !_home.IsHome && !_hiddenForFullscreen && !_configuration.Current.QuietMode && !_isDesktopDigging && !_isToyBreak
                                      && !IsSleepState(_states.Current) && _states.Current != DinoState.Doze
                                      && IdleTimeService.GetIdleTime() < TimeSpan.FromMinutes(2) && _walkTimer is null && !_isSmoothMoving;
 
-    private bool CanSpawnDigSite() => IsVisible && !_home.IsHome && !_hiddenForFullscreen && !_isDesktopDigging
+    private bool CanSpawnDigSite() => IsVisible && !_home.IsHome && !_hiddenForFullscreen && !_isDesktopDigging && !_isToyBreak
                                       && !IsSleepState(_states.Current) && _states.Current is not (DinoState.Doze or DinoState.Home)
                                       && !FullScreenDetector.IsForegroundFullScreen(this);
 
