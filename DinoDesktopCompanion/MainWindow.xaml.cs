@@ -1,4 +1,4 @@
-using System.ComponentModel;
+ï»¿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -82,7 +82,7 @@ public partial class MainWindow : Window
         _behaviour.RandomMessageRequested += () => ShowSpeech(_messages.GetForTimeOfDay());
         _behaviour.TransientStateRequested += PlayTransientState;
         _behaviour.TurnAroundRequested += () => { if (_states.Current == DinoState.Idle) { Dino.SetFacingLeft(!Dino.IsFacingLeft); ReturnToIdleAfter(1500); } };
-        _behaviour.HeartEventRequested += () => { if (_states.Current == DinoState.Idle) ShowSpeech("??", 3000); };
+        _behaviour.HeartEventRequested += () => { if (_states.Current == DinoState.Idle) ShowSpeech("", 3000); };
         _behaviour.HuntMouseRequested += () => { if (_states.Current == DinoState.Idle) HuntMouseBriefly(); };
         _behaviour.HighFiveRequested += StartHighFive;
         _behaviour.AreaEventRequested += StartRandomAreaEvent;
@@ -308,7 +308,7 @@ public partial class MainWindow : Window
             return false;
         }
         if (!_isDesktopDigging && !_isToyBreak) return true;
-        ShowSpeech(_isToyBreak ? "Ich bin gerade beschäftigt!" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
+        ShowSpeech(_isToyBreak ? "Ich bin gerade beschÃ¤ftigt!" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
         return false;
     }
 
@@ -373,7 +373,7 @@ public partial class MainWindow : Window
             _lastClickXP = DateTimeOffset.Now;
         }
 
-        var hasHeart = SpeechBubble.IsVisible && SpeechText.Text == "??";
+        var hasHeart = SpeechBubble.IsVisible && SpeechText.Text == "";
         if (hasHeart)
         {
             _states.Set(DinoState.BigHappy);
@@ -383,7 +383,7 @@ public partial class MainWindow : Window
         }
 
         var rand = new Random().Next(4);
-        var msg = rand switch { 0 => "Das gefällt mir!", 1 => "Hihi!", 2 => "??", _ => "" };
+        var msg = rand switch { 0 => "Das gefÃ¤llt mir!", 1 => "Hihi!", 2 => "", _ => "" };
         if (msg != "") ShowSpeech(msg, 1200);
 
         _states.Set(rand % 2 == 0 ? DinoState.Happy : DinoState.SmallHappy);
@@ -421,12 +421,7 @@ public partial class MainWindow : Window
         BeginAnimation(LeftProperty, leftAnimation); BeginAnimation(TopProperty, topAnimation);
     }
 
-    public void ShowSpeech(string text, int milliseconds = 4500)
-    {
-        if (!_configuration.Current.SpeechBubbles) return;
-        SpeechText.Text = text; SpeechBubble.Visibility = Visibility.Visible;
-        _bubbleTimer.Stop(); _bubbleTimer.Interval = TimeSpan.FromMilliseconds(milliseconds); _bubbleTimer.Start();
-    }
+    public void ShowSpeech(string text, int milliseconds = 4500) { if (!_configuration.Current.SpeechBubbles) return; var playerName = ((App)System.Windows.Application.Current).Profiles.ActiveProfile?.ProfileName ?? "Spieler"; text = text.Replace("{PlayerName}", playerName); SpeechText.Text = text; SpeechBubble.Visibility = Visibility.Visible; _bubbleTimer.Stop(); _bubbleTimer.Interval = TimeSpan.FromMilliseconds(milliseconds); _bubbleTimer.Start(); }
 
     private DateTimeOffset _lastClickXP = DateTimeOffset.MinValue;
     private InteractionWindow? _interactionWindow;
@@ -441,7 +436,7 @@ public partial class MainWindow : Window
     {
         if (_isToyBreak)
         {
-            ShowSpeech("Ich bin gerade beschäftigt!");
+            ShowSpeech("Ich bin gerade beschÃ¤ftigt!");
             return;
         }
         if (_isDesktopDigging)
@@ -493,7 +488,7 @@ public partial class MainWindow : Window
                     _states.Set(state);
                     if (!_rewardService.TryRewardAP("Pet"))
                     {
-                        var speeches = new[] { "?", "Hehe!", "Das ist schön!", "Schön!" };
+                        var speeches = new[] { "?", "Hehe!", "Das ist schÃ¶n!", "SchÃ¶n!" };
                         ShowSpeech(speeches[Random.Shared.Next(speeches.Length)]);
                     }
                     ReturnToIdleAfter(1500);
@@ -599,7 +594,7 @@ public partial class MainWindow : Window
         stackPanel.Children.Add(_sleepToolTipApText);
         
         var grid = new System.Windows.Controls.Grid { Margin = new System.Windows.Thickness(0, 0, 0, 6) };
-        grid.Children.Add(new System.Windows.Controls.TextBlock { Text = "Nächster AP", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A6572")), FontWeight = System.Windows.FontWeights.SemiBold });
+        grid.Children.Add(new System.Windows.Controls.TextBlock { Text = "NÃ¤chster AP", FontSize = 11, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A6572")), FontWeight = System.Windows.FontWeights.SemiBold });
         _sleepToolTipRegenText = new System.Windows.Controls.TextBlock { FontSize = 11, FontWeight = System.Windows.FontWeights.Bold, Foreground = new System.Windows.Media.SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString("#4A6572")), HorizontalAlignment = System.Windows.HorizontalAlignment.Right };
         grid.Children.Add(_sleepToolTipRegenText);
         stackPanel.Children.Add(grid);
@@ -668,7 +663,7 @@ public partial class MainWindow : Window
     {
         if (_isDesktopDigging || _isToyBreak)
         {
-            ShowSpeech("Ich bin gerade beschäftigt!");
+            ShowSpeech("Ich bin gerade beschÃ¤ftigt!");
             return;
         }
         if ((DateTime.Now - _progress.Current.LastWashTime).TotalMinutes < 10)
@@ -1131,7 +1126,7 @@ public partial class MainWindow : Window
     }
     public void OpenGpuDino()
     {
-        if (IsSleeping) { ShowSpeech("Dino schläft gerade. Wecke ihn zuerst auf."); return; }
+        if (IsSleeping) { ShowSpeech("Dino schlÃ¤ft gerade. Wecke ihn zuerst auf."); return; }
         if (!EnsureDinoAvailableForAction()) return;
         if (_chatWindow is not null) { _chatWindow.Activate(); return; }
         _chatWindow = new GpuDinoWindow(_configuration, _ollama);
@@ -1254,12 +1249,12 @@ public partial class MainWindow : Window
             if (_home.IsHome || IsSleepState(_states.Current)) return;
             
             rarity = rarity.ToLowerInvariant();
-            if (rarity == "episch" || rarity == "legendär")
+            if (rarity == "episch" || rarity == "legendÃ¤r")
             {
                 _states.Set(DinoState.BigHappy);
                 ShowSpeech("Wow! Schau mal!");
             }
-            else if (rarity == "ungewöhnlich" || rarity == "selten")
+            else if (rarity == "ungewÃ¶hnlich" || rarity == "selten")
             {
                 _states.Set(DinoState.Happy);
                 ShowSpeech("Oh! Das ist selten!");
@@ -1410,7 +1405,7 @@ public partial class MainWindow : Window
         ShowSpeech("Fang mich!", 2000);
         int markersToClick = 3;
         bool completed = false;
-        SpawnMarkers("??", 3, () => 
+        SpawnMarkers("", 3, () => 
         {
             if (completed) return;
             markersToClick--;
@@ -1434,7 +1429,7 @@ public partial class MainWindow : Window
         ShowSpeech("Komm mit!", 2000);
         int markersToClick = 3;
         bool completed = false;
-        SpawnMarkers("??", 3, () => 
+        SpawnMarkers("", 3, () => 
         {
             if (completed) return;
             markersToClick--;
@@ -1548,7 +1543,7 @@ public partial class MainWindow : Window
     private void ScheduleNextLeavesTimer()
     {
         _leavesTimer.Stop();
-        // Erstes Gebietsobjekt schon nach 5s, dann alle 8–20s ein neues
+        // Erstes Gebietsobjekt schon nach 5s, dann alle 8â€“20s ein neues
         _leavesTimer.Interval = _activeLeaves.Count == 0
             ? TimeSpan.FromSeconds(5)
             : TimeSpan.FromSeconds(Random.Shared.Next(8, 20));
@@ -1648,11 +1643,11 @@ public partial class MainWindow : Window
         image.Freeze();
         return areaId?.ToLowerInvariant() switch
         {
-            "garten" => new AreaCollectibleVisual(image, "Blüte", "??"),
-            "strand" => new AreaCollectibleVisual(image, "Muschel", "??"),
-            "schneeland" => new AreaCollectibleVisual(image, "Eiskristall", "??"),
-            "hoehle" => new AreaCollectibleVisual(image, "Pilz", "??"),
-            _ => new AreaCollectibleVisual(image, "Blatt", "??")
+            "garten" => new AreaCollectibleVisual(image, "BlÃ¼te", ""),
+            "strand" => new AreaCollectibleVisual(image, "Muschel", ""),
+            "schneeland" => new AreaCollectibleVisual(image, "Eiskristall", ""),
+            "hoehle" => new AreaCollectibleVisual(image, "Pilz", ""),
+            _ => new AreaCollectibleVisual(image, "Blatt", "")
         };
     }
 
@@ -1695,7 +1690,7 @@ public partial class MainWindow : Window
         var marker = new Window
         {
             AllowsTransparency = true,
-            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
+            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false, ShowActivated = false,
             Width = 56, Height = 56,
             Tag = collectible
         };
@@ -1714,10 +1709,10 @@ public partial class MainWindow : Window
         {
             if (!_activeLeaves.Contains(marker)) return;
 
-            // AP-Prüfung: kein AP -> Dino muss schlafen
+            // AP-PrÃ¼fung: kein AP -> Dino muss schlafen
             if (_progress.Current.AdventurePoints <= 0)
             {
-                ShowSpeech("Zu müde... ??");
+                ShowSpeech("Zu mÃ¼de... ??");
                 SetSleepState();
                 return;
             }
@@ -1725,7 +1720,7 @@ public partial class MainWindow : Window
             _activeLeaves.Remove(marker);
             marker.Close();
 
-            // Zufällig: 50% Chance kostet 1 AP
+            // ZufÃ¤llig: 50% Chance kostet 1 AP
             if (r.Next(2) == 0)
             {
                 _progress.SpendAdventurePoints(1);
@@ -1735,7 +1730,7 @@ public partial class MainWindow : Window
             ApplyAreaCollectibleReward(collectible, isAuto: false);
         };
 
-        // Gebietsobjekt verschwindet nach 25–40s von selbst
+        // Gebietsobjekt verschwindet nach 25â€“40s von selbst
         var lifetime = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(40, 70)) };
         lifetime.Tick += (_, _) =>
         {
@@ -1746,7 +1741,7 @@ public partial class MainWindow : Window
         };
         lifetime.Start();
         marker.Show();
-        // KEIN State-Set hier – damit Grabung weiterhin erscheinen kann
+        // KEIN State-Set hier â€“ damit Grabung weiterhin erscheinen kann
     }
 
     private void TryDinoAutoLeafCollect()
@@ -1855,7 +1850,7 @@ public partial class MainWindow : Window
         var shootingStar = new Window
         {
             AllowsTransparency = true,
-            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
+            WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false, ShowActivated = false,
             Width = 64, Height = 64,
         };
         var img = new System.Windows.Controls.Image
@@ -1910,7 +1905,7 @@ public partial class MainWindow : Window
             var dx = targetLeft - shootingStar.Left;
             var dy = targetTop  - shootingStar.Top;
             var d = Math.Sqrt(dx * dx + dy * dy);
-            if (d < 6) { PickTarget(); return; }
+            if (d < 6) { PickTarget(); return; } shootingStar.Topmost = true;
             shootingStar.Left += dx / d * 7.2;
             shootingStar.Top  += dy / d * 7.2;
             img.RenderTransform = dx < 0
@@ -1956,7 +1951,7 @@ public partial class MainWindow : Window
             var previousAp = _progress.Current.AdventurePoints;
             if (requestedAp > 0) _progress.AddInstantAP(requestedAp);
             var apReward = _progress.Current.AdventurePoints - previousAp;
-            ShowSpeech($"+{coinReward} Coins · +{xpReward} XP{(apReward > 0 ? $" · +{apReward} AP" : "")} ??");
+            ShowSpeech($"+{coinReward} Coins Â· +{xpReward} XP{(apReward > 0 ? $" Â· +{apReward} AP" : "")} ??");
 
             if (!_isDesktopDigging) { _states.Set(DinoState.Happy); ReturnToIdleAfter(1500); }
             CloseShootingStar();
@@ -1969,10 +1964,12 @@ public partial class MainWindow : Window
         crawl.Start();
         retarget.Start();
         shootingStar.Show();
-        _states.Set(DinoState.Curious);
-        ReturnToIdleAfter(1200);
-    }
+        if (!_isDesktopDigging) { _states.Set(DinoState.Curious); ReturnToIdleAfter(1200); } }
 }
+
+
+
+
 
 
 

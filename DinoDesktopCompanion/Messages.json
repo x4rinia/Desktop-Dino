@@ -1,13 +1,100 @@
 {
-  "greeting": ["Hallo Xarinia 🦕", "Schön, dass du da bist."],
-  "idle": ["Was programmieren wir heute?", "Ich bin noch da.", "Ein ruhiger Desktop ist ein guter Desktop."],
-  "coding": ["Kleine Schritte, sauberer Code.", "Vergiss die Pause nicht."],
-  "morning": ["Guten Morgen 🦕", "Bereit für einen guten Start?"],
-  "evening": ["Ganz schön spät.", "Noch eine kleine Aufgabe, dann Pause?"],
-  "sleep": ["Ich ruhe mich kurz aus.", "Zzz …"],
-  "wake": ["Da bin ich wieder!", "Schon wach."],
-  "home": ["Ich gehe nach Hause.", "Bis später!"],
-  "return": ["Hier bin ich! 🦕", "Du hast mich gerufen?"],
-  "chat": ["Wenn du magst, kannst du mich etwas fragen.", "Ich denke gern mit dir nach."],
-  "random": ["Knusper.", "Ich bewache deinen Desktop.", "Heute ist ein guter Dino-Tag."]
+  "greeting": [
+    "Hallo {PlayerName}",
+    "Da bist du ja!",
+    "Dino meldet sich zum Desktop-Dienst.",
+    "Schön, dass du wieder da bist."
+  ],
+
+  "idle": [
+    "Ich bin noch da.",
+    "Ich passe solange auf.",
+    "Hmm … was machen wir als Nächstes?",
+    "Ein bisschen rumstehen kann ich ziemlich gut.",
+    "Dino wartet geduldig. Meistens."
+  ],
+
+  "coding": [
+    "Kleine Schritte, sauberer Code.",
+    "Ich glaube an diesen Bug. Er gibt irgendwann auf.",
+    "Noch ein Fix!",
+    "Nicht vergessen zu speichern.",
+    "Ich bewache den Code.",
+    "Der Fehler kann sich nicht ewig verstecken.",
+    "Compile first. Panik später."
+  ],
+
+  "morning": [
+    "Guten Morgen",
+    "Dino ist schon wach!",
+    "Bereit für einen guten Start?",
+    "Erst wach werden, dann Welt erobern.",
+    "Morgen! Ich hab schon auf dich gewartet."
+  ],
+
+  "evening": [
+    "Ganz schön spät.",
+    "Dino findet, heute war genug.",
+    "Noch eine kleine Aufgabe?",
+    "Der Desktop wird langsam müde.",
+    "Wir können auch morgen weitermachen."
+  ],
+
+  "sleep": [
+    "Ich ruhe mich kurz aus.",
+    "Zzz …",
+    "Dino-Energiesparmodus aktiviert.",
+    "Nur fünf Minuten … zzz.",
+    "Ich mach die Augen nur ganz kurz zu."
+  ],
+
+  "wake": [
+    "Da bin ich wieder!",
+    "Schon wach.",
+    "Dino-System online.",
+    "Huch! Ich bin wach!",
+    "Was hab ich verpasst?"
+  ],
+
+  "home": [
+    "Ich gehe nach Hause.",
+    "Bis später!",
+    "Dino macht Feierabend.",
+    "Ich bin dann mal im Dinohaus.",
+    "Bis gleich! Ich lass die Tür offen."
+  ],
+
+  "return": [
+    "Hier bin ich!",
+    "Du hast mich gerufen?",
+    "Dino ist zurück!",
+    "Vermisst?",
+    "Ich wusste, dass du mich wieder brauchst."
+  ],
+
+  "chat": [
+    "Wenn du magst, kannst du mich etwas fragen.",
+    "Ich denke gern mit dir nach.",
+    "Was beschäftigt dich?",
+    "Dino hört zu.",
+    "Erzähl.",
+    "Ich hab Zeit."
+  ],
+
+  "random": [
+    "Knusper.",
+    "Ich bewache deinen Desktop.",
+    "Heute ist ein guter Dino-Tag.",
+    "Ich habe nichts angefasst. Wirklich.",
+    "Dino war das nicht.",
+    "Vielleicht brauche ich einen Snack.",
+    "Ich bin klein, aber sehr beschäftigt.",
+    "Desktop erfolgreich bewacht.",
+    "Was guckst du so?",
+    "Ich steh hier nur dekorativ rum.",
+    "Ein Dino braucht keine Erklärung.",
+    "Psst … ich glaube, der PC beobachtet uns.",
+    "Ich könnte jetzt einen Ball treten.",
+    "Keine Sorge. Dino hat alles im Blick."
+  ]
 }

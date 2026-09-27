@@ -1,4 +1,4 @@
-using System.Windows.Media;
+﻿using System.Windows.Media;
 using System.Windows.Threading;
 using DinoDesktopCompanion.Collections;
 using DinoDesktopCompanion.Core;
@@ -269,36 +269,23 @@ public sealed class DesktopDigSiteService : IDisposable
             .Where(item => !item.Id.EndsWith("_gold", StringComparison.OrdinalIgnoreCase) && !item.Id.EndsWith("_crystal", StringComparison.OrdinalIgnoreCase))
             .Where(item => _collections.Current.ToyCounts.GetValueOrDefault(item.Id, 0) < 40)
             .ToList();
-        var undiscoveredCandidates = areaCandidates
-            .Where(item => !_collections.Current.UnlockedToys.Contains(item.Id))
-            .ToList();
-            
         var collectBonus = _activeSiteIsRare ? 0.2 : 0;
         var hasCollectRoll = Random.Shared.NextDouble() < _collections.HomeBonuses.ApplyCollectibleChance(0.75 + collectBonus);
         
         AlbumEntryDefinition? found = null;
+        AlbumEntryDefinition? found2 = null;
         if (hasCollectRoll)
         {
             var rarityBonus = bonuses.RarityChanceBonus + (_activeSiteIsRare ? 0.15 : 0);
-            found = ChooseByRarity(undiscoveredCandidates.Count > 0 ? undiscoveredCandidates : areaCandidates, rarityBonus);
-        }
-        
-        if (found is not null)
-        {
-            var isNew = _collections.Toys.Unlock(found.Id, out var superFound);
-            var count = _collections.Current.ToyCounts.GetValueOrDefault(found.Id, 0);
+            found = ChooseByRarity(areaCandidates, rarityBonus);
             
-            message += isNew
-                ? $" Neuer Fund: {found.Name} – jetzt im Sammelalbum!"
-                : $" Fundstück: {found.Name} (bereits {count}x gesammelt).";
-                
-            if (superFound != null)
+            if (bonuses.RarityChanceBonus > 0 && Random.Shared.NextDouble() < (bonuses.RarityChanceBonus))
             {
-                message += $"\n🌟 Wahnsinn! {count}x {found.Name} gesammelt! Du erhältst das Superfunde-Stück: {superFound.Name}!";
+                found2 = ChooseByRarity(areaCandidates, rarityBonus);
             }
         }
-        else
-            message += " Diesmal leider kein Fundstück.";
+        
+        var HandleFound = new Action<AlbumEntryDefinition>(f => { var isNew = _collections.Toys.Unlock(f.Id, out var superFound); var count = _collections.Current.ToyCounts.GetValueOrDefault(f.Id, 0); message += isNew ? $" Neuer Fund: {f.Name}!" : $" Fund: {f.Name} ({count}x)."; if (superFound != null) message += $"\nWahnsinn! Du erhältst: {superFound.Name}!"; }); if (found is not null) { HandleFound(found); if (found2 is not null) HandleFound(found2); } else message += " Diesmal leider kein Fundstück.";
         
         _finishDinoDigging(true, found?.Rarity ?? "");
         site.ShowCompletion(message, found);
@@ -348,11 +335,11 @@ public sealed class DesktopDigSiteService : IDisposable
         {
             var (baseWeight, tier) = item.Rarity.ToLowerInvariant() switch
             {
-                "ungewöhnlich" => (30d, 1),
-                "selten" => (12d, 2),
-                "episch" => (4d, 3),
-                "legendär" => (1d, 4),
-                _ => (60d, 0)
+                "ungewöhnlich" => (15d, 1),
+                "selten" => (5d, 2),
+                "episch" => (2d, 3),
+                "legendär" => (0.5d, 4),
+                _ => (100d, 0)
             };
             return baseWeight * (1 + tier * Math.Clamp(rarityChanceBonus, 0, 1));
         }).ToArray();
@@ -410,3 +397,6 @@ public sealed class DesktopDigSiteService : IDisposable
         CancelActive();
     }
 }
+
+
+
