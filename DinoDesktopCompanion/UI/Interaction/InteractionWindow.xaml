@@ -520,7 +520,7 @@
                                 <Grid x:Name="HomeCanvasContainer" Width="806" Height="365" ClipToBounds="True">
                                     <Image x:Name="HomeBackgroundImage" Width="806" Height="365" Stretch="Fill"/>
                                     <Canvas x:Name="HomeCanvasBackground" Width="806" Height="365"/>
-                                    <Image x:Name="HomeDinoImage" Width="160" Height="160" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,0,25" Stretch="Uniform" Visibility="Collapsed"/>
+                                    <ui:DinoVisual x:Name="HomeDinoImage" Width="160" Height="160" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,0,25" Visibility="Collapsed"/>
                                     <Canvas x:Name="HomeCanvasForeground" Width="806" Height="365" IsHitTestVisible="True"/>
                                 </Grid>
                             </Viewbox>

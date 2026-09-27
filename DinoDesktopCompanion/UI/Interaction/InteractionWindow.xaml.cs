@@ -236,7 +236,7 @@ public partial class InteractionWindow : Window
             if (isHome)
             {
                 HomeDinoImage.Visibility = Visibility.Visible;
-                HomeDinoImage.Source = sleeping ? LoadHomeImage("Assets/Sprites/Sleep/sleep-01.png") : LoadHomeImage("Assets/Sprites/Sit/sit-01.png");
+                HomeDinoImage.SetSprite(sleeping ? LoadHomeImage("Assets/Sprites/Sleep/sleep-01.png") : LoadHomeImage("Assets/Sprites/Sit/sit-01.png")); var equippedSkinId = _collections.Current.EquippedSkinId; var skinDef = _collections.Cosmetics.Skins.FirstOrDefault(s => s.Id == equippedSkinId); if (skinDef != null) HomeDinoImage.ApplySkin(skinDef);
             }
             else
             {
