@@ -1086,7 +1086,17 @@ public partial class MainWindow : Window
 
     public void CallToCursor()
     {
-        if (!EnsureDinoAvailableForAction()) return;
+        if (IsSleeping)
+        {
+            ShowSpeech("Zzz...");
+            return;
+        }
+        if (_isDesktopDigging || _isToyBreak)
+        {
+            ShowSpeech(_isToyBreak ? "Ich bin gerade beschäftigt!" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
+            return;
+        }
+
         _home.CallDino(() =>
         {
             _digSites.CancelActive();

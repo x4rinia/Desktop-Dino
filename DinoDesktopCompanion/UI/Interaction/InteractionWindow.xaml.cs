@@ -1463,7 +1463,7 @@ public partial class InteractionWindow : Window
 
     private void SendHome_Click(object sender, RoutedEventArgs e)
     {
-        if (App.Current.MainWindow is MainWindow mw && mw.EnsureDinoAvailableForAction())
+        if (App.Current.MainWindow is MainWindow mw && true)
         {
             mw.SendHome();
             UpdateSleepUI();
@@ -1472,7 +1472,7 @@ public partial class InteractionWindow : Window
 
     private void CallDesktop_Click(object sender, RoutedEventArgs e)
     {
-        if (App.Current.MainWindow is MainWindow mw && mw.EnsureDinoAvailableForAction())
+        if (App.Current.MainWindow is MainWindow mw && true)
         {
             mw.CallToCursor();
             UpdateSleepUI();
