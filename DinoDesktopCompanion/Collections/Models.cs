@@ -77,6 +77,7 @@ public class HouseSlotDefinition
     public double Width { get; set; } = 128;
     public double Height { get; set; } = 42;
     public int ZIndex { get; set; }
+    public double Scale { get; set; } = 1.0;
 }
 
 public class AlbumEntryDefinition
@@ -103,3 +104,4 @@ public class AlbumAreaDefinition
     public string Description { get; set; } = string.Empty;
     public int Order { get; set; }
 }
+

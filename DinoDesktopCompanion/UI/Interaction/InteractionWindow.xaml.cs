@@ -431,9 +431,38 @@ public partial class InteractionWindow : Window
             .ToList();
 
         ToysList.Children.Clear();
-        foreach (var entry in matching)
+        
+        var regularItems = matching.Where(i => i.Rarity != "Episch" && i.Rarity != "Legendär").ToList();
+        var specialItems = matching.Where(i => i.Rarity == "Episch" || i.Rarity == "Legendär").ToList();
+
+        if (regularItems.Count > 0)
         {
-            ToysList.Children.Add(CreateAlbumCard(entry));
+            ToysList.Children.Add(new TextBlock
+            {
+                Text = "Reguläre Funde",
+                FontWeight = FontWeights.Bold,
+                FontSize = 14,
+                Margin = new Thickness(6, 10, 6, 4),
+                Foreground = (System.Windows.Media.Brush)FindResource("DinoPrimaryDark")
+            });
+            var wp = new WrapPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+            foreach (var entry in regularItems) wp.Children.Add(CreateAlbumCard(entry));
+            ToysList.Children.Add(wp);
+        }
+
+        if (specialItems.Count > 0)
+        {
+            ToysList.Children.Add(new TextBlock
+            {
+                Text = "Besondere Varianten",
+                FontWeight = FontWeights.Bold,
+                FontSize = 14,
+                Margin = new Thickness(6, 14, 6, 4),
+                Foreground = (System.Windows.Media.Brush)FindResource("DinoPrimaryDark")
+            });
+            var wp = new WrapPanel { Orientation = System.Windows.Controls.Orientation.Horizontal };
+            foreach (var entry in specialItems) wp.Children.Add(CreateAlbumCard(entry));
+            ToysList.Children.Add(wp);
         }
 
         if (matching.Count == 0)
@@ -547,14 +576,20 @@ public partial class InteractionWindow : Window
             if (_selectedAlbumEntry?.Id == entry.Id) return;
             
             _selectedAlbumEntry = entry;
-            foreach (System.Windows.Controls.Button childBtn in ToysList.Children)
+            foreach (var child in ToysList.Children)
             {
-                if (childBtn.Content is Border childBorder)
+                if (child is WrapPanel wp)
                 {
-                    bool isThisSelected = (childBtn.Tag as string) == entry.Id;
-                    var bAccent = childBorder.Tag as System.Windows.Media.Brush;
-                    childBorder.BorderBrush = isThisSelected ? new SolidColorBrush(Color.FromRgb(44, 143, 124)) : bAccent;
-                    childBorder.BorderThickness = new Thickness(isThisSelected ? 2 : 1);
+                    foreach (var element in wp.Children)
+                    {
+                        if (element is System.Windows.Controls.Button childBtn && childBtn.Content is Border childBorder)
+                        {
+                            bool isThisSelected = (childBtn.Tag as string) == entry.Id;
+                            var bAccent = childBorder.Tag as System.Windows.Media.Brush;
+                            childBorder.BorderBrush = isThisSelected ? new SolidColorBrush(Color.FromRgb(44, 143, 124)) : bAccent;
+                            childBorder.BorderThickness = new Thickness(isThisSelected ? 2 : 1);
+                        }
+                    }
                 }
             }
             ShowAlbumDetails(_selectedAlbumEntry);
@@ -764,7 +799,7 @@ public partial class InteractionWindow : Window
 
     private void LoadHome()
     {
-        if (HomeCanvas == null || HomeBackgroundImage == null) return;
+        if (HomeCanvasBackground == null || HomeBackgroundImage == null) return;
 
         var house = _collections.Home.Houses.FirstOrDefault(h => h.Id == _collections.Current.ActiveHouseId);
         if (house == null) return;
@@ -787,10 +822,12 @@ public partial class InteractionWindow : Window
             HomeBackgroundImage.Source = source;
         }
 
-        HomeCanvas.Children.Clear();
+        HomeCanvasBackground.Children.Clear();
+        HomeCanvasForeground.Children.Clear();
         var configuredSlots = 0;
         foreach (var slot in house.Slots ?? [])
         {
+            System.Windows.Controls.Canvas targetCanvas;
             var slotItem = _collections.Home.Items.FirstOrDefault(item => item.SlotId == slot.Id);
             HomeItemDefinition? displayedItem = null;
             if (_collections.Current.EquippedHomeItemsBySlot.TryGetValue(slot.Id, out var equippedId))
@@ -813,11 +850,18 @@ public partial class InteractionWindow : Window
                     Cursor = System.Windows.Input.Cursors.Hand,
                     ToolTip = item.Name
                 };
+                if (slot.Scale != 1.0 && slot.Scale > 0)
+                {
+                    image.LayoutTransform = new ScaleTransform(slot.Scale, slot.Scale);
+                }
+                
                 System.Windows.Controls.Canvas.SetLeft(image, slot.X + (slot.Width - image.Width) / 2);
                 System.Windows.Controls.Canvas.SetTop(image, Math.Max(0, slot.Y + (slot.Height - image.Height) / 2));
                 System.Windows.Controls.Panel.SetZIndex(image, slot.ZIndex);
                 image.MouseLeftButtonUp += (_, _) => ShowHomeSelection(slot, item);
-                HomeCanvas.Children.Add(image);
+                
+                targetCanvas = slot.ZIndex >= 3 ? HomeCanvasForeground : HomeCanvasBackground;
+                targetCanvas.Children.Add(image);
                 continue;
             }
 
@@ -838,7 +882,9 @@ public partial class InteractionWindow : Window
                 System.Windows.Controls.Canvas.SetTop(hotspot, Math.Max(0, slot.Y - (hotspot.Height - slot.Height) / 2));
                 System.Windows.Controls.Panel.SetZIndex(hotspot, slot.ZIndex);
                 hotspot.Click += (_, _) => ShowHomeSelection(slot, item);
-                HomeCanvas.Children.Add(hotspot);
+                
+                targetCanvas = slot.ZIndex >= 3 ? HomeCanvasForeground : HomeCanvasBackground;
+                targetCanvas.Children.Add(hotspot);
                 continue;
             }
 
@@ -857,7 +903,9 @@ public partial class InteractionWindow : Window
             System.Windows.Controls.Canvas.SetTop(lockButton, Math.Max(0, slot.Y - (lockHeight - slot.Height) / 2));
             System.Windows.Controls.Panel.SetZIndex(lockButton, slot.ZIndex);
             lockButton.Click += (_, _) => ShowHomeSelection(slot, slotItem);
-            HomeCanvas.Children.Add(lockButton);
+            
+            targetCanvas = slot.ZIndex >= 3 ? HomeCanvasForeground : HomeCanvasBackground;
+            targetCanvas.Children.Add(lockButton);
         }
 
         var totalSlots = house.Slots?.Count ?? 0;
@@ -1439,4 +1487,25 @@ public partial class InteractionWindow : Window
     {
         System.Windows.Application.Current.Shutdown();
     }
+
+
+
+    private void WashDino_Click(object sender, RoutedEventArgs e)
+    {
+        var app = (App)System.Windows.Application.Current;
+        var main = app.MainWindow as MainWindow;
+        main?.StartWashDino();
+    }
+
+    private void SpawnBall_Click(object sender, RoutedEventArgs e)
+    {
+        var app = (App)System.Windows.Application.Current;
+        var main = app.MainWindow as MainWindow;
+        main?.StartBallPlacement();
+    }
+
+
+
 }
+
+

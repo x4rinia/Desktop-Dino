@@ -274,7 +274,7 @@ public sealed class DesktopDigSiteService : IDisposable
             .ToList();
             
         var collectBonus = _activeSiteIsRare ? 0.2 : 0;
-        var hasCollectRoll = Random.Shared.NextDouble() < _collections.HomeBonuses.ApplyCollectibleChance(0.25 + collectBonus);
+        var hasCollectRoll = Random.Shared.NextDouble() < _collections.HomeBonuses.ApplyCollectibleChance(0.75 + collectBonus);
         
         AlbumEntryDefinition? found = null;
         if (hasCollectRoll)
@@ -298,7 +298,7 @@ public sealed class DesktopDigSiteService : IDisposable
             }
         }
         else
-            message += " Diesmal kein Fundstück.";
+            message += " Diesmal leider kein Fundstück.";
         
         _finishDinoDigging(true, found?.Rarity ?? "");
         site.ShowCompletion(message, found);

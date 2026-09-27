@@ -19,4 +19,7 @@ public sealed class ProgressData
     public int DailyFeedCount { get; set; }
     public DateTimeOffset LastResetDate { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset LastPassiveRegen { get; set; } = DateTimeOffset.MinValue;
+    public DateTimeOffset LastAppleTime { get; set; } = DateTimeOffset.MinValue;
+    public DateTimeOffset LastWashTime { get; set; } = DateTimeOffset.MinValue;
+    public DateTimeOffset LastBallTime { get; set; } = DateTimeOffset.MinValue;
 }

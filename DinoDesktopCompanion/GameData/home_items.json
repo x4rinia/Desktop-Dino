@@ -1,614 +1,802 @@
 [
-  {
-    "Id": "home-bed-basic",
-    "Name": "Kuscheliger Dino-Plüsch",
-    "SlotId": "bett",
-    "BaseDecorationId": "plush",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/plush.png",
-    "VisualWidth": 150,
-    "VisualHeight": 110,
-    "Rarity": "Gewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 2",
-    "RequiredLevel": 2,
-    "Cost": 100,
-    "Bonuses": [
-      { "Type": "SleepApRegeneration", "Value": 15, "Description": "+15 % Schlaf-AP-Regeneration" },
-      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-bed-large",
-    "Name": "Großer Dino-Plüsch",
-    "SlotId": "bett",
-    "BaseDecorationId": "plush",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-bed-basic",
-    "AssetPath": "Assets/Home/Items/plush.png",
-    "VisualWidth": 160,
-    "VisualHeight": 115,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 10",
-    "RequiredLevel": 10,
-    "Cost": 500,
-    "Bonuses": [
-      { "Type": "SleepApRegeneration", "Value": 20, "Description": "+20 % Schlaf-AP-Regeneration" },
-      { "Type": "MaxAdventurePoints", "Value": 2, "Description": "+2 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-bed-royal",
-    "Name": "Königlicher Dino-Plüsch",
-    "SlotId": "bett",
-    "BaseDecorationId": "plush",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-bed-large",
-    "AssetPath": "Assets/Home/Items/plush.png",
-    "VisualWidth": 170,
-    "VisualHeight": 120,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 18",
-    "RequiredLevel": 18,
-    "Cost": 900,
-    "Bonuses": [
-      { "Type": "SleepApRegeneration", "Value": 30, "Description": "+30 % Schlaf-AP-Regeneration" },
-      { "Type": "MaxAdventurePoints", "Value": 3, "Description": "+3 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-lamp-basic",
-    "Name": "Warme Dino-Lampe",
-    "SlotId": "lampe",
-    "BaseDecorationId": "lamp",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/lamp-basic.png",
-    "VisualWidth": 85,
-    "VisualHeight": 125,
-    "Rarity": "Gewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 4",
-    "RequiredLevel": 4,
-    "Cost": 150,
-    "Bonuses": [
-      { "Type": "DigSpeed", "Value": 15, "Description": "+15 % passive Grabgeschwindigkeit" }
-    ]
-  },
-  {
-    "Id": "home-lamp-crystal",
-    "Name": "Kristall-Dino-Lampe",
-    "SlotId": "lampe",
-    "BaseDecorationId": "lamp",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-lamp-basic",
-    "AssetPath": "Assets/Home/Items/lamp-basic.png",
-    "VisualWidth": 85,
-    "VisualHeight": 125,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 14",
-    "RequiredLevel": 14,
-    "Cost": 550,
-    "Bonuses": [
-      { "Type": "DigSpeed", "Value": 25, "Description": "+25 % passive Grabgeschwindigkeit" }
-    ]
-  },
-  {
-    "Id": "home-lamp-sun",
-    "Name": "Sonnenstein-Lampe",
-    "SlotId": "lampe",
-    "BaseDecorationId": "lamp",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-lamp-crystal",
-    "AssetPath": "Assets/Home/Items/lamp-basic.png",
-    "VisualWidth": 85,
-    "VisualHeight": 125,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 20",
-    "RequiredLevel": 20,
-    "Cost": 950,
-    "Bonuses": [
-      { "Type": "DigSpeed", "Value": 35, "Description": "+35 % passive Grabgeschwindigkeit" }
-    ]
-  },
-  {
-    "Id": "home-shelf-basic",
-    "Name": "Fundstück-Regal",
-    "SlotId": "regal",
-    "BaseDecorationId": "shelf",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/shelf-basic.png",
-    "VisualWidth": 145,
-    "VisualHeight": 175,
-    "Rarity": "Gewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 6",
-    "RequiredLevel": 6,
-    "Cost": 250,
-    "Bonuses": [
-      { "Type": "CollectibleChance", "Value": 5, "Description": "+5 % Sammelfundchance" }
-    ]
-  },
-  {
-    "Id": "home-shelf-collector",
-    "Name": "Meister-Sammelregal",
-    "SlotId": "regal",
-    "BaseDecorationId": "shelf",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-shelf-basic",
-    "AssetPath": "Assets/Home/Items/shelf-basic.png",
-    "VisualWidth": 145,
-    "VisualHeight": 175,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 15",
-    "RequiredLevel": 15,
-    "Cost": 650,
-    "Bonuses": [
-      { "Type": "CollectibleChance", "Value": 10, "Description": "+10 % Sammelfundchance" },
-      { "Type": "RarityChance", "Value": 5, "Description": "+5 % Chance auf seltenere Funde" }
-    ]
-  },
-  {
-    "Id": "home-shelf-museum",
-    "Name": "Museums-Prunkregal",
-    "SlotId": "regal",
-    "BaseDecorationId": "shelf",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-shelf-collector",
-    "AssetPath": "Assets/Home/Items/shelf-basic.png",
-    "VisualWidth": 145,
-    "VisualHeight": 175,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 21",
-    "RequiredLevel": 21,
-    "Cost": 1000,
-    "Bonuses": [
-      { "Type": "CollectibleChance", "Value": 15, "Description": "+15 % Sammelfundchance" },
-      { "Type": "RarityChance", "Value": 10, "Description": "+10 % Chance auf seltenere Funde" }
-    ]
-  },
-  {
-    "Id": "home-plant-basic",
-    "Name": "Glückliche Zimmerpflanze",
-    "SlotId": "pflanze",
-    "BaseDecorationId": "plant",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/plant-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 130,
-    "Rarity": "Ungewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 8",
-    "RequiredLevel": 8,
-    "Cost": 300,
-    "Bonuses": [
-      { "Type": "RarityChance", "Value": 3, "Description": "+3 % Chance auf seltenere Funde" }
-    ]
-  },
-  {
-    "Id": "home-plant-fern",
-    "Name": "Uralter Riesen-Farn",
-    "SlotId": "pflanze",
-    "BaseDecorationId": "plant",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-plant-basic",
-    "AssetPath": "Assets/Home/Items/plant-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 130,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 16",
-    "RequiredLevel": 16,
-    "Cost": 550,
-    "Bonuses": [
-      { "Type": "RarityChance", "Value": 6, "Description": "+6 % Chance auf seltenere Funde" }
-    ]
-  },
-  {
-    "Id": "home-plant-ancient",
-    "Name": "Urwald-Lebensbaum",
-    "SlotId": "pflanze",
-    "BaseDecorationId": "plant",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-plant-fern",
-    "AssetPath": "Assets/Home/Items/plant-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 130,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 22",
-    "RequiredLevel": 22,
-    "Cost": 950,
-    "Bonuses": [
-      { "Type": "RarityChance", "Value": 10, "Description": "+10 % Chance auf seltenere Funde" }
-    ]
-  },
-  {
-    "Id": "home-toybox-basic",
-    "Name": "Dinos Spielzeugkiste",
-    "SlotId": "spielzeugkiste",
-    "BaseDecorationId": "toybox",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/toybox-basic.png",
-    "VisualWidth": 150,
-    "VisualHeight": 110,
-    "Rarity": "Ungewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 10",
-    "RequiredLevel": 10,
-    "Cost": 400,
-    "Bonuses": [
-      { "Type": "GameExperience", "Value": 10, "Description": "+10 % XP bei Spielen" }
-    ]
-  },
-  {
-    "Id": "home-toybox-treasure",
-    "Name": "Abenteuer-Schatztruhe",
-    "SlotId": "spielzeugkiste",
-    "BaseDecorationId": "toybox",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-toybox-basic",
-    "AssetPath": "Assets/Home/Items/toybox-basic.png",
-    "VisualWidth": 150,
-    "VisualHeight": 110,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 17",
-    "RequiredLevel": 17,
-    "Cost": 700,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP" },
-      { "Type": "GameExperience", "Value": 15, "Description": "+15 % XP bei Spielen" }
-    ]
-  },
-  {
-    "Id": "home-toybox-legendary",
-    "Name": "Legendäre Schatzkammer",
-    "SlotId": "spielzeugkiste",
-    "BaseDecorationId": "toybox",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-toybox-treasure",
-    "AssetPath": "Assets/Home/Items/toybox-basic.png",
-    "VisualWidth": 150,
-    "VisualHeight": 110,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 23",
-    "RequiredLevel": 23,
-    "Cost": 1100,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 2, "Description": "+2 MaxAP" },
-      { "Type": "GameExperience", "Value": 25, "Description": "+25 % XP bei Spielen" }
-    ]
-  },
-  {
-    "Id": "home-pillow-basic",
-    "Name": "Weiches Dino-Kissen",
-    "SlotId": "kissen",
-    "BaseDecorationId": "pillow",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/pillow-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 78,
-    "Rarity": "Ungewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 5",
-    "RequiredLevel": 5,
-    "Cost": 200,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-pillow-cloud",
-    "Name": "Wolken-Dino-Kissen",
-    "SlotId": "kissen",
-    "BaseDecorationId": "pillow",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-pillow-basic",
-    "AssetPath": "Assets/Home/Items/pillow-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 78,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 13",
-    "RequiredLevel": 13,
-    "Cost": 500,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 2, "Description": "+2 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-pillow-royal",
-    "Name": "Samtiges Traumkissen",
-    "SlotId": "kissen",
-    "BaseDecorationId": "pillow",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-pillow-cloud",
-    "AssetPath": "Assets/Home/Items/pillow-basic.png",
-    "VisualWidth": 105,
-    "VisualHeight": 78,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 19",
-    "RequiredLevel": 19,
-    "Cost": 850,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 3, "Description": "+3 MaxAP" }
-    ]
-  },
-  {
-    "Id": "home-rug-basic",
-    "Name": "Dino-Pfoten-Teppich",
-    "SlotId": "teppich",
-    "BaseDecorationId": "rug",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/rug-basic.png",
-    "VisualWidth": 250,
-    "VisualHeight": 100,
-    "Rarity": "Ungewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 7",
-    "RequiredLevel": 7,
-    "Cost": 220,
-    "Bonuses": [
-      { "Type": "DiggingExperience", "Value": 10, "Description": "+10 % XP bei Desktop-Grabungen" }
-    ]
-  },
-  {
-    "Id": "home-rug-moss",
-    "Name": "Weicher Moosteppich",
-    "SlotId": "teppich",
-    "BaseDecorationId": "rug",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-rug-basic",
-    "AssetPath": "Assets/Home/Items/rug-basic.png",
-    "VisualWidth": 250,
-    "VisualHeight": 100,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 15",
-    "RequiredLevel": 15,
-    "Cost": 520,
-    "Bonuses": [
-      { "Type": "DiggingExperience", "Value": 20, "Description": "+20 % XP bei Desktop-Grabungen" }
-    ]
-  },
-  {
-    "Id": "home-rug-magic",
-    "Name": "Runen-Webteppich",
-    "SlotId": "teppich",
-    "BaseDecorationId": "rug",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-rug-moss",
-    "AssetPath": "Assets/Home/Items/rug-basic.png",
-    "VisualWidth": 250,
-    "VisualHeight": 100,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 21",
-    "RequiredLevel": 21,
-    "Cost": 900,
-    "Bonuses": [
-      { "Type": "DiggingExperience", "Value": 30, "Description": "+30 % XP bei Desktop-Grabungen" }
-    ]
-  },
-  {
-    "Id": "home-window-basic",
-    "Name": "Helle Fensterdeko (Teleskop)",
-    "SlotId": "fensterdeko",
-    "BaseDecorationId": "telescope",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/window-basic.png",
-    "VisualWidth": 120,
-    "VisualHeight": 145,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 11",
-    "RequiredLevel": 11,
-    "Cost": 450,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 1, "Description": "+1 MaxAP (Teleskop-Ausblick)" }
-    ]
-  },
-  {
-    "Id": "home-window-sun",
-    "Name": "Messing-Teleskop am Fenster",
-    "SlotId": "fensterdeko",
-    "BaseDecorationId": "telescope",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-window-basic",
-    "AssetPath": "Assets/Home/Items/window-basic.png",
-    "VisualWidth": 120,
-    "VisualHeight": 145,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 19",
-    "RequiredLevel": 19,
-    "Cost": 850,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 2, "Description": "+2 MaxAP (Weiter Weitblick)" }
-    ]
-  },
-  {
-    "Id": "home-window-observatory",
-    "Name": "Sternen-Observatorium",
-    "SlotId": "fensterdeko",
-    "BaseDecorationId": "telescope",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-window-sun",
-    "AssetPath": "Assets/Home/Items/window-basic.png",
-    "VisualWidth": 120,
-    "VisualHeight": 145,
-    "Rarity": "Legendär",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 25",
-    "RequiredLevel": 25,
-    "Cost": 1300,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 3, "Description": "+3 MaxAP (Sternen-Himmelsblick)" }
-    ]
-  },
-  {
-    "Id": "home-wall-picture",
-    "Name": "Pfoten-Wandbild",
-    "SlotId": "wandbild",
-    "BaseDecorationId": "wall",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/wall-picture.png",
-    "VisualWidth": 110,
-    "VisualHeight": 110,
-    "Rarity": "Gewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 3",
-    "RequiredLevel": 3,
-    "Cost": 120,
-    "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 15, "Description": "Sternschnuppen-Abschluss: garantiert +1 AP" }
-    ]
-  },
-  {
-    "Id": "home-wall-tapestry",
-    "Name": "Dino-Wandteppich",
-    "SlotId": "wandbild",
-    "BaseDecorationId": "wall",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-wall-picture",
-    "AssetPath": "Assets/Home/Items/wall-picture.png",
-    "VisualWidth": 110,
-    "VisualHeight": 110,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 12",
-    "RequiredLevel": 12,
-    "Cost": 450,
-    "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 25, "Description": "Sternschnuppen-Abschluss: garantiert +2 AP" },
-      { "Type": "Experience", "Value": 5, "Description": "+5 % Gesamt-XP" }
-    ]
-  },
-  {
-    "Id": "home-wall-fresco",
-    "Name": "Urzeit-Meisterfresko",
-    "SlotId": "wandbild",
-    "BaseDecorationId": "wall",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-wall-tapestry",
-    "AssetPath": "Assets/Home/Items/wall-picture.png",
-    "VisualWidth": 110,
-    "VisualHeight": 110,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 20",
-    "RequiredLevel": 20,
-    "Cost": 900,
-    "Bonuses": [
-      { "Type": "BugRewardBonus", "Value": 35, "Description": "Sternschnuppen-Abschluss: garantiert +3 AP" },
-      { "Type": "Experience", "Value": 10, "Description": "+10 % Gesamt-XP" }
-    ]
-  },
-  {
-    "Id": "home-event-basket",
-    "Name": "Gartenkorb",
-    "SlotId": "gartenkorb",
-    "BaseDecorationId": "basket",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/basket-basic.png",
-    "VisualWidth": 140,
-    "VisualHeight": 110,
-    "Rarity": "Ungewöhnlich",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 8",
-    "RequiredLevel": 8,
-    "Cost": 350,
-    "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
-      { "Type": "LeafRewardBonus", "Value": 15, "Description": "+15 % Gebietsobjekt-Belohnung" }
-    ]
-  },
-  {
-    "Id": "home-event-basket-large",
-    "Name": "Großer Gartenkorb",
-    "SlotId": "gartenkorb",
-    "BaseDecorationId": "basket",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-event-basket",
-    "AssetPath": "Assets/Home/Items/basket-basic.png",
-    "VisualWidth": 140,
-    "VisualHeight": 110,
-    "Rarity": "Selten",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 16",
-    "RequiredLevel": 16,
-    "Cost": 650,
-    "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
-      { "Type": "LeafRewardBonus", "Value": 25, "Description": "+25 % Gebietsobjekt-Belohnung" }
-    ]
-  },
-  {
-    "Id": "home-event-basket-golden",
-    "Name": "Goldener Ernte-Gartenkorb",
-    "SlotId": "gartenkorb",
-    "BaseDecorationId": "basket",
-    "UpgradeLevel": 3,
-    "RequiredPreviousItemId": "home-event-basket-large",
-    "AssetPath": "Assets/Home/Items/basket-basic.png",
-    "VisualWidth": 140,
-    "VisualHeight": 110,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 22",
-    "RequiredLevel": 22,
-    "Cost": 1050,
-    "Bonuses": [
-      { "Type": "AutoLeafCollect", "Value": 1, "Description": "Dino sammelt gelegentlich selbst Gebietsobjekte" },
-      { "Type": "LeafRewardBonus", "Value": 35, "Description": "+35 % Gebietsobjekt-Belohnung" },
-      { "Type": "Experience", "Value": 5, "Description": "+5 % Gesamt-XP" }
-    ]
-  },
-  {
-    "Id": "home-event-shelf",
-    "Name": "Event-Erinnerungsregal",
-    "SlotId": "event",
-    "BaseDecorationId": "event-shelf",
-    "UpgradeLevel": 1,
-    "AssetPath": "Assets/Home/Items/event-shelf.png",
-    "VisualWidth": 170,
-    "VisualHeight": 105,
-    "Rarity": "Episch",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 20",
-    "RequiredLevel": 20,
-    "Cost": 1000,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 2, "Description": "+2 MaxAP" },
-      { "Type": "Experience", "Value": 10, "Description": "+10 % Gesamt-XP" }
-    ]
-  },
-  {
-    "Id": "home-event-shelf-grand",
-    "Name": "Großes Event-Erinnerungsregal",
-    "SlotId": "event",
-    "BaseDecorationId": "event-shelf",
-    "UpgradeLevel": 2,
-    "RequiredPreviousItemId": "home-event-shelf",
-    "AssetPath": "Assets/Home/Items/event-shelf.png",
-    "VisualWidth": 170,
-    "VisualHeight": 105,
-    "Rarity": "Legendär",
-    "Source": "Dinohaus",
-    "UnlockCondition": "Level 24",
-    "RequiredLevel": 24,
-    "Cost": 1400,
-    "Bonuses": [
-      { "Type": "MaxAdventurePoints", "Value": 3, "Description": "+3 MaxAP" },
-      { "Type": "Experience", "Value": 15, "Description": "+15 % Gesamt-XP" }
-    ]
-  }
+    {
+        "Id":  "home-bed-basic",
+        "Name":  "Kuscheliger Dino-Plüsch",
+        "SlotId":  "bett",
+        "BaseDecorationId":  "plush",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/plush.png",
+        "VisualWidth":  150,
+        "VisualHeight":  110,
+        "Rarity":  "Gewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 2",
+        "RequiredLevel":  4,
+        "Cost":  150,
+        "Bonuses":  [
+                        {
+                            "Type":  "SleepApRegeneration",
+                            "Value":  15,
+                            "Description":  "+15 % Schlaf-AP-Regeneration"
+                        },
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  1,
+                            "Description":  "+1 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-bed-large",
+        "Name":  "Großer Dino-Plüsch",
+        "SlotId":  "bett",
+        "BaseDecorationId":  "plush",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-bed-basic",
+        "AssetPath":  "Assets/Home/Items/plush.png",
+        "VisualWidth":  160,
+        "VisualHeight":  115,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 10",
+        "RequiredLevel":  13,
+        "Cost":  500,
+        "Bonuses":  [
+                        {
+                            "Type":  "SleepApRegeneration",
+                            "Value":  20,
+                            "Description":  "+20 % Schlaf-AP-Regeneration"
+                        },
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  2,
+                            "Description":  "+2 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-bed-royal",
+        "Name":  "Königlicher Dino-Plüsch",
+        "SlotId":  "bett",
+        "BaseDecorationId":  "plush",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-bed-large",
+        "AssetPath":  "Assets/Home/Items/plush.png",
+        "VisualWidth":  170,
+        "VisualHeight":  120,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 18",
+        "RequiredLevel":  19,
+        "Cost":  850,
+        "Bonuses":  [
+                        {
+                            "Type":  "SleepApRegeneration",
+                            "Value":  30,
+                            "Description":  "+30 % Schlaf-AP-Regeneration"
+                        },
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  3,
+                            "Description":  "+3 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-lamp-basic",
+        "Name":  "Warme Dino-Lampe",
+        "SlotId":  "lampe",
+        "BaseDecorationId":  "lamp",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/lamp-basic.png",
+        "VisualWidth":  85,
+        "VisualHeight":  125,
+        "Rarity":  "Gewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 4",
+        "RequiredLevel":  5,
+        "Cost":  200,
+        "Bonuses":  [
+                        {
+                            "Type":  "DigSpeed",
+                            "Value":  15,
+                            "Description":  "+15 % passive Grabgeschwindigkeit"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-lamp-crystal",
+        "Name":  "Kristall-Dino-Lampe",
+        "SlotId":  "lampe",
+        "BaseDecorationId":  "lamp",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-lamp-basic",
+        "AssetPath":  "Assets/Home/Items/lamp-basic.png",
+        "VisualWidth":  85,
+        "VisualHeight":  125,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 14",
+        "RequiredLevel":  14,
+        "Cost":  550,
+        "Bonuses":  [
+                        {
+                            "Type":  "DigSpeed",
+                            "Value":  25,
+                            "Description":  "+25 % passive Grabgeschwindigkeit"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-lamp-sun",
+        "Name":  "Sonnenstein-Lampe",
+        "SlotId":  "lampe",
+        "BaseDecorationId":  "lamp",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-lamp-crystal",
+        "AssetPath":  "Assets/Home/Items/lamp-basic.png",
+        "VisualWidth":  85,
+        "VisualHeight":  125,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 20",
+        "RequiredLevel":  20,
+        "Cost":  950,
+        "Bonuses":  [
+                        {
+                            "Type":  "DigSpeed",
+                            "Value":  35,
+                            "Description":  "+35 % passive Grabgeschwindigkeit"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-shelf-basic",
+        "Name":  "Fundstück-Regal",
+        "SlotId":  "regal",
+        "BaseDecorationId":  "shelf",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/shelf-basic.png",
+        "VisualWidth":  145,
+        "VisualHeight":  175,
+        "Rarity":  "Gewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 6",
+        "RequiredLevel":  6,
+        "Cost":  250,
+        "Bonuses":  [
+                        {
+                            "Type":  "CollectibleChance",
+                            "Value":  5,
+                            "Description":  "+5 % Sammelfundchance"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-shelf-collector",
+        "Name":  "Meister-Sammelregal",
+        "SlotId":  "regal",
+        "BaseDecorationId":  "shelf",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-shelf-basic",
+        "AssetPath":  "Assets/Home/Items/shelf-basic.png",
+        "VisualWidth":  145,
+        "VisualHeight":  175,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 15",
+        "RequiredLevel":  15,
+        "Cost":  650,
+        "Bonuses":  [
+                        {
+                            "Type":  "CollectibleChance",
+                            "Value":  10,
+                            "Description":  "+10 % Sammelfundchance"
+                        },
+                        {
+                            "Type":  "RarityChance",
+                            "Value":  5,
+                            "Description":  "+5 % Chance auf seltenere Funde"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-shelf-museum",
+        "Name":  "Museums-Prunkregal",
+        "SlotId":  "regal",
+        "BaseDecorationId":  "shelf",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-shelf-collector",
+        "AssetPath":  "Assets/Home/Items/shelf-basic.png",
+        "VisualWidth":  145,
+        "VisualHeight":  175,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 21",
+        "RequiredLevel":  21,
+        "Cost":  1000,
+        "Bonuses":  [
+                        {
+                            "Type":  "CollectibleChance",
+                            "Value":  15,
+                            "Description":  "+15 % Sammelfundchance"
+                        },
+                        {
+                            "Type":  "RarityChance",
+                            "Value":  10,
+                            "Description":  "+10 % Chance auf seltenere Funde"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-plant-basic",
+        "Name":  "Glückliche Zimmerpflanze",
+        "SlotId":  "pflanze",
+        "BaseDecorationId":  "plant",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/plant-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  130,
+        "Rarity":  "Ungewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 8",
+        "RequiredLevel":  8,
+        "Cost":  300,
+        "Bonuses":  [
+                        {
+                            "Type":  "RarityChance",
+                            "Value":  3,
+                            "Description":  "+3 % Chance auf seltenere Funde"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-plant-fern",
+        "Name":  "Uralter Riesen-Farn",
+        "SlotId":  "pflanze",
+        "BaseDecorationId":  "plant",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-plant-basic",
+        "AssetPath":  "Assets/Home/Items/plant-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  130,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 16",
+        "RequiredLevel":  16,
+        "Cost":  550,
+        "Bonuses":  [
+                        {
+                            "Type":  "RarityChance",
+                            "Value":  6,
+                            "Description":  "+6 % Chance auf seltenere Funde"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-plant-ancient",
+        "Name":  "Urwald-Lebensbaum",
+        "SlotId":  "pflanze",
+        "BaseDecorationId":  "plant",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-plant-fern",
+        "AssetPath":  "Assets/Home/Items/plant-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  130,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 22",
+        "RequiredLevel":  22,
+        "Cost":  950,
+        "Bonuses":  [
+                        {
+                            "Type":  "RarityChance",
+                            "Value":  10,
+                            "Description":  "+10 % Chance auf seltenere Funde"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-toybox-basic",
+        "Name":  "Dinos Spielzeugkiste",
+        "SlotId":  "spielzeugkiste",
+        "BaseDecorationId":  "toybox",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/toybox-basic.png",
+        "VisualWidth":  150,
+        "VisualHeight":  110,
+        "Rarity":  "Ungewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 10",
+        "RequiredLevel":  10,
+        "Cost":  400,
+        "Bonuses":  [
+                        {
+                            "Type":  "GameExperience",
+                            "Value":  10,
+                            "Description":  "+10 % XP bei Spielen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-toybox-treasure",
+        "Name":  "Abenteuer-Schatztruhe",
+        "SlotId":  "spielzeugkiste",
+        "BaseDecorationId":  "toybox",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-toybox-basic",
+        "AssetPath":  "Assets/Home/Items/toybox-basic.png",
+        "VisualWidth":  150,
+        "VisualHeight":  110,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 17",
+        "RequiredLevel":  17,
+        "Cost":  700,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  1,
+                            "Description":  "+1 MaxAP"
+                        },
+                        {
+                            "Type":  "GameExperience",
+                            "Value":  15,
+                            "Description":  "+15 % XP bei Spielen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-toybox-legendary",
+        "Name":  "Legendäre Schatzkammer",
+        "SlotId":  "spielzeugkiste",
+        "BaseDecorationId":  "toybox",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-toybox-treasure",
+        "AssetPath":  "Assets/Home/Items/toybox-basic.png",
+        "VisualWidth":  150,
+        "VisualHeight":  110,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 23",
+        "RequiredLevel":  23,
+        "Cost":  1100,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  2,
+                            "Description":  "+2 MaxAP"
+                        },
+                        {
+                            "Type":  "GameExperience",
+                            "Value":  25,
+                            "Description":  "+25 % XP bei Spielen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-pillow-basic",
+        "Name":  "Weiches Dino-Kissen",
+        "SlotId":  "kissen",
+        "BaseDecorationId":  "pillow",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/pillow-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  78,
+        "Rarity":  "Ungewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 5",
+        "RequiredLevel":  2,
+        "Cost":  100,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  1,
+                            "Description":  "+1 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-pillow-cloud",
+        "Name":  "Wolken-Dino-Kissen",
+        "SlotId":  "kissen",
+        "BaseDecorationId":  "pillow",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-pillow-basic",
+        "AssetPath":  "Assets/Home/Items/pillow-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  78,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 13",
+        "RequiredLevel":  10,
+        "Cost":  500,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  2,
+                            "Description":  "+2 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-pillow-royal",
+        "Name":  "Samtiges Traumkissen",
+        "SlotId":  "kissen",
+        "BaseDecorationId":  "pillow",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-pillow-cloud",
+        "AssetPath":  "Assets/Home/Items/pillow-basic.png",
+        "VisualWidth":  105,
+        "VisualHeight":  78,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 19",
+        "RequiredLevel":  18,
+        "Cost":  900,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  3,
+                            "Description":  "+3 MaxAP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-rug-basic",
+        "Name":  "Dino-Pfoten-Teppich",
+        "SlotId":  "teppich",
+        "BaseDecorationId":  "rug",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/rug-basic.png",
+        "VisualWidth":  250,
+        "VisualHeight":  100,
+        "Rarity":  "Ungewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 7",
+        "RequiredLevel":  7,
+        "Cost":  220,
+        "Bonuses":  [
+                        {
+                            "Type":  "DiggingExperience",
+                            "Value":  10,
+                            "Description":  "+10 % XP bei Desktop-Grabungen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-rug-moss",
+        "Name":  "Weicher Moosteppich",
+        "SlotId":  "teppich",
+        "BaseDecorationId":  "rug",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-rug-basic",
+        "AssetPath":  "Assets/Home/Items/rug-basic.png",
+        "VisualWidth":  250,
+        "VisualHeight":  100,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 15",
+        "RequiredLevel":  15,
+        "Cost":  520,
+        "Bonuses":  [
+                        {
+                            "Type":  "DiggingExperience",
+                            "Value":  20,
+                            "Description":  "+20 % XP bei Desktop-Grabungen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-rug-magic",
+        "Name":  "Runen-Webteppich",
+        "SlotId":  "teppich",
+        "BaseDecorationId":  "rug",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-rug-moss",
+        "AssetPath":  "Assets/Home/Items/rug-basic.png",
+        "VisualWidth":  250,
+        "VisualHeight":  100,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 21",
+        "RequiredLevel":  21,
+        "Cost":  900,
+        "Bonuses":  [
+                        {
+                            "Type":  "DiggingExperience",
+                            "Value":  30,
+                            "Description":  "+30 % XP bei Desktop-Grabungen"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-window-basic",
+        "Name":  "Helle Fensterdeko (Teleskop)",
+        "SlotId":  "fensterdeko",
+        "BaseDecorationId":  "telescope",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/window-basic.png",
+        "VisualWidth":  120,
+        "VisualHeight":  145,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 11",
+        "RequiredLevel":  11,
+        "Cost":  450,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  1,
+                            "Description":  "+1 MaxAP (Teleskop-Ausblick)"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-window-sun",
+        "Name":  "Messing-Teleskop am Fenster",
+        "SlotId":  "fensterdeko",
+        "BaseDecorationId":  "telescope",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-window-basic",
+        "AssetPath":  "Assets/Home/Items/window-basic.png",
+        "VisualWidth":  120,
+        "VisualHeight":  145,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 19",
+        "RequiredLevel":  19,
+        "Cost":  850,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  2,
+                            "Description":  "+2 MaxAP (Weiter Weitblick)"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-window-observatory",
+        "Name":  "Sternen-Observatorium",
+        "SlotId":  "fensterdeko",
+        "BaseDecorationId":  "telescope",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-window-sun",
+        "AssetPath":  "Assets/Home/Items/window-basic.png",
+        "VisualWidth":  120,
+        "VisualHeight":  145,
+        "Rarity":  "Legendär",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 25",
+        "RequiredLevel":  25,
+        "Cost":  1300,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  3,
+                            "Description":  "+3 MaxAP (Sternen-Himmelsblick)"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-wall-picture",
+        "Name":  "Pfoten-Wandbild",
+        "SlotId":  "wandbild",
+        "BaseDecorationId":  "wall",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/wall-picture.png",
+        "VisualWidth":  110,
+        "VisualHeight":  110,
+        "Rarity":  "Gewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 3",
+        "RequiredLevel":  3,
+        "Cost":  120,
+        "Bonuses":  [
+                        {
+                            "Type":  "BugRewardBonus",
+                            "Value":  15,
+                            "Description":  "Sternschnuppen-Abschluss: garantiert +1 AP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-wall-tapestry",
+        "Name":  "Dino-Wandteppich",
+        "SlotId":  "wandbild",
+        "BaseDecorationId":  "wall",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-wall-picture",
+        "AssetPath":  "Assets/Home/Items/wall-picture.png",
+        "VisualWidth":  110,
+        "VisualHeight":  110,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 12",
+        "RequiredLevel":  12,
+        "Cost":  450,
+        "Bonuses":  [
+                        {
+                            "Type":  "BugRewardBonus",
+                            "Value":  25,
+                            "Description":  "Sternschnuppen-Abschluss: garantiert +2 AP"
+                        },
+                        {
+                            "Type":  "Experience",
+                            "Value":  5,
+                            "Description":  "+5 % Gesamt-XP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-wall-fresco",
+        "Name":  "Urzeit-Meisterfresko",
+        "SlotId":  "wandbild",
+        "BaseDecorationId":  "wall",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-wall-tapestry",
+        "AssetPath":  "Assets/Home/Items/wall-picture.png",
+        "VisualWidth":  110,
+        "VisualHeight":  110,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 20",
+        "RequiredLevel":  20,
+        "Cost":  900,
+        "Bonuses":  [
+                        {
+                            "Type":  "BugRewardBonus",
+                            "Value":  35,
+                            "Description":  "Sternschnuppen-Abschluss: garantiert +3 AP"
+                        },
+                        {
+                            "Type":  "Experience",
+                            "Value":  10,
+                            "Description":  "+10 % Gesamt-XP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-event-basket",
+        "Name":  "Gartenkorb",
+        "SlotId":  "gartenkorb",
+        "BaseDecorationId":  "basket",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/basket-basic.png",
+        "VisualWidth":  140,
+        "VisualHeight":  110,
+        "Rarity":  "Ungewöhnlich",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 8",
+        "RequiredLevel":  8,
+        "Cost":  350,
+        "Bonuses":  [
+                        {
+                            "Type":  "AutoLeafCollect",
+                            "Value":  1,
+                            "Description":  "Dino sammelt gelegentlich selbst Gebietsobjekte"
+                        },
+                        {
+                            "Type":  "LeafRewardBonus",
+                            "Value":  15,
+                            "Description":  "+15 % Gebietsobjekt-Belohnung"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-event-basket-large",
+        "Name":  "Großer Gartenkorb",
+        "SlotId":  "gartenkorb",
+        "BaseDecorationId":  "basket",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-event-basket",
+        "AssetPath":  "Assets/Home/Items/basket-basic.png",
+        "VisualWidth":  140,
+        "VisualHeight":  110,
+        "Rarity":  "Selten",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 16",
+        "RequiredLevel":  16,
+        "Cost":  650,
+        "Bonuses":  [
+                        {
+                            "Type":  "AutoLeafCollect",
+                            "Value":  1,
+                            "Description":  "Dino sammelt gelegentlich selbst Gebietsobjekte"
+                        },
+                        {
+                            "Type":  "LeafRewardBonus",
+                            "Value":  25,
+                            "Description":  "+25 % Gebietsobjekt-Belohnung"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-event-basket-golden",
+        "Name":  "Goldener Ernte-Gartenkorb",
+        "SlotId":  "gartenkorb",
+        "BaseDecorationId":  "basket",
+        "UpgradeLevel":  3,
+        "RequiredPreviousItemId":  "home-event-basket-large",
+        "AssetPath":  "Assets/Home/Items/basket-basic.png",
+        "VisualWidth":  140,
+        "VisualHeight":  110,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 22",
+        "RequiredLevel":  22,
+        "Cost":  1050,
+        "Bonuses":  [
+                        {
+                            "Type":  "AutoLeafCollect",
+                            "Value":  1,
+                            "Description":  "Dino sammelt gelegentlich selbst Gebietsobjekte"
+                        },
+                        {
+                            "Type":  "LeafRewardBonus",
+                            "Value":  35,
+                            "Description":  "+35 % Gebietsobjekt-Belohnung"
+                        },
+                        {
+                            "Type":  "Experience",
+                            "Value":  5,
+                            "Description":  "+5 % Gesamt-XP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-event-shelf",
+        "Name":  "Event-Erinnerungsregal",
+        "SlotId":  "event",
+        "BaseDecorationId":  "event-shelf",
+        "UpgradeLevel":  1,
+        "AssetPath":  "Assets/Home/Items/event-shelf.png",
+        "VisualWidth":  170,
+        "VisualHeight":  105,
+        "Rarity":  "Episch",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 20",
+        "RequiredLevel":  20,
+        "Cost":  1000,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  2,
+                            "Description":  "+2 MaxAP"
+                        },
+                        {
+                            "Type":  "Experience",
+                            "Value":  10,
+                            "Description":  "+10 % Gesamt-XP"
+                        }
+                    ]
+    },
+    {
+        "Id":  "home-event-shelf-grand",
+        "Name":  "Großes Event-Erinnerungsregal",
+        "SlotId":  "event",
+        "BaseDecorationId":  "event-shelf",
+        "UpgradeLevel":  2,
+        "RequiredPreviousItemId":  "home-event-shelf",
+        "AssetPath":  "Assets/Home/Items/event-shelf.png",
+        "VisualWidth":  170,
+        "VisualHeight":  105,
+        "Rarity":  "Legendär",
+        "Source":  "Dinohaus",
+        "UnlockCondition":  "Level 24",
+        "RequiredLevel":  24,
+        "Cost":  1400,
+        "Bonuses":  [
+                        {
+                            "Type":  "MaxAdventurePoints",
+                            "Value":  3,
+                            "Description":  "+3 MaxAP"
+                        },
+                        {
+                            "Type":  "Experience",
+                            "Value":  15,
+                            "Description":  "+15 % Gesamt-XP"
+                        }
+                    ]
+    }
 ]

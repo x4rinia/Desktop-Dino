@@ -1,4 +1,4 @@
-<Window x:Class="DinoDesktopCompanion.UI.Tutorial.TutorialWindow"
+﻿<Window x:Class="DinoDesktopCompanion.UI.Tutorial.TutorialWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Dino Desktop Companion - Info" Height="450" Width="400"
@@ -30,6 +30,9 @@
                 <TextBlock FontWeight="SemiBold" Text="Dino schlafen schicken"/>
                 <TextBlock Text="Möchtest du, dass der Dino schneller Energie sammelt oder dich nicht beim Arbeiten stört? Schicke ihn über das Dino-Menü schlafen oder nach Hause ins Dino-Haus. Er bleibt so lange dort, bis du ihn wieder aufweckst."/>
                 
+                <TextBlock FontWeight="SemiBold" Text="Apfel, Ball &amp; Waschen"/>
+                <TextBlock Text="Im Start-Bereich des Dino-Menüs kannst du einen Apfel hinlegen, einen Ball zuwerfen oder den Dino waschen. Der Apfel gibt 1 AP (5 Min Cooldown). Beim Spielen mit dem Ball (1 Min Cooldown) besteht die Chance auf 1 AP. Das Waschen gibt 50 XP (10 Min Cooldown)."/>
+                
                 <TextBlock FontWeight="SemiBold" Text="Grabungen &amp; Sammlungen"/>
                 <TextBlock Text="Du kannst den Dino über das Dino-Menü zum Graben schicken, wenn du Gebiete freigeschaltet hast. Dabei findet er Toys und Skins, die du ihm anziehen kannst!"/>
                 
@@ -42,3 +45,5 @@
                 Background="#3B9272" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand"/>
     </Grid>
 </Window>
+
+

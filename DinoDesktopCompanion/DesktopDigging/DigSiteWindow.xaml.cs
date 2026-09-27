@@ -1,4 +1,4 @@
-using System.Runtime.InteropServices;
+﻿using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -69,7 +69,7 @@ public partial class DigSiteWindow : Window
         if (_progress >= _requiredClicks) return;
         _digging = true;
         DigButton.IsEnabled = true;
-        DigButton.Content = "Mithalfen!";
+        DigButton.Content = "Mithelfen!";
         UpdateProgress();
     }
 
@@ -150,7 +150,7 @@ public partial class DigSiteWindow : Window
             DigVisualContainer.RenderTransform.BeginAnimation(ScaleTransform.ScaleXProperty, anim);
             DigVisualContainer.RenderTransform.BeginAnimation(ScaleTransform.ScaleYProperty, anim);
 
-            var flash = new System.Windows.Media.Animation.DoubleAnimation { From = 0.8, To = 0.0, Duration = TimeSpan.FromMilliseconds(300) };
+            var flash = new System.Windows.Media.Animation.DoubleAnimation { From = 0.6, To = 1.0, Duration = TimeSpan.FromMilliseconds(300) };
             DigSiteImage.BeginAnimation(OpacityProperty, flash);
         }
     }

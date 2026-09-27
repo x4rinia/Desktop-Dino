@@ -1,24 +1,113 @@
-[
-  {
-    "Id": "default",
-    "Name": "Dinos Haus",
-    "BackgroundAssetPath": "Assets/Home/dinohaus-empty-v2.png",
-    "BackgroundCropX": 0,
-    "BackgroundCropY": 92,
-    "BackgroundCropWidth": 1672,
-    "BackgroundCropHeight": 757,
-    "Slots": [
-      { "Id": "bett", "Name": "Bett", "X": 122, "Y": 254, "Width": 126, "Height": 42, "ZIndex": 3 },
-      { "Id": "kissen", "Name": "Kissen", "X": 245, "Y": 288, "Width": 126, "Height": 42, "ZIndex": 4 },
-      { "Id": "teppich", "Name": "Teppich", "X": 377, "Y": 294, "Width": 126, "Height": 42, "ZIndex": 1 },
-      { "Id": "lampe", "Name": "Lampe", "X": 10, "Y": 262, "Width": 126, "Height": 42, "ZIndex": 4 },
-      { "Id": "pflanze", "Name": "Pflanze", "X": 680, "Y": 259, "Width": 126, "Height": 42, "ZIndex": 4 },
-      { "Id": "spielzeugkiste", "Name": "Spielzeugkiste", "X": 548, "Y": 279, "Width": 154, "Height": 42, "ZIndex": 3 },
-      { "Id": "regal", "Name": "Regal", "X": 270, "Y": 122, "Width": 126, "Height": 42, "ZIndex": 2 },
-      { "Id": "fensterdeko", "Name": "Fensterdeko", "X": 582, "Y": 172, "Width": 148, "Height": 42, "ZIndex": 2 },
-      { "Id": "wandbild", "Name": "Wanddeko", "X": 82, "Y": 82, "Width": 136, "Height": 42, "ZIndex": 2 },
-      { "Id": "event", "Name": "Wandregal", "X": 434, "Y": 45, "Width": 136, "Height": 42, "ZIndex": 2 },
-      { "Id": "gartenkorb", "Name": "Gartenkorb", "X": 440, "Y": 255, "Width": 126, "Height": 42, "ZIndex": 2 }
-    ]
-  }
+[{
+    "Id":  "default",
+    "Name":  "Dinos Haus",
+    "BackgroundAssetPath":  "Assets/Home/dinohaus-empty-v2.png",
+    "BackgroundCropX":  0,
+    "BackgroundCropY":  92,
+    "BackgroundCropWidth":  1672,
+    "BackgroundCropHeight":  757,
+    "Slots":  [
+                  {
+                      "Id":  "bett",
+                      "Name":  "Bett",
+                      "X":  130,
+                      "Y":  300,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  3,
+                      "Scale":  0.75
+                  },
+                  {
+                      "Id":  "kissen",
+                      "Name":  "Kissen",
+                      "X":  240,
+                      "Y":  275,
+                      "Width":  140,
+                      "Height":  42,
+                      "ZIndex":  2,
+                      "Scale":  1.4
+                  },
+                  {
+                      "Id":  "teppich",
+                      "Name":  "Teppich",
+                      "X":  377,
+                      "Y":  294,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  1
+                  },
+                  {
+                      "Id":  "lampe",
+                      "Name":  "Lampe",
+                      "X":  10,
+                      "Y":  262,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  4
+                  },
+                  {
+                      "Id":  "pflanze",
+                      "Name":  "Pflanze",
+                      "X":  680,
+                      "Y":  259,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  4
+                  },
+                  {
+                      "Id":  "spielzeugkiste",
+                      "Name":  "Spielzeugkiste",
+                      "X":  548,
+                      "Y":  279,
+                      "Width":  154,
+                      "Height":  42,
+                      "ZIndex":  3
+                  },
+                  {
+                      "Id":  "regal",
+                      "Name":  "Regal",
+                      "X":  270,
+                      "Y":  122,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  2
+                  },
+                  {
+                      "Id":  "fensterdeko",
+                      "Name":  "Fensterdeko",
+                      "X":  582,
+                      "Y":  172,
+                      "Width":  148,
+                      "Height":  42,
+                      "ZIndex":  2
+                  },
+                  {
+                      "Id":  "wandbild",
+                      "Name":  "Wanddeko",
+                      "X":  82,
+                      "Y":  82,
+                      "Width":  136,
+                      "Height":  42,
+                      "ZIndex":  2
+                  },
+                  {
+                      "Id":  "event",
+                      "Name":  "Wandregal",
+                      "X":  434,
+                      "Y":  45,
+                      "Width":  136,
+                      "Height":  42,
+                      "ZIndex":  2
+                  },
+                  {
+                      "Id":  "gartenkorb",
+                      "Name":  "Gartenkorb",
+                      "X":  440,
+                      "Y":  255,
+                      "Width":  126,
+                      "Height":  42,
+                      "ZIndex":  2
+                  }
+              ]
+}
 ]

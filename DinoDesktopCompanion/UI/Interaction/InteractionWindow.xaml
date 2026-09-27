@@ -1,4 +1,4 @@
-﻿<Window x:Class="DinoDesktopCompanion.UI.InteractionWindow"
+<Window x:Class="DinoDesktopCompanion.UI.InteractionWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:ui="clr-namespace:DinoDesktopCompanion.UI"
@@ -225,6 +225,18 @@
                                                  Foreground="{StaticResource DinoPrimary}" Background="#E2ECE9" BorderThickness="0" Margin="0,0,0,16"/>
                                     
                                     <!-- Buttons wurden ins Dinohaus verlegt -->
+                                    <Grid>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="5" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="5" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+                                        <Button x:Name="AppleBtn" Grid.Row="0" Content="🍎 Apfel hinlegen" Click="SpawnApple_Click" Background="#FFE8E8" Foreground="#D63333" BorderBrush="#FFCCCC" FontWeight="SemiBold" ToolTip="Lege einen Apfel als Snack (+1 AP, 5min CD)"/>
+                                        <Button x:Name="WashBtn" Grid.Row="2" Content="🛁 Dino waschen" Click="WashDino_Click" Background="#E8F4FF" Foreground="#3385D6" BorderBrush="#CCE5FF" FontWeight="SemiBold" ToolTip="Wasche den Dino für +50 XP (10min CD)"/>
+                                        <Button x:Name="BallBtn" Grid.Row="4" Content="🎾 Ball werfen" Click="SpawnBall_Click" Background="#EEFFEB" Foreground="#4BA83D" BorderBrush="#C7F5BF" FontWeight="SemiBold" ToolTip="Wirf einen Ball, den der Dino jagt (+1 AP, 1min CD)"/>
+                                    </Grid>
                                 </StackPanel>
                             </Border>
                         </Grid>
@@ -325,7 +337,7 @@
                         <Border Grid.Column="0" Background="#F7FBF9" BorderBrush="{StaticResource DinoBorder}" BorderThickness="1"
                                 CornerRadius="13" Padding="5" Margin="0,0,8,0">
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                <WrapPanel x:Name="ToysList" Orientation="Horizontal"/>
+                                <StackPanel x:Name="ToysList" Orientation="Vertical"/>
                             </ScrollViewer>
                         </Border>
 
@@ -507,8 +519,9 @@
                             <Viewbox Stretch="Uniform" HorizontalAlignment="Stretch" VerticalAlignment="Top">
                                 <Grid x:Name="HomeCanvasContainer" Width="806" Height="365" ClipToBounds="True">
                                     <Image x:Name="HomeBackgroundImage" Width="806" Height="365" Stretch="Fill"/>
-                                    <Canvas x:Name="HomeCanvas" Width="806" Height="365"/>
-                                    <Image x:Name="HomeDinoImage" Width="160" Height="160" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,0,50" Stretch="Uniform" Visibility="Collapsed"/>
+                                    <Canvas x:Name="HomeCanvasBackground" Width="806" Height="365"/>
+                                    <Image x:Name="HomeDinoImage" Width="160" Height="160" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="220,0,0,25" Stretch="Uniform" Visibility="Collapsed"/>
+                                    <Canvas x:Name="HomeCanvasForeground" Width="806" Height="365" IsHitTestVisible="True"/>
                                 </Grid>
                             </Viewbox>
                             
@@ -560,3 +573,6 @@
         </Grid>
     </Grid>
 </Window>
+
+
+

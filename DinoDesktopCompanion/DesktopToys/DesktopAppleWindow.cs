@@ -20,11 +20,11 @@ public sealed class DesktopAppleWindow : Window
 
     public DesktopAppleWindow()
     {
-        Width = 84;
-        Height = 84;
+        Width = 120;
+        Height = 120;
         WindowStyle = WindowStyle.None;
         AllowsTransparency = true;
-        Background = System.Windows.Media.Brushes.Transparent;
+        Background = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(1, 0, 0, 0));
         ResizeMode = ResizeMode.NoResize;
         ShowInTaskbar = false;
         ShowActivated = false;
@@ -34,20 +34,25 @@ public sealed class DesktopAppleWindow : Window
 
         _image = new System.Windows.Controls.Image
         {
-            Source = LoadAppleImage(),
+            Source = LoadImage("apple.png"),
             Stretch = Stretch.Uniform,
             Margin = new Thickness(5),
             RenderTransformOrigin = new System.Windows.Point(0.5, 0.5),
             RenderTransform = new ScaleTransform(1, 1),
             SnapsToDevicePixels = true
         };
-        Content = _image;
-
+                var grid = new System.Windows.Controls.Grid();
+        var canvas = new System.Windows.Controls.Canvas();
+        grid.Children.Add(_image);
+        grid.Children.Add(canvas);
+        Content = grid;
         _placementTimer.Tick += (_, _) => FollowCursor();
+        Loaded += (_, _) => { this.CaptureMouse(); };
         MouseLeftButtonUp += (_, e) =>
         {
             if (!_isPlacing) return;
             e.Handled = true;
+            this.ReleaseMouseCapture();
             _isPlacing = false;
             _placementTimer.Stop();
             Cursor = System.Windows.Input.Cursors.Arrow;
@@ -57,6 +62,7 @@ public sealed class DesktopAppleWindow : Window
         MouseRightButtonUp += (_, e) =>
         {
             if (!_isPlacing) return;
+            this.ReleaseMouseCapture();
             e.Handled = true;
             _placementTimer.Stop();
             PlacementCancelled?.Invoke(this, EventArgs.Empty);
@@ -65,11 +71,99 @@ public sealed class DesktopAppleWindow : Window
         Closed += (_, _) => _placementTimer.Stop();
     }
 
+    public void SetImage(string filename)
+    {
+        _image.Source = LoadImage(filename);
+    }
+    
+    public System.Windows.Media.ImageSource ImageSource => _image.Source;
+
     public void BeginPlacement()
     {
         FollowCursor();
         Show();
         _placementTimer.Start();
+    }
+
+        public void BeginWashAnimation(TimeSpan duration, Window dino)
+    {
+        _isPlacing = false;
+        _placementTimer.Stop();
+        Topmost = true; // Sponge goes over Dino
+        IsHitTestVisible = false;
+        ToolTip = null;
+
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+        var startTime = DateTime.Now;
+        var centerX = dino.Left + dino.Width / 2;
+        var centerY = dino.Top + dino.Height / 2;
+
+        timer.Tick += (s, e) =>
+        {
+            var elapsed = (DateTime.Now - startTime).TotalSeconds;
+            if (elapsed > duration.TotalSeconds)
+            {
+                timer.Stop();
+                return;
+            }
+            // orbit around dino
+            var angle = elapsed * Math.PI * 2; // 1 revolution per second
+            var radiusX = dino.Width / 2 * 0.8;
+            var radiusY = dino.Height / 2 * 0.6;
+            
+            var x = centerX + Math.Cos(angle) * radiusX - Width / 2;
+            var y = centerY + Math.Sin(angle * 2) * radiusY - Height / 2; // Lissajous figure for scrubbing motion
+            
+            Left = x;
+            Top = y;
+
+            if (_image.RenderTransform is ScaleTransform scale)
+            {
+                // gentle pulsing
+                scale.ScaleX = 1 + Math.Sin(elapsed * 10) * 0.1;
+                scale.ScaleY = 1 + Math.Sin(elapsed * 10) * 0.1;
+            }
+
+            // Spawn bubbles
+            if (Random.Shared.NextDouble() < 0.2)
+            {
+                var grid = Content as System.Windows.Controls.Grid;
+                var canvas = grid?.Children[1] as System.Windows.Controls.Canvas;
+                if (canvas != null)
+                {
+                    var bubble = new System.Windows.Shapes.Ellipse
+                    {
+                        Width = 10,
+                        Height = 10,
+                        Fill = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(180, 200, 230, 255)),
+                        Stroke = System.Windows.Media.Brushes.White,
+                        StrokeThickness = 1
+                    };
+                    System.Windows.Controls.Canvas.SetLeft(bubble, Width / 2 + Random.Shared.Next(-20, 20));
+                    System.Windows.Controls.Canvas.SetTop(bubble, Height / 2 + Random.Shared.Next(-20, 20));
+                    canvas.Children.Add(bubble);
+
+                    var btimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(30) };
+                    var bstart = DateTime.Now;
+                    btimer.Tick += (bs, be) =>
+                    {
+                        var bElapsed = (DateTime.Now - bstart).TotalSeconds;
+                        if (bElapsed > 1.5)
+                        {
+                            btimer.Stop();
+                            canvas.Children.Remove(bubble);
+                            return;
+                        }
+                        System.Windows.Controls.Canvas.SetTop(bubble, System.Windows.Controls.Canvas.GetTop(bubble) - 1);
+                        bubble.Width = 10 + bElapsed * 15;
+                        bubble.Height = 10 + bElapsed * 15;
+                        bubble.Opacity = 1 - (bElapsed / 1.5);
+                    };
+                    btimer.Start();
+                }
+            }
+        };
+        timer.Start();
     }
 
     public void BeginEatingAnimation(TimeSpan duration)
@@ -106,9 +200,9 @@ public sealed class DesktopAppleWindow : Window
         Top = Math.Clamp(top, workTop, Math.Max(workTop, workBottom - Height));
     }
 
-    private static BitmapImage? LoadAppleImage()
+    private static BitmapImage? LoadImage(string filename)
     {
-        var path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Desktop", "Toys", "apple.png");
+        var path = System.IO.Path.Combine(AppContext.BaseDirectory, "Assets", "Desktop", "Toys", filename);
         if (!System.IO.File.Exists(path)) return null;
 
         var image = new BitmapImage();

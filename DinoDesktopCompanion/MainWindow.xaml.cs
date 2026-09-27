@@ -1,4 +1,4 @@
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -53,7 +53,9 @@ public partial class MainWindow : Window
     private readonly DesktopActivityRewardService _rewardService;
     private DesktopAppleWindow? _activeApple;
     private bool _isToyBreak;
+    private DateTime _lastAppleTime = DateTime.MinValue;
     private int _appleActionVersion;
+    private int _ballPushCount = 0;
     private bool _waitingForHighFive;
     private bool _waitingForAttention;
     private bool _waitingForDigInteraction;
@@ -130,7 +132,7 @@ public partial class MainWindow : Window
         SourceInitialized += (_, _) => { ((HwndSource)PresentationSource.FromVisual(this)).AddHook(WindowProc); ReapplyTopmost(); };
         Activated += (_, _) => ReapplyTopmost();
         Deactivated += (_, _) => { if (_configuration.Current.AlwaysOnTop && IsVisible) Dispatcher.BeginInvoke(DispatcherPriority.Background, new Action(ReapplyTopmost)); };
-        IsVisibleChanged += (_, _) => { if (IsVisible) Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(ReapplyTopmost)); };
+        IsVisibleChanged += (_, _) => { if (IsVisible) Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(() => { ReapplyTopmost(); UpdateVignette(); })); else UpdateVignette(); };
         Icon = AppIconService.LoadImageSource();
     }
 
@@ -296,7 +298,7 @@ public partial class MainWindow : Window
     public bool EnsureDinoAvailableForAction()
     {
         if (!_isDesktopDigging && !_isToyBreak) return true;
-        ShowSpeech(_isToyBreak ? "Ich mache gerade Apfelpause! 🍎" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
+        ShowSpeech(_isToyBreak ? "Ich bin gerade beschäftigt!" : "Ich grabe gerade! Brich die Grabung zuerst ab.");
         return false;
     }
 
@@ -429,7 +431,7 @@ public partial class MainWindow : Window
     {
         if (_isToyBreak)
         {
-            ShowSpeech("Ich mache gerade Apfelpause! 🍎");
+            ShowSpeech("Ich bin gerade beschäftigt!");
             return;
         }
         if (_isDesktopDigging)
@@ -652,16 +654,93 @@ public partial class MainWindow : Window
         _interactionWindow.Show();
     }
 
+        public void StartWashDino()
+    {
+        if (_isDesktopDigging || _isToyBreak)
+        {
+            ShowSpeech("Ich bin gerade beschäftigt!");
+            return;
+        }
+        if ((DateTime.Now - _progress.Current.LastWashTime).TotalMinutes < 10)
+        {
+            ShowSpeech("Ich bin doch schon sauber! 🛁");
+            return;
+        }
+        if (_home.IsHome)
+        {
+            ShowSpeech("Hol mich erst aus dem Dinohaus!");
+            return;
+        }
+
+        _isToyBreak = true;
+        _appleActionVersion++;
+        var version = _appleActionVersion;
+
+        var sponge = new DesktopAppleWindow();
+        sponge.Owner = this;
+        sponge.SetImage("sponge.png");
+        
+        _activeApple = sponge;
+        sponge.PlacementConfirmed += (s, e) =>
+        {
+            if (_states.Current != DinoState.Walk) _states.Set(DinoState.Walk);
+            TravelToApple(sponge, version);
+        };
+        sponge.PlacementCancelled += (_, _) => CancelApplePlacement(sponge, version);
+        sponge.Closed += (_, _) => HandleAppleClosed(sponge, version);
+        sponge.BeginPlacement();
+    }
+
+        public void StartBallPlacement()
+    {
+        if (_activeApple is not null || _isToyBreak)
+        {
+            ShowSpeech("Ich spiele doch gerade schon!");
+            return;
+        }
+
+        if ((DateTime.Now - _progress.Current.LastBallTime).TotalMinutes < 1)
+        {
+            var left = 60 - (DateTime.Now - _progress.Current.LastBallTime).TotalSeconds;
+            ShowSpeech($"Puh, ich brauche noch {Math.Ceiling(left)}s Pause vom Rennen!");
+            return;
+        }
+
+        if (!EnsureDinoAvailableForAction()) return;
+        _isToyBreak = true;
+        _digSites.CancelActive();
+        
+        
+        var actionVersion = ++_appleActionVersion;
+        Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+        {
+            if (actionVersion != _appleActionVersion || !_isToyBreak) return;
+            var ball = new DesktopToys.DesktopAppleWindow();
+            ball.SetImage("ball.png");
+            _activeApple = ball;
+            _ballPushCount = 0;
+            ball.PlacementConfirmed += (_, _) => TravelToApple(ball, actionVersion);
+            ball.PlacementCancelled += (_, _) => CancelApplePlacement(ball, actionVersion);
+            ball.Closed += (_, _) => HandleAppleClosed(ball, actionVersion);
+            ball.BeginPlacement();
+        }));
+    }
+
     public void StartApplePlacement()
     {
         if (_activeApple is not null || _isToyBreak)
         {
-            ShowSpeech("Da liegt schon ein Apfel! 🍎");
+            ShowSpeech("Ich spiele gerade schon!");
             return;
         }
         if (_isDesktopDigging)
         {
             ShowSpeech("Ich grabe gerade! Brich die Grabung zuerst ab.");
+            return;
+        }
+        if ((DateTime.Now - _progress.Current.LastAppleTime).TotalMinutes < 5)
+        {
+            ShowSpeech("Ich bin noch satt vom letzten Apfel! 🍎");
             return;
         }
         if (_home.IsHome)
@@ -715,8 +794,12 @@ public partial class MainWindow : Window
         var workTop = workArea.Top / dpi.DpiScaleY;
         var workRight = workArea.Right / dpi.DpiScaleX;
         var workBottom = workArea.Bottom / dpi.DpiScaleY;
-        var targetLeft = apple.Left + (apple.Width - Width) / 2;
-        targetLeft = Math.Clamp(targetLeft, workLeft, Math.Max(workLeft, workRight - Width));
+        var isSponge = ((System.Windows.Media.Imaging.BitmapImage)apple.ImageSource)?.UriSource?.ToString().Contains("sponge", StringComparison.OrdinalIgnoreCase) == true;
+        var isBallLocal = ((System.Windows.Media.Imaging.BitmapImage)apple.ImageSource)?.UriSource?.ToString().Contains("ball", StringComparison.OrdinalIgnoreCase) == true;
+        var targetLeftCandidate = isSponge || isBallLocal
+            ? apple.Left + (apple.Width - Width) / 2
+            : (apple.Left < Left ? apple.Left + apple.Width - 70 : apple.Left - Width + 70);
+        var targetLeft = Math.Clamp(targetLeftCandidate, workLeft, Math.Max(workLeft, workRight - Width));
         var targetTop = Math.Clamp(apple.Top - Height + 64, workTop, Math.Max(workTop, workBottom - Height));
         Dino.SetFacingLeft(targetLeft < Left);
 
@@ -736,12 +819,75 @@ public partial class MainWindow : Window
             MonitorService.KeepVisible(this);
             if (!ReferenceEquals(_activeApple, apple) || actionVersion != _appleActionVersion || !apple.IsVisible) return;
 
-            _states.Set(DinoState.Sniff);
-            ShowSpeech("Mampf! 🍎", 2200);
-            var eatingDuration = TimeSpan.FromSeconds(8);
-            apple.BeginEatingAnimation(eatingDuration);
-            await Task.Delay(eatingDuration);
-            FinishAppleBreak(apple, actionVersion);
+            var imgSrc = apple.ImageSource as System.Windows.Media.Imaging.BitmapImage;
+            bool isSponge = imgSrc != null && imgSrc.UriSource.ToString().Contains("sponge");
+            bool isBall = imgSrc != null && imgSrc.UriSource.ToString().Contains("ball");
+            
+            if (isBall)
+            {
+                _ballPushCount++;
+                _states.Set(DinoState.Happy);
+                
+                if (_ballPushCount <= 5)
+                {
+                    var dx = (Dino.IsFacingLeft ? -1 : 1) * Math.Max(250, 1000 - distance);
+                    var dy = Random.Shared.Next(-200, 200);
+                    var btimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(16) };
+                    var bstart = DateTime.Now;
+                    var bStartX = apple.Left;
+                    var bStartY = apple.Top;
+                    btimer.Tick += (bs, be) =>
+                    {
+                        var bElapsed = (DateTime.Now - bstart).TotalSeconds;
+                        if (bElapsed > 0.6)
+                        {
+                            if (!btimer.IsEnabled) return;
+                            btimer.Stop();
+                            if (_ballPushCount < 5) TravelToApple(apple, actionVersion);
+                            else FinishAppleBreak(apple, actionVersion);
+                            return;
+                        }
+                        var t = bElapsed / 0.6;
+                        t = t * (2 - t);
+                        var unconstrainedX = bStartX + dx * t;
+                        var unconstrainedY = bStartY + dy * t;
+                        
+                        var workArea2 = System.Windows.Forms.Screen.FromPoint(new System.Drawing.Point((int)bStartX, (int)bStartY)).WorkingArea;
+                        var dpi2 = System.Windows.Media.VisualTreeHelper.GetDpi(this);
+                        var minX = workArea2.Left / dpi2.DpiScaleX;
+                        var maxX = workArea2.Right / dpi2.DpiScaleX - apple.Width;
+                        var minY = workArea2.Top / dpi2.DpiScaleY;
+                        var maxY = workArea2.Bottom / dpi2.DpiScaleY - apple.Height;
+                        
+                        if (maxX > minX) {
+                            var rangeX = maxX - minX;
+                            var modX = (unconstrainedX - minX) % (2 * rangeX);
+                            if (modX < 0) modX += 2 * rangeX;
+                            if (modX > rangeX) modX = 2 * rangeX - modX;
+                            apple.Left = minX + modX;
+                        }
+                        
+                        if (maxY > minY) {
+                            var rangeY = maxY - minY;
+                            var modY = (unconstrainedY - minY) % (2 * rangeY);
+                            if (modY < 0) modY += 2 * rangeY;
+                            if (modY > rangeY) modY = 2 * rangeY - modY;
+                            apple.Top = minY + modY;
+                        }
+                    };
+                    btimer.Start();
+                }
+            }
+            else
+            {
+                _states.Set(isSponge ? DinoState.Happy : DinoState.Sniff);
+                ShowSpeech(isSponge ? "Blubb blubb... 🫧" : "Mampf! 🍎", 2200);
+                var eatingDuration = TimeSpan.FromSeconds(8);
+                if (isSponge) apple.BeginWashAnimation(eatingDuration, this);
+                else apple.BeginEatingAnimation(eatingDuration);
+                await Task.Delay(eatingDuration);
+                FinishAppleBreak(apple, actionVersion);
+            }
         };
         BeginAnimation(LeftProperty, leftAnimation);
         BeginAnimation(TopProperty, topAnimation);
@@ -753,11 +899,52 @@ public partial class MainWindow : Window
         _activeApple = null;
         _isToyBreak = false;
         try { apple.Close(); } catch { }
-        if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+        
+        // differentiate between wash and apple by the image source
+        var imgSource = apple.ImageSource as System.Windows.Media.Imaging.BitmapImage;
+        if (imgSource != null && imgSource.UriSource.ToString().Contains("sponge"))
         {
-            _states.Set(DinoState.Happy);
-            ShowSpeech("Lecker! ♥", 1800);
-            ReturnToIdleAfter(1400);
+            _progress.Current.LastWashTime = DateTime.Now;
+            _progress.AddXP(50, "Washed Dino");
+            if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+            {
+                _states.Set(DinoState.Happy);
+                ShowSpeech("Quietschsauber! +50 XP 🛁", 2500);
+                ReturnToIdleAfter(1400);
+            }
+        }
+        else if (imgSource != null && imgSource.UriSource.ToString().Contains("ball"))
+        {
+            _progress.Current.LastBallTime = DateTime.Now;
+            if (Random.Shared.NextDouble() > 0.5)
+            {
+                _progress.AddInstantAP(1);
+                if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+                {
+                    _states.Set(DinoState.Happy);
+                    ShowSpeech("+1 AP! 🎾", 2500);
+                    ReturnToIdleAfter(1400);
+                }
+            }
+            else
+            {
+                if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+                {
+                    _states.Set(DinoState.Happy);
+                    ReturnToIdleAfter(1400);
+                }
+            }
+        }
+        else
+        {
+            _progress.Current.LastAppleTime = DateTime.Now;
+            _progress.AddInstantAP(1);
+            if (!IsSleeping && !_isDesktopDigging && _states.Current != DinoState.Home)
+            {
+                _states.Set(DinoState.Happy);
+                ShowSpeech("Lecker! +1 AP ♥", 2500);
+                ReturnToIdleAfter(1400);
+            }
         }
     }
 
@@ -1262,7 +1449,7 @@ public partial class MainWindow : Window
         {
             StartAttention,
             StartMouseGame,
-            StartPawTrail,
+            
             SpawnSingleLeaf,
             StartShootingStarEvent
         };
@@ -1464,26 +1651,21 @@ public partial class MainWindow : Window
         var dg = new System.Windows.Media.DrawingGroup();
         using (var dc = dg.Open())
         {
-            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(90, 255, 225, 102)), null, new System.Windows.Point(5, 43), 1.5, 1.5);
-            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(130, 255, 225, 102)), null, new System.Windows.Point(11, 38), 2, 2);
-            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(170, 255, 225, 102)), null, new System.Windows.Point(17, 33), 2.5, 2.5);
-            dc.DrawEllipse(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromArgb(210, 255, 225, 102)), null, new System.Windows.Point(23, 27), 3, 3);
-
             var geometry = new System.Windows.Media.StreamGeometry();
             using (var context = geometry.Open())
             {
                 var points = Enumerable.Range(0, 10).Select(index =>
                 {
-                    var radius = index % 2 == 0 ? 15d : 6.5d;
+                    var radius = index % 2 == 0 ? 22d : 10d;
                     var angle = -Math.PI / 2 + index * Math.PI / 5;
-                    return new System.Windows.Point(34 + Math.Cos(angle) * radius, 16 + Math.Sin(angle) * radius);
+                    return new System.Windows.Point(48 + Math.Cos(angle) * radius, 48 + Math.Sin(angle) * radius);
                 }).ToArray();
                 context.BeginFigure(points[0], true, true);
                 context.PolyLineTo(points.Skip(1).ToArray(), true, true);
             }
             geometry.Freeze();
-            dc.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 221, 74)), new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(213, 135, 22)), 1.5), geometry);
-            dc.DrawEllipse(System.Windows.Media.Brushes.White, null, new System.Windows.Point(31, 11), 2.2, 2.2);
+            dc.DrawGeometry(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 221, 74)), new System.Windows.Media.Pen(new System.Windows.Media.SolidColorBrush(System.Windows.Media.Color.FromRgb(213, 135, 22)), 3), geometry);
+            dc.DrawEllipse(System.Windows.Media.Brushes.White, null, new System.Windows.Point(42, 38), 4.4, 4.4);
         }
         dg.Freeze();
         var image = new System.Windows.Media.DrawingImage(dg);
@@ -1544,7 +1726,7 @@ public partial class MainWindow : Window
         };
 
         // Gebietsobjekt verschwindet nach 25–40s von selbst
-        var lifetime = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(25, 40)) };
+        var lifetime = new DispatcherTimer { Interval = TimeSpan.FromSeconds(r.Next(40, 70)) };
         lifetime.Tick += (_, _) =>
         {
             lifetime.Stop();
@@ -1664,11 +1846,11 @@ public partial class MainWindow : Window
         {
             AllowsTransparency = true,
             WindowStyle = WindowStyle.None, Background = System.Windows.Media.Brushes.Transparent, Topmost = true, ShowInTaskbar = false,
-            Width = 72, Height = 72,
+            Width = 64, Height = 64,
         };
         var img = new System.Windows.Controls.Image
         {
-            Source = MakeShootingStarImage(), Width = 56, Height = 56,
+            Source = MakeShootingStarImage(), Width = 42, Height = 42,
             HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
             VerticalAlignment = System.Windows.VerticalAlignment.Center,
             Cursor = System.Windows.Input.Cursors.Hand
@@ -1722,7 +1904,7 @@ public partial class MainWindow : Window
             shootingStar.Left += dx / d * 7.2;
             shootingStar.Top  += dy / d * 7.2;
             img.RenderTransform = dx < 0
-                ? new ScaleTransform(-1, 1, 25, 25)
+                ? new ScaleTransform(-1, 1, 48, 48)
                 : Transform.Identity;
         };
 
